@@ -3,30 +3,115 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'glass_shine_button.dart';
 
-// ─── 기사페이지와 동일 팔레트 (네이비 + 민트) ───────────────────────
-const _appBg    = Color(0xFF090E1A); // 전체 배경 (패널보다 살짝 밝게)
-const _panel    = Color(0xFF070C18); // 메인 배경 (inset 패널)
-const _surface  = Color(0xFF0D1427); // 카드
-const _elevated = Color(0xFF303854); // 트랙 · 테두리
-
+// ═══════════════════════════════════════════════════════════════════════
+// 공통 색 팔레트 (모든 섹션 공유)
+// ═══════════════════════════════════════════════════════════════════════
+const _surface  = Color(0xFF0D1427); // 카드·입력칸 배경
+const _elevated = Color(0xFF303854); // 테두리
 const _text  = Color(0xFFFBFBFB);
 const _text2 = Color(0xFF787C8D);
-
 const _teal     = Color(0xFF4AE3ED); // 민트 (메인 액센트)
 const _pink     = Color(0xFFE672BA); // 핑크
 const _amber    = Color(0xFFE6C97F); // 노랑
+const _borderDim = Color(0x33303854); // 보조 테두리(옅은)
 
-// ── 보조 테두리(옅은) ──
-const _borderDim = Color(0x33303854);
+// ═══════════════════════════════════════════════════════════════════════
+// 1. 전체배경
+// ═══════════════════════════════════════════════════════════════════════
+const _appBg = Color(0xFF090E1A); // 전체 화면 Scaffold 배경색
 
-// ── 회원가입 패널(메인배경) ──
-const double _regOuterPad         = 10;   // 패널 바깥 여백
-const double _regPanelRadius      = 24;   // 패널 모서리
-const double _regPanelBorderAlpha = 1.0;  // 패널 테두리 투명도 (1.0=솔리드)
+// ═══════════════════════════════════════════════════════════════════════
+// 2. 메인배경 (회원가입 패널)
+// ═══════════════════════════════════════════════════════════════════════
+const _panel = Color(0xFF070C18); // 패널 배경색
+const double _regOuterPad         = 10;  // 패널 바깥 여백
+const double _regPanelRadius      = 24;  // 패널 모서리
+const Color  _regPanelBorderColor = _elevated; // 패널 테두리 색
+const double _regPanelBorderAlpha = 1.0; // 패널 테두리 투명도(1.0=솔리드)
+const double _regPanelBorderWidth = 1;   // 패널 테두리 두께
+const double _regInnerHPad        = 20;  // 내용 좌우 여백
 const List<BoxShadow> _panelShadow = [
   BoxShadow(color: Color(0xFF18203A), blurRadius: 11, offset: Offset(4, 6)),
 ];
-// ─────────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════════
+// 3. 상단 헤더 (아이콘 + 제목)
+// ═══════════════════════════════════════════════════════════════════════
+const double _hdrIconBoxSize   = 44;       // 아이콘 박스 크기
+const Color  _hdrIconBoxColor  = _surface; // 아이콘 박스 배경
+const Color  _hdrIconBoxBorder = _elevated;// 아이콘 박스 테두리
+const double _hdrIconBoxRadius = 12;       // 아이콘 박스 모서리
+const Color  _hdrIconColor     = _teal;    // 아이콘 색
+const double _hdrIconSize      = 24;       // 아이콘 크기
+const double _hdrIconGap       = 14;       // 아이콘 ↔ 제목 갭
+const Color  _hdrTitleColor    = _text;    // 제목 색
+const double _hdrTitleFontSize = 16;       // 제목 글씨 크기
+const double _hdrTitleLetterSp = 0.2;      // 제목 자간
+const double _hdrTitleSubGap   = 3;        // 제목 ↔ 부제 갭
+const Color  _hdrSubColor      = _text2;   // 부제 색
+const double _hdrSubFontSize   = 11;       // 부제 글씨 크기
+const double _gapHeaderToFields = 16;      // 헤더 ↔ 입력칸 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 4. 입력칸 (이름·전화·이메일·비밀번호)
+// ═══════════════════════════════════════════════════════════════════════
+const Color  _fieldTextColor    = _text;    // 입력 글씨 색
+const double _fieldTextFontSize = 13;       // 입력 글씨 크기
+const Color  _fieldIconColor    = _text2;   // 아이콘 색
+const double _fieldIconSize     = 18;       // 아이콘 크기
+const Color  _fieldFillColor    = _surface; // 입력칸 배경
+const Color  _fieldHintColor    = _text2;   // 힌트 색
+const double _fieldHintFontSize = 12;       // 힌트 글씨 크기
+const Color  _fieldBorderColor  = _elevated;// 기본 테두리 색
+const double _fieldBorderWidth  = 0.5;      // 기본 테두리 두께
+const Color  _fieldFocusColor   = _teal;    // 포커스 테두리 색
+const double _fieldFocusWidth   = 1.0;      // 포커스 테두리 두께
+const double _fieldRadius       = 10;       // 입력칸 모서리
+const double _fieldPadV         = 9;        // 안쪽 위아래 여백
+const double _fieldPadH         = 14;       // 안쪽 좌우 여백
+const double _gapField          = 8;        // 입력칸 사이 갭
+const double _gapFieldsToChoice = 10;       // 입력칸 ↔ 선택칩 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 5. 선택칩 (운송수단 / 유상운송보험)
+// ═══════════════════════════════════════════════════════════════════════
+const Color  _choiceLabelColor    = _text2;    // 라벨 색
+const double _choiceLabelFontSize = 11;        // 라벨 글씨 크기
+const double _choiceLabelLetterSp = 0.3;       // 라벨 자간
+const double _choiceLabelGap      = 6;         // 라벨 ↔ 칩 갭
+const Color  _choiceSelColor      = _teal;     // 선택 색(글씨·테두리·아이콘)
+const Color  _choiceUnselColor    = _text2;    // 미선택 색
+const Color  _choiceUnselBg       = _surface;  // 미선택 배경
+const Color  _choiceUnselBorder   = _borderDim;// 미선택 테두리
+const double _choiceFontSize      = 13;        // 칩 글씨 크기
+const double _choiceIconSize      = 16;        // 칩 아이콘 크기
+const double _gapChoice           = 8;         // 선택칩 줄 사이 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 6. 안내 박스
+// ═══════════════════════════════════════════════════════════════════════
+const Color  _noticeBg       = _surface;  // 안내 박스 배경
+const Color  _noticeBorder   = _elevated; // 안내 박스 테두리
+const double _noticeRadius   = 10;        // 안내 박스 모서리
+const Color  _noticeColor    = _pink;     // 아이콘·글씨 색
+const double _noticeIconSize = 20;        // 아이콘 크기
+const double _noticeFontSize = 11;        // 글씨 크기
+const double _gapChoiceToNotice = 10;     // 선택칩 ↔ 안내 박스 갭
+const double _gapNoticeToBtn    = 12;     // 안내 박스 ↔ 버튼 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 7. 회원가입 요청 버튼 (GlassShineButton — 스타일은 위젯 내부)
+// ═══════════════════════════════════════════════════════════════════════
+const double _gapBtnToLogin = 12; // 버튼 ↔ 로그인 링크 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 8. 로그인 링크
+// ═══════════════════════════════════════════════════════════════════════
+const Color  _loginQColor       = _text;  // "이미 계정이 있으신가요?" 색
+const double _loginQFontSize    = 12;     // 안내 글씨 크기
+const Color  _loginLinkColor    = _amber; // "로그인" 색
+const double _loginLinkFontSize = 13;     // "로그인" 글씨 크기
+const double _gapBottom         = 20;     // 하단 여백
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -170,112 +255,112 @@ class _RegisterPageState extends State<RegisterPage> {
               color: _panel,
               borderRadius: BorderRadius.circular(_regPanelRadius),
               border: Border.all(
-                  color: _elevated.withValues(alpha: _regPanelBorderAlpha),
-                  width: 1),
+                  color: _regPanelBorderColor.withValues(alpha: _regPanelBorderAlpha),
+                  width: _regPanelBorderWidth),
               boxShadow: _panelShadow,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(_regPanelRadius),
               child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: _regInnerHPad),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
 
-              // ── 상단 헤더 ──
+              // ── 3. 상단 헤더 ──
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 44, height: 44,
+                    width: _hdrIconBoxSize, height: _hdrIconBoxSize,
                     decoration: BoxDecoration(
-                      color: _surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: _elevated, width: 1),
+                      color: _hdrIconBoxColor,
+                      borderRadius: BorderRadius.circular(_hdrIconBoxRadius),
+                      border: Border.all(color: _hdrIconBoxBorder, width: 1),
                     ),
                     child: const Icon(Icons.person_add_outlined,
-                        color: _teal, size: 24),
+                        color: _hdrIconColor, size: _hdrIconSize),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: _hdrIconGap),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text("SwingTiger 회원가입",
                           style: TextStyle(
-                              color: _text,
-                              fontSize: 16,
+                              color: _hdrTitleColor,
+                              fontSize: _hdrTitleFontSize,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2)),
-                      SizedBox(height: 3),
+                              letterSpacing: _hdrTitleLetterSp)),
+                      SizedBox(height: _hdrTitleSubGap),
                       Text("모든 입력 항목은 필수입니다.",
-                          style: TextStyle(color: _text2, fontSize: 11)),
+                          style: TextStyle(color: _hdrSubColor, fontSize: _hdrSubFontSize)),
                     ],
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: _gapHeaderToFields),
 
-              // ── 입력 필드들 (라벨 제거, 항목명을 칸 안 힌트로 표시) ──
+              // ── 4. 입력칸 (라벨 제거, 항목명을 칸 안 힌트로 표시) ──
               _buildField(Icons.person_outline_rounded,
                   _nameController, "이름", false),
-              const SizedBox(height: 8),
+              const SizedBox(height: _gapField),
 
               _buildField(Icons.phone_outlined,
                   _phoneController, "전화번호", false),
-              const SizedBox(height: 8),
+              const SizedBox(height: _gapField),
 
               _buildField(Icons.mail_outline_rounded,
                   _emailController, "이메일 (비밀번호 분실시 필요)", false),
-              const SizedBox(height: 8),
+              const SizedBox(height: _gapField),
 
               _buildPasswordField(Icons.lock_outline_rounded,
                   _passwordController, "비밀번호 (6자리 이상)",
                   _obscurePassword, () => setState(() => _obscurePassword = !_obscurePassword)),
-              const SizedBox(height: 8),
+              const SizedBox(height: _gapField),
 
               _buildPasswordField(Icons.lock_outline_rounded,
                   _confirmPasswordController, "비밀번호 확인",
                   _obscureConfirmPassword, () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword)),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: _gapFieldsToChoice),
 
-              // ── 운송수단 / 유상운송보험 선택 ──
+              // ── 5. 선택칩 (운송수단 / 유상운송보험) ──
               _buildChoice("운송수단", const ["오토바이", "자동차"],
                   _vehicleType, (v) => setState(() => _vehicleType = v)),
-              const SizedBox(height: 8),
+              const SizedBox(height: _gapChoice),
               _buildChoice("유상운송보험 가입유무", const ["가입", "미가입"],
                   _paidInsurance, (v) => setState(() => _paidInsurance = v)),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: _gapChoiceToNotice),
 
-              // ── 안내 박스 ──
+              // ── 6. 안내 박스 ──
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: _surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: _elevated, width: 1),
+                  color: _noticeBg,
+                  borderRadius: BorderRadius.circular(_noticeRadius),
+                  border: Border.all(color: _noticeBorder, width: 1),
                 ),
                 child: Row(
                   children: const [
-                    Icon(Icons.verified_user, color: _pink, size: 20),
+                    Icon(Icons.verified_user, color: _noticeColor, size: _noticeIconSize),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         "입력하신 정보는 안전하게 보호되며,\n관리자 승인 후 이용하실 수 있습니다.",
                         style: TextStyle(
-                            color: _pink, fontSize: 11, height: 1.4),
+                            color: _noticeColor, fontSize: _noticeFontSize, height: 1.4),
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: _gapNoticeToBtn),
 
-              // ── 회원가입 요청 버튼 (글래스 샤인) ──
+              // ── 7. 회원가입 요청 버튼 (글래스 샤인) ──
               GlassShineButton(
                 label: "회원가입 요청",
                 onPressed: _handleRegisterRequest,
@@ -284,24 +369,24 @@ class _RegisterPageState extends State<RegisterPage> {
                 fontSize: 15,
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: _gapBtnToLogin),
 
-              // ── 로그인 링크 ──
+              // ── 8. 로그인 링크 ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("이미 계정이 있으신가요?  ",
-                      style: TextStyle(color: _text, fontSize: 12)),
+                      style: TextStyle(color: _loginQColor, fontSize: _loginQFontSize)),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Text(
                       "로그인",
                       style: TextStyle(
-                        color: _amber,
-                        fontSize: 13,
+                        color: _loginLinkColor,
+                        fontSize: _loginLinkFontSize,
                         fontWeight: FontWeight.w600,
                         decoration: TextDecoration.underline,
-                        decorationColor: _amber,
+                        decorationColor: _loginLinkColor,
                         decorationThickness: 1.2,
                       ),
                     ),
@@ -309,7 +394,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: _gapBottom),
             ],
           ),
         ),
@@ -327,22 +412,22 @@ class _RegisterPageState extends State<RegisterPage> {
     return TextField(
       controller:  ctrl,
       obscureText: obscure,
-      style: const TextStyle(color: _text, fontSize: 13),
+      style: const TextStyle(color: _fieldTextColor, fontSize: _fieldTextFontSize),
       cursorColor: _teal,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: _text2, size: 18),
+        prefixIcon: Icon(icon, color: _fieldIconColor, size: _fieldIconSize),
         filled:    true,
-        fillColor: _surface,
+        fillColor: _fieldFillColor,
         hintText:  hint,
-        hintStyle: const TextStyle(color: _text2, fontSize: 12),
+        hintStyle: const TextStyle(color: _fieldHintColor, fontSize: _fieldHintFontSize),
         enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: _elevated, width: 0.5),
-            borderRadius: BorderRadius.circular(10)),
+            borderSide: const BorderSide(color: _fieldBorderColor, width: _fieldBorderWidth),
+            borderRadius: BorderRadius.circular(_fieldRadius)),
         focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: _teal, width: 1.0),
-            borderRadius: BorderRadius.circular(10)),
+            borderSide: const BorderSide(color: _fieldFocusColor, width: _fieldFocusWidth),
+            borderRadius: BorderRadius.circular(_fieldRadius)),
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 9, horizontal: 14),
+            const EdgeInsets.symmetric(vertical: _fieldPadV, horizontal: _fieldPadH),
       ),
     );
   }
@@ -355,8 +440,8 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         Text(label,
             style: const TextStyle(
-                color: _text2, fontSize: 11, letterSpacing: 0.3)),
-        const SizedBox(height: 6),
+                color: _choiceLabelColor, fontSize: _choiceLabelFontSize, letterSpacing: _choiceLabelLetterSp)),
+        const SizedBox(height: _choiceLabelGap),
         Row(
           children: options.map((o) {
             final sel = selected == o;
@@ -368,20 +453,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                   decoration: BoxDecoration(
-                    color: sel ? _teal.withValues(alpha: 0.15) : _surface,
-                    borderRadius: BorderRadius.circular(10),
+                    color: sel ? _choiceSelColor.withValues(alpha: 0.15) : _choiceUnselBg,
+                    borderRadius: BorderRadius.circular(_fieldRadius),
                     border: Border.all(
-                        color: sel ? _teal : _borderDim,
+                        color: sel ? _choiceSelColor : _choiceUnselBorder,
                         width: sel ? 1.2 : 0.5),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Icon(sel ? Icons.check_circle : Icons.circle_outlined,
-                        size: 16, color: sel ? _teal : _text2),
+                        size: _choiceIconSize, color: sel ? _choiceSelColor : _choiceUnselColor),
                     const SizedBox(width: 6),
                     Text(o,
                         style: TextStyle(
-                            color: sel ? _teal : _text2,
-                            fontSize: 13,
+                            color: sel ? _choiceSelColor : _choiceUnselColor,
+                            fontSize: _choiceFontSize,
                             fontWeight:
                                 sel ? FontWeight.w700 : FontWeight.w500)),
                   ]),
@@ -405,28 +490,28 @@ class _RegisterPageState extends State<RegisterPage> {
       style: const TextStyle(color: _text, fontSize: 13),
       cursorColor: _teal,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: _text2, size: 18),
+        prefixIcon: Icon(icon, color: _fieldIconColor, size: _fieldIconSize),
         suffixIcon: GestureDetector(
           onTap: onToggle,
           child: Icon(
             obscure
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined,
-            color: _text2, size: 18,
+            color: _fieldIconColor, size: _fieldIconSize,
           ),
         ),
         filled:    true,
-        fillColor: _surface,
+        fillColor: _fieldFillColor,
         hintText:  hint,
-        hintStyle: const TextStyle(color: _text2, fontSize: 12),
+        hintStyle: const TextStyle(color: _fieldHintColor, fontSize: _fieldHintFontSize),
         enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: _elevated, width: 0.5),
-            borderRadius: BorderRadius.circular(10)),
+            borderSide: const BorderSide(color: _fieldBorderColor, width: _fieldBorderWidth),
+            borderRadius: BorderRadius.circular(_fieldRadius)),
         focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: _teal, width: 1.0),
-            borderRadius: BorderRadius.circular(10)),
+            borderSide: const BorderSide(color: _fieldFocusColor, width: _fieldFocusWidth),
+            borderRadius: BorderRadius.circular(_fieldRadius)),
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 9, horizontal: 14),
+            const EdgeInsets.symmetric(vertical: _fieldPadV, horizontal: _fieldPadH),
       ),
     );
   }
