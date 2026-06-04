@@ -70,7 +70,6 @@ const Color _greetIconInnerColor  = _purple;  // 안쪽 원 색
 const Color _greetHelloColor      = _text;    // "안녕하세요," 글씨 색
 const Color _greetNameColor       = _amber;   // 이름 글씨 색
 const Color _greetSuffixColor     = _text;    // " 님" 글씨 색
-const Color _greetLogoutBoxColor  = _surface; // 로그아웃 버튼 배경색
 const Color _greetLogoutIconColor = _purple;  // 로그아웃 아이콘 색
 // ── 글씨 크기 (각각 따로) ──
 const double _greetHelloFontSize  = 18;  // "안녕하세요," 크기
@@ -1791,17 +1790,15 @@ class _AdminPageState extends State<AdminPage> {
                     fontWeight: FontWeight.w700)),
           ])),
         ),
-        GestureDetector(
-          onTap: _logout,
-          child: Container(
-            width: _greetLogoutBoxSize,
-            height: _greetLogoutBoxSize,
-            decoration: BoxDecoration(
-                color: _greetLogoutBoxColor,
-                borderRadius: BorderRadius.circular(_greetLogoutRadius)),
-            child: const Icon(Icons.logout_rounded,
-                color: _greetLogoutIconColor, size: _greetLogoutIconSize),
-          ),
+        GlassShineButton(
+          onPressed: _logout,
+          icon: Icons.logout_rounded,
+          accent: _greetLogoutIconColor,
+          textColor: _greetLogoutIconColor,
+          width: _greetLogoutBoxSize,
+          height: _greetLogoutBoxSize,
+          radius: _greetLogoutRadius,
+          fontSize: _greetLogoutIconSize - 3,
         ),
       ]);
 

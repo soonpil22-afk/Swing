@@ -48,9 +48,9 @@ const Color _bgScaffold = _appBg;   // 모든 화면 Scaffold 배경색
 // ── 색 (팔레트에서 선택) ──
 const Color  _panelColor       = _panel;     // 패널 배경색
 const Color  _panelBorderColor = _elevated;  // 테두리 색
-const double _panelBorderAlpha = 0.3;        // 테두리 투명도(0~1)
+const double _panelBorderAlpha = 1.0;        // 테두리 투명도(0~1, 1.0=솔리드)
 // ── 숫자 (크기·여백) ──
-const double _panelOuterPad    = 10;   // 패널 바깥 여백
+const double _panelOuterPad    = 6;   // 패널 바깥 여백
 const double _panelRadius      = 24;  // 패널 모서리 둥글기
 const double _panelBorderWidth = 1;   // 테두리 두께
 const double _panelPadL = 11;  // 안쪽 여백 왼쪽

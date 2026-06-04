@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
+import 'glass_shine_button.dart';
 
 // ═══════════════════════════════════════════════════════════════════════
 // Design Tokens (기사페이지와 동일 팔레트)
@@ -53,7 +54,6 @@ const Color _greetIconInnerColor  = _pink;  // 안쪽 원 색
 const Color _greetHelloColor      = _text;    // "안녕하세요," 글씨 색
 const Color _greetNameColor       = _amber;   // 이름 글씨 색
 const Color _greetSuffixColor     = _text;    // " 님" 글씨 색
-const Color _greetLogoutBoxColor  = _surface; // 로그아웃 버튼 배경색
 const Color _greetLogoutIconColor = _pink;  // 로그아웃 아이콘 색
 const double _greetHelloFontSize  = 18;  // "안녕하세요," 크기
 const double _greetNameFontSize   = 18;  // 이름 크기
@@ -190,17 +190,15 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
               ]),
             ),
           ),
-          GestureDetector(
-            onTap: _handleLogout,
-            child: Container(
-              width: _greetLogoutBoxSize,
-              height: _greetLogoutBoxSize,
-              decoration: BoxDecoration(
-                  color: _greetLogoutBoxColor,
-                  borderRadius: BorderRadius.circular(_greetLogoutRadius)),
-              child: const Icon(Icons.logout_rounded,
-                  color: _greetLogoutIconColor, size: _greetLogoutIconSize),
-            ),
+          GlassShineButton(
+            onPressed: _handleLogout,
+            icon: Icons.logout_rounded,
+            accent: _greetLogoutIconColor,
+            textColor: _greetLogoutIconColor,
+            width: _greetLogoutBoxSize,
+            height: _greetLogoutBoxSize,
+            radius: _greetLogoutRadius,
+            fontSize: _greetLogoutIconSize - 3,
           ),
         ]),
       );
