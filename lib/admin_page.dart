@@ -1380,6 +1380,7 @@ class _AdminPageState extends State<AdminPage> {
       );
 
   // === 차트 카드 (누적 지급액) ===============================================
+  // ═══════════════ 4. 차트 (로직) ═══════════════
   Widget _adminChartCard() {
     final periodColor = [_teal, _pink, _purple][_chartPeriod];
     final series = _chLoaded && _chSeries[_chartPeriod].isNotEmpty
@@ -1485,6 +1486,7 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   // === 출금 랭킹 TOP5 ========================================================
+  // ═══════════════ 5. 출금랭킹 (로직) ═══════════════
   Widget _rankingCard() {
     final list = [_rankDay, _rankWeek, _rankMonth][_rankPeriod];
     final top5 = list.take(5).toList();
@@ -1768,6 +1770,7 @@ class _AdminPageState extends State<AdminPage> {
       );
 
   // === 인사 ==================================================================
+  // ═══════════════ 3. 안녕하세요 (로직) ═══════════════
   Widget _greeting() => Row(children: [
         Container(
           width: _greetIconOuterSize,
@@ -1819,6 +1822,7 @@ class _AdminPageState extends State<AdminPage> {
       ]);
 
   // === 하단 메뉴 카드 (한 카드 안 4칸, 세로 경계선으로 구분) ==================
+  // ═══════════════ 6. 하단 4버튼 카드 (로직) ═══════════════
   Widget _bottomMenuCard() {
     Widget divider() => Container(width: 1, height: _menuItemDividerH, color: _menuDividerColor);
     return Container(
@@ -1975,6 +1979,7 @@ class _AdminPageState extends State<AdminPage> {
 
   // === 탭 1: 공지사항 =================================================================================
 
+  // ═══════════════ 10-1. 공지사항 (로직) ═══════════════
   Widget _noticeTab() {
     return SingleChildScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -2219,6 +2224,7 @@ class _AdminPageState extends State<AdminPage> {
 
   // === 탭 3: 공제설정 =================================================================================
 
+  // ═══════════════ 9. 공제설정 (로직) ═══════════════
   Widget _settingsTab() => SingleChildScrollView(
     padding: const EdgeInsets.fromLTRB(_stPadL, _stPadT, _stPadR, _stPadB),
     child: Container(
@@ -2492,6 +2498,7 @@ Widget _adminPanelScaffold(BuildContext context, String title, Widget child) {
 
 // === 출금신청 페이지 ==============================================================================
 
+// ═══════════════════════ 7. 출금신청 페이지 (로직) ═══════════════════════
 class _WithdrawalRequestPage extends StatefulWidget {
   final bool embedded; // 허브 탭 안에 들어갈 때 true (패널 생략)
   const _WithdrawalRequestPage({this.embedded = false});
@@ -3028,6 +3035,7 @@ class _WithdrawalRequestPageState extends State<_WithdrawalRequestPage> {
 
 // === _RiderManagePage ========================================================================
 
+// ═══════════════════════ 8. 라이더관리 페이지 (로직) ═══════════════════════
 class _RiderManagePage extends StatefulWidget {
   final bool embedded;
   const _RiderManagePage({this.embedded = false});
@@ -3550,6 +3558,7 @@ class _RiderManagePageState extends State<_RiderManagePage> {
 
 // === _LeaseAlertsPage ========================================================================
 
+// ═══════════════════════ 8-2. 리스비 (로직) ═══════════════════════
 class _LeaseAlertsPage extends StatefulWidget {
   final bool embedded;
   const _LeaseAlertsPage({this.embedded = false});
@@ -3945,6 +3954,7 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
 }
 
 
+// ═══════════════════════ 8-3. 라이더 출금내역 (로직) ═══════════════════════
 class _RiderHistoryPage extends StatefulWidget {
   final String name, uid;
   const _RiderHistoryPage({required this.name, required this.uid});
@@ -4642,6 +4652,7 @@ class _RiderHistoryPageState extends State<_RiderHistoryPage>
 
 // === 1:1 상담 목록 페이지 =====================================================================
 
+// ═══════════════════════ 10-2. 1:1 상담 (로직) ═══════════════════════
 class _ChatListPage extends StatelessWidget {
   final bool embedded;
   const _ChatListPage({this.embedded = false});
@@ -5052,6 +5063,7 @@ class _AdminAreaChartPainter extends CustomPainter {
 }
 
 // === 전체 출금 랭킹 페이지 (더보기) ==========================================
+// ═══════════════════════ 5-1. 더보기 (전체 랭킹 페이지, 로직) ═══════════════════════
 class _FullRankingPage extends StatelessWidget {
   final String title;
   final List<MapEntry<String, double>> ranking;
