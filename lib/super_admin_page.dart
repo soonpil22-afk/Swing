@@ -6,7 +6,7 @@ import 'main.dart';
 import 'glass_shine_button.dart';
 
 // ═══════════════════════════════════════════════════════════════════════
-// Design Tokens (기사페이지와 동일 팔레트)
+// 공통 색 팔레트 (모든 섹션 공유)
 // ═══════════════════════════════════════════════════════════════════════
 const _appBg    = Color(0xFF090E1A); // 전체 배경
 const _panel    = Color(0xFF070C18); // 메인 배경 (inset 패널)
@@ -25,12 +25,12 @@ const List<BoxShadow> _cardShadow = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════
-// [1] 전체 배경 (조정값)
+// 1. 전체배경
 // ═══════════════════════════════════════════════════════════════════════
 const Color _bgScaffold = _appBg;   // 모든 화면 Scaffold 배경색
 
 // ═══════════════════════════════════════════════════════════════════════
-// [2] 메인 배경 (안쪽 패널) (조정값)
+// 2. 메인배경 (안쪽 패널)
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _panelColor       = _panel;     // 패널 배경색
 const Color  _panelBorderColor = _elevated;  // 테두리 색
@@ -47,7 +47,7 @@ const List<BoxShadow> _panelShadow = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════
-// [3] 안녕하세요 (인사) (조정값)
+// 3. 안녕하세요 (인사)
 // ═══════════════════════════════════════════════════════════════════════
 const Color _greetIconOuterColor  = _teal;    // 바깥 원 색
 const Color _greetIconInnerColor  = _pink;  // 안쪽 원 색
@@ -70,7 +70,7 @@ const String _greetSuffixText     = ' 님.';
 const String _greetName           = '운영자';   // 이름 자리(고정)
 
 // ═══════════════════════════════════════════════════════════════════════
-// [4] 어플 사용 on/off 카드 (조정값)
+// 4. 어플 사용 ON/OFF 카드
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _appCardBg          = _surface;     // 카드 배경색
 const Color  _appCardBorder      = _cardBorder;  // 카드 테두리 색
@@ -113,6 +113,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
         MaterialPageRoute(builder: (_) => const LoginPage()), (_) => false);
   }
 
+  // ── 1·2. 전체배경 + 메인배경 (로직) ──
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,7 +148,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
     );
   }
 
-  // ── [3] 인사 ─────────────────────────────────────────────────────────
+  // ── 3. 안녕하세요 (로직) ──
   Widget _greeting() => Padding(
         padding: const EdgeInsets.symmetric(vertical: _greetVPad),
         child: Row(children: [
@@ -203,7 +204,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
         ]),
       );
 
-  // ── [4] 어플 사용 on/off 카드 ─────────────────────────────────────────
+  // ── 4. 어플 사용 ON/OFF 카드 (로직) ──
   Widget _appToggleCard() => StreamBuilder<DocumentSnapshot>(
         stream: _appStatusRef.snapshots(),
         builder: (_, snap) {
