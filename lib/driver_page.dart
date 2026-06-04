@@ -25,7 +25,6 @@ const _amber    = Color(0xFFE6C97F); // 노랑
 const _card     = Color(0xFF0E2C3C); // 청록
 const _dot      = Color(0xFFFBFBFB); // 차트 꼭짓점 흰 점
 const _red      = Color(0xFFE05252);
-const _orange   = Color(0xFFE08F2A);  // 테두리 강조
 
 const _cardBorder = Color(0x4D303854);
 
@@ -964,21 +963,21 @@ class _DriverPageState extends State<DriverPage> {
                 constraints: const BoxConstraints(maxWidth: 320),
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
                 decoration: BoxDecoration(
-                    color: _card,
+                    color: _surface,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: _orange.withValues(alpha: 0.5), width: 1)),
+                    border: Border.all(color: _elevated, width: 1)),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
                   const Row(children: [
-                    Icon(Icons.directions_bike, color: _orange, size: 20),
+                    Icon(Icons.moped, color: _teal, size: 20),
                     SizedBox(width: 8),
                     Text("리스비 납기일 안내",
-                        style: TextStyle(color: _orange, fontSize: 15, fontWeight: FontWeight.w700)),
+                        style: TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
                   ]),
                   const SizedBox(height: 4),
-                  Divider(color: _orange.withValues(alpha: 0.25), height: 16),
+                  const Divider(color: _elevated, height: 16),
                   Text(
                       "오늘은 $cyc회차 납기일입니다\n${NumberFormat('#,###').format(amt)}원 납부 부탁드립니다.",
-                      style: const TextStyle(color: _text2, fontSize: 13, height: 1.7),
+                      style: const TextStyle(color: _text, fontSize: 13, height: 1.7),
                       textAlign: TextAlign.center),
                   const SizedBox(height: 20),
                   SizedBox(
