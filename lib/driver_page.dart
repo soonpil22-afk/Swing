@@ -22,7 +22,6 @@ const _teal     = Color(0xFF4AE3ED); // 민트 (메인 액센트)
 const _purple   = Color(0xFF9F66E6); // 보라
 const _pink     = Color(0xFFE672BA); // 핑크
 const _amber    = Color(0xFFE6C97F); // 노랑
-const _card     = Color(0xFF0E2C3C); // 청록
 const _dot      = Color(0xFFFBFBFB); // 차트 꼭짓점 흰 점
 const _red      = Color(0xFFE05252);
 
@@ -184,8 +183,8 @@ const double _wfRadius      = 18;   // 프레임 모서리
 const double _wfBorderWidth = 1.5;  // 테두리(빛) 두께
 const int    _wfFlowMs      = 3500; // 빛 한 바퀴 도는 시간(ms, 작을수록 빠름)
 // 금액 글씨
-const double _wfAmtLeftGap      = 24; // 금액 왼쪽 여백(오른쪽으로 밀기)
-const double _wfAmtFontSize     = 22; // 금액 숫자 크기
+const double _wfAmtLeftGap      = 22; // 금액 왼쪽 여백(오른쪽으로 밀기)
+const double _wfAmtFontSize     = 26; // 금액 숫자 크기
 const double _wfAmtUnitFontSize = 13; // " 원" 크기
 // 출금신청 버튼
 const double _wfBtnFontSize = 15; // 버튼 글씨 크기
@@ -615,7 +614,7 @@ void _showInfoDialog(BuildContext context, String msg) {
         constraints: const BoxConstraints(maxWidth: 320),
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(
-          color: _card,
+          color: _surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: _teal.withValues(alpha: 0.4), width: 1),
         ),
