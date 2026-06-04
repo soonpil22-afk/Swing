@@ -4115,7 +4115,7 @@ class _RiderHistoryPageState extends State<_RiderHistoryPage>
               color: _panel,
               borderRadius: BorderRadius.circular(_panelRadius),
               border: Border.all(
-                  color: _teal.withValues(alpha: _panelBorderAlpha), width: 1),
+                  color: _elevated, width: 1),
               boxShadow: _panelShadow,
             ),
             child: ClipRRect(
@@ -4185,7 +4185,7 @@ class _RiderHistoryPageState extends State<_RiderHistoryPage>
   // ── 탭 1: 정산내역 ──────────────────────────────────────────────────
 
   Widget _settlementTab() {
-    if (!_logsLoaded) return const Center(child: CircularProgressIndicator(color: _teal));
+    if (!_logsLoaded) return const Center(child: CircularProgressIndicator(color: _elevated));
     if (_logs.isEmpty) {
       return const Center(
           child: Text("출금 내역이 없습니다.", style: TextStyle(color: _text2, fontSize: 14)));
