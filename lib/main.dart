@@ -11,29 +11,100 @@ import 'admin_page.dart';
 import 'driver_page.dart';
 import 'glass_shine_button.dart';
 
-// ─── Design Tokens ───────────────────────────────────────────────────
-const _appBg    = Color(0xFF090E1A); // 전체 배경 (패널보다 살짝 밝게)
-const _panel    = Color(0xFF070C18); // 메인 배경 (inset 패널)
-const _surface  = Color(0xFF0D1427); // 카드
-const _elevated = Color(0xFF303854); // 트랙 · 테두리
-
+// ═══════════════════════════════════════════════════════════════════════
+// 공통 색 팔레트 (모든 섹션 공유)
+// ═══════════════════════════════════════════════════════════════════════
+const _surface  = Color(0xFF0D1427); // 카드·입력칸 배경
+const _elevated = Color(0xFF303854); // 테두리
 const _text  = Color(0xFFFBFBFB);
 const _text2 = Color(0xFF787C8D);
-
 const _teal     = Color(0xFF4AE3ED); // 민트 (메인 액센트)
 const _amber    = Color(0xFFE6C97F); // 노랑
+const _borderDim = Color(0x33303854); // 보조 테두리(옅은)
 
-// ── 보조 테두리(옅은) ──
-const _borderDim = Color(0x33303854);
+// ═══════════════════════════════════════════════════════════════════════
+// 1. 전체배경
+// ═══════════════════════════════════════════════════════════════════════
+const _appBg = Color(0xFF090E1A); // 전체 화면 Scaffold 배경색
 
-// ── 로그인 패널(메인배경) ──
-const double _loginOuterPad         = 10;   // 패널 바깥 여백
-const double _loginPanelRadius      = 24;   // 패널 모서리
-const double _loginPanelBorderAlpha = 1.0;  // 패널 테두리 투명도 (1.0=솔리드)
+// ═══════════════════════════════════════════════════════════════════════
+// 2. 메인배경 (로그인 패널)
+// ═══════════════════════════════════════════════════════════════════════
+const _panel = Color(0xFF070C18); // 패널 배경색
+const double _loginOuterPad         = 10;  // 패널 바깥 여백
+const double _loginPanelRadius      = 24;  // 패널 모서리
+const Color  _loginPanelBorderColor = _elevated; // 패널 테두리 색
+const double _loginPanelBorderAlpha = 1.0; // 패널 테두리 투명도(1.0=솔리드)
+const double _loginPanelBorderWidth = 1;   // 패널 테두리 두께
+const double _loginInnerHPad        = 32;  // 내용 좌우 여백
 const List<BoxShadow> _panelShadow = [
   BoxShadow(color: Color(0xFF18203A), blurRadius: 11, offset: Offset(4, 6)),
 ];
-// ─────────────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════════
+// 3. 로고 / 브랜드
+// ═══════════════════════════════════════════════════════════════════════
+const double _gapLogoToField = 32; // 로고 ↔ 입력칸 갭
+// 하단 브랜드 문구 (SWING TIGER / DELIVERY · PAYROLL)
+const Color  _brandSwingColor   = _text;  // "SWING" 색
+const Color  _brandTigerColor   = _amber; // "TIGER" 색
+const double _brandFontSize     = 12;     // 브랜드 글씨 크기
+const double _brandLetterSp     = 2.0;    // 브랜드 자간
+const Color  _brandSubColor     = _text2; // "DELIVERY · PAYROLL" 색
+const double _brandSubFontSize  = 8;      // 부제 글씨 크기
+const double _brandSubLetterSp  = 3.0;    // 부제 자간
+const double _gapSignupToBrand  = 40; // 회원가입 ↔ 브랜드 갭
+const double _gapBrandToSub     = 4;  // 브랜드 ↔ 부제 갭
+const double _gapBottom         = 40; // 부제 ↔ 하단 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 4. 입력칸 (이메일 / 비밀번호)
+// ═══════════════════════════════════════════════════════════════════════
+const Color  _fieldLabelColor    = _text2;     // 라벨 색
+const double _fieldLabelFontSize = 11;         // 라벨 글씨 크기
+const double _fieldLabelLetterSp = 0.3;        // 라벨 자간
+const double _fieldLabelGap      = 5;          // 라벨 ↔ 입력칸 갭
+const Color  _fieldTextColor     = _text;      // 입력 글씨 색
+const double _fieldTextFontSize  = 15;         // 입력 글씨 크기
+const Color  _fieldHintColor     = _text2;     // 힌트 색
+const double _fieldHintFontSize  = 13;         // 힌트 글씨 크기
+const Color  _fieldFillColor     = _surface;   // 입력칸 배경
+const Color  _fieldIconColor     = _teal;      // 아이콘 색
+const double _fieldIconSize      = 22;         // 아이콘 크기
+const Color  _fieldBorderColor   = _borderDim; // 기본 테두리 색
+const double _fieldBorderWidth   = 1;          // 기본 테두리 두께
+const Color  _fieldFocusColor    = _teal;      // 포커스 테두리 색
+const double _fieldFocusWidth    = 1.5;        // 포커스 테두리 두께
+const double _fieldRadius        = 10;         // 입력칸 모서리
+const double _fieldPadV          = 13;         // 안쪽 위아래 여백
+const double _fieldPadH          = 14;         // 안쪽 좌우 여백
+const double _gapFieldToField    = 12;         // 이메일 ↔ 비밀번호 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 5. 로그인 정보 저장 + 비밀번호 찾기
+// ═══════════════════════════════════════════════════════════════════════
+const double _checkSize          = 20;       // 체크박스 크기
+const Color  _checkActiveColor   = _teal;    // 체크 활성 색
+const Color  _checkBorderColor   = _elevated;// 체크 테두리 색
+const Color  _rememberColor      = _text2;   // "로그인 정보 저장" 색
+const double _rememberFontSize   = 12;       // "로그인 정보 저장" 크기
+const Color  _findPwColor        = _teal;    // "비밀번호 찾기" 색
+const double _findPwFontSize     = 12;       // "비밀번호 찾기" 크기
+const double _gapFieldToRemember = 8;        // 비번칸 ↔ 체크행 갭
+const double _gapRememberToBtn   = 20;       // 체크행 ↔ 로그인 버튼 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 6. 로그인 버튼 (GlassShineButton — 스타일은 위젯 내부)
+// ═══════════════════════════════════════════════════════════════════════
+const double _gapBtnToSignup = 16; // 로그인 버튼 ↔ 회원가입 갭
+
+// ═══════════════════════════════════════════════════════════════════════
+// 7. 회원가입 링크
+// ═══════════════════════════════════════════════════════════════════════
+const Color  _signupQColor       = _text;  // "계정이 없으신가요?" 색
+const double _signupQFontSize    = 13;     // 안내 글씨 크기
+const Color  _signupLinkColor    = _amber; // "회원가입" 색
+const double _signupLinkFontSize = 13;     // "회원가입" 글씨 크기
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -202,75 +273,77 @@ class _LoginPageState extends State<LoginPage> {
               color: _panel,
               borderRadius: BorderRadius.circular(_loginPanelRadius),
               border: Border.all(
-                  color: _elevated.withValues(alpha: _loginPanelBorderAlpha),
-                  width: 1),
+                  color: _loginPanelBorderColor.withValues(alpha: _loginPanelBorderAlpha),
+                  width: _loginPanelBorderWidth),
               boxShadow: _panelShadow,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(_loginPanelRadius),
               child: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(horizontal: _loginInnerHPad),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
 
+              // ── 3. 로고 ──
               const _ShineLogo(),
-              const SizedBox(height: 32),
+              const SizedBox(height: _gapLogoToField),
 
+              // ── 4. 입력칸 ──
               _buildField("이메일", Icons.mail_outline_rounded,
                   _emailController, false),
-              const SizedBox(height: 12),
-
+              const SizedBox(height: _gapFieldToField),
               _buildField("비밀번호", Icons.lock_outline_rounded,
                   _passwordController, true),
-              const SizedBox(height: 8),
+              const SizedBox(height: _gapFieldToRemember),
 
-              // ── ✅ 체크박스 오른쪽에 비밀번호 찾기 추가 ──
+              // ── 5. 로그인 정보 저장 + 비밀번호 찾기 ──
               Row(children: [
                 SizedBox(
-                  width: 20, height: 20,
+                  width: _checkSize, height: _checkSize,
                   child: Checkbox(
                     value:       _isRememberMe,
                     onChanged:   (v) => setState(() => _isRememberMe = v!),
-                    side:        const BorderSide(color: _elevated, width: 1.5),
-                    activeColor: _teal,
+                    side:        const BorderSide(color: _checkBorderColor, width: 1.5),
+                    activeColor: _checkActiveColor,
                     checkColor:  _panel,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
                 const SizedBox(width: 8),
                 const Text("로그인 정보 저장",
-                    style: TextStyle(color: _text2, fontSize: 12)),
+                    style: TextStyle(color: _rememberColor, fontSize: _rememberFontSize)),
                 const Spacer(),
                 GestureDetector(
                   onTap: _handleForgotPassword,
                   child: const Text(
                     "비밀번호 찾기",
                     style: TextStyle(
-                      color: _teal,
-                      fontSize: 12,
+                      color: _findPwColor,
+                      fontSize: _findPwFontSize,
                       decoration: TextDecoration.underline,
-                      decorationColor: _teal,
+                      decorationColor: _findPwColor,
                       decorationThickness: 1.0,
                     ),
                   ),
                 ),
               ]),
-              // ────────────────────────────────────────────────────
 
-              const SizedBox(height: 20),
+              const SizedBox(height: _gapRememberToBtn),
 
+              // ── 6. 로그인 버튼 ──
               GlassShineButton(label: "로그인", onPressed: _handleLogin),
-              const SizedBox(height: 16),
+              const SizedBox(height: _gapBtnToSignup),
 
+              // ── 7. 회원가입 링크 ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                     "계정이 없으신가요?  ",
-                    style: TextStyle(color: _text, fontSize: 13),
+                    style: TextStyle(color: _signupQColor, fontSize: _signupQFontSize),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.push(context,
@@ -278,11 +351,11 @@ class _LoginPageState extends State<LoginPage> {
                     child: const Text(
                       "회원가입",
                       style: TextStyle(
-                        color: _amber,
-                        fontSize: 13,
+                        color: _signupLinkColor,
+                        fontSize: _signupLinkFontSize,
                         fontWeight: FontWeight.w600,
                         decoration: TextDecoration.underline,
-                        decorationColor: _amber,
+                        decorationColor: _signupLinkColor,
                         decorationThickness: 1.2,
                       ),
                     ),
@@ -290,20 +363,21 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
 
-              const SizedBox(height: 40),
-                    RichText(
-              text: const TextSpan(
-              style:TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 2.0),
-              children: [
-                    TextSpan(text: "SWING ", style: TextStyle(color: _text)),
-                    TextSpan(text: "TIGER", style: TextStyle(color: _amber)),
-              ],
-            ),
-          ),
-const SizedBox(height: 4),
-const Text("DELIVERY · PAYROLL",
-    style: TextStyle(color: _text2, fontSize: 8, letterSpacing: 3.0)),
-const SizedBox(height: 40),
+              const SizedBox(height: _gapSignupToBrand),
+              // ── 3. 브랜드 문구 ──
+              RichText(
+                text: const TextSpan(
+                  style: TextStyle(fontSize: _brandFontSize, fontWeight: FontWeight.w700, letterSpacing: _brandLetterSp),
+                  children: [
+                    TextSpan(text: "SWING ", style: TextStyle(color: _brandSwingColor)),
+                    TextSpan(text: "TIGER", style: TextStyle(color: _brandTigerColor)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: _gapBrandToSub),
+              const Text("DELIVERY · PAYROLL",
+                  style: TextStyle(color: _brandSubColor, fontSize: _brandSubFontSize, letterSpacing: _brandSubLetterSp)),
+              const SizedBox(height: _gapBottom),
             ],
           ),
         ),
@@ -321,26 +395,26 @@ const SizedBox(height: 40),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(color: _text2, fontSize: 11, letterSpacing: 0.3)),
-        const SizedBox(height: 5),
+            style: const TextStyle(color: _fieldLabelColor, fontSize: _fieldLabelFontSize, letterSpacing: _fieldLabelLetterSp)),
+        const SizedBox(height: _fieldLabelGap),
         TextField(
           controller:  ctrl,
           obscureText: obscure,
-          style: const TextStyle(color: _text, fontSize: 15),
+          style: const TextStyle(color: _fieldTextColor, fontSize: _fieldTextFontSize),
           cursorColor: _teal,
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: _teal, size: 22),
+            prefixIcon: Icon(icon, color: _fieldIconColor, size: _fieldIconSize),
             filled:    true,
-            fillColor: _surface,
+            fillColor: _fieldFillColor,
             hintText:  obscure ? '••••••••' : 'example@email.com',
-            hintStyle: const TextStyle(color: _text2, fontSize: 13),
+            hintStyle: const TextStyle(color: _fieldHintColor, fontSize: _fieldHintFontSize),
             enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: _borderDim, width: 1),
-                borderRadius: BorderRadius.circular(10)),
+                borderSide: const BorderSide(color: _fieldBorderColor, width: _fieldBorderWidth),
+                borderRadius: BorderRadius.circular(_fieldRadius)),
             focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: _teal, width: 1.5),
-                borderRadius: BorderRadius.circular(10)),
-            contentPadding: const EdgeInsets.symmetric(vertical: 13, horizontal: 14),
+                borderSide: const BorderSide(color: _fieldFocusColor, width: _fieldFocusWidth),
+                borderRadius: BorderRadius.circular(_fieldRadius)),
+            contentPadding: const EdgeInsets.symmetric(vertical: _fieldPadV, horizontal: _fieldPadH),
           ),
         ),
       ],
