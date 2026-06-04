@@ -283,9 +283,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         color: _hdrIconColor, size: _hdrIconSize),
                   ),
                   const SizedBox(width: _hdrIconGap),
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text("SwingTiger 회원가입",
                           style: TextStyle(
                               color: _hdrTitleColor,
@@ -343,8 +343,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   borderRadius: BorderRadius.circular(_noticeRadius),
                   border: Border.all(color: _noticeBorder, width: 1),
                 ),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Icon(Icons.verified_user, color: _noticeColor, size: _noticeIconSize),
                     SizedBox(width: 12),
                     Expanded(
