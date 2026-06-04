@@ -29,7 +29,7 @@ const _borderDim = Color(0x33303854);
 // ── 로그인 패널(메인배경) ──
 const double _loginOuterPad         = 10;   // 패널 바깥 여백
 const double _loginPanelRadius      = 24;   // 패널 모서리
-const double _loginPanelBorderAlpha = 0.3;  // 패널 테두리 투명도
+const double _loginPanelBorderAlpha = 1.0;  // 패널 테두리 투명도 (1.0=솔리드)
 const List<BoxShadow> _panelShadow = [
   BoxShadow(color: Color(0xFF18203A), blurRadius: 11, offset: Offset(4, 6)),
 ];

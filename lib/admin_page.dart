@@ -42,7 +42,7 @@ const List<BoxShadow> _panelShadow = [
 
 // 메인 패널
 const Color  _panelBorderColor = _elevated; // 패널 테두리 색
-const double _panelBorderAlpha = 0.3;        // 패널 테두리 투명도
+const double _panelBorderAlpha = 1.0;        // 패널 테두리 투명도 (1.0=솔리드)
 const double _panelBorderWidth = 1;          // 패널 테두리 두께
 const double _panelOuterPad    = 10;
 const double _panelRadius      = 24;
@@ -2448,7 +2448,7 @@ Widget _adminPanelScaffold(BuildContext context, String title, Widget child) {
             color: _panel,
             borderRadius: BorderRadius.circular(_panelRadius),
             border: Border.all(
-                color: _teal.withValues(alpha: _panelBorderAlpha), width: 1),
+                color: _elevated.withValues(alpha: _panelBorderAlpha), width: 1),
             boxShadow: _panelShadow,
           ),
           child: ClipRRect(
