@@ -185,11 +185,12 @@ const double _wfRadius      = 18;   // 프레임 모서리
 const double _wfBorderWidth = 1.5;  // 테두리(빛) 두께
 const int    _wfFlowMs      = 3500; // 빛 한 바퀴 도는 시간(ms, 작을수록 빠름)
 // 금액 글씨
+const double _wfAmtLeftGap      = 24; // 금액 왼쪽 여백(오른쪽으로 밀기)
 const double _wfAmtFontSize     = 22; // 금액 숫자 크기
 const double _wfAmtUnitFontSize = 13; // " 원" 크기
 // 출금신청 버튼
-const double _wfBtnFontSize = 14.5; // 버튼 글씨 크기
-const double _wfBtnPadH     = 18;   // 버튼 좌우 여백
+const double _wfBtnFontSize = 15; // 버튼 글씨 크기
+const double _wfBtnPadH     = 20;   // 버튼 좌우 여백
 const double _wfBtnPadV     = 12;   // 버튼 위아래 여백
 const double _wfBtnRadius   = 12;   // 버튼 모서리
 // ── 출금신청 확인 다이얼로그 (출금신청 버튼 누르면 뜨는 확인창) ──
@@ -2131,6 +2132,7 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
           ),
           padding: const EdgeInsets.fromLTRB(16, 13, 13, 13),
           child: Row(children: [
+            const SizedBox(width: _wfAmtLeftGap),
             // 금액 (골드 그라데이션 글씨)
             ShaderMask(
               shaderCallback: (r) => const LinearGradient(
