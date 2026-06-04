@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dart --version)",
+      "Read(//usr/local/bin/**)",
+      "Read(//usr/bin/**)",
+      "Bash(find / -name \"dart\" -type f)",
+      "Bash(/mnt/c/src/flutter/bin/dart analyze *)",
+      "Read(//mnt/c/src/flutter/bin/**)",
+      "Read(//mnt/c/src/flutter/bin/internal/**)",
+      "Bash(flutter analyze *)",
+      "Bash(/mnt/c/src/flutter/bin/flutter analyze *)",
+      "Bash(dart analyze *)",
+      "Bash(python3 *)",
+      "Bash(cmd.exe /c \"cd /d C:\\\\JejuProject\\\\swing_tiger && flutter analyze lib/driver_page.dart 2>&1\")",
+      "Bash(grep -v \"^[0-9]\\\\{4,\\\\}\")",
+      "Bash(/mnt/c/src/flutter/bin/flutter.bat analyze *)",
+      "Bash(xxd)"
+    ]
+  }
+}

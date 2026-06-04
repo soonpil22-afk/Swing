@@ -1,0 +1,57 @@
+name: swing_tiger # 👈 내부 프로젝트 명칭도 swing_tiger으로 변경
+description: "SwingTiger Admin Project"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  
+  # Firebase 관련
+  firebase_core: ^3.15.0
+  firebase_auth: ^5.1.1
+  cloud_firestore: ^5.0.1
+  firebase_messaging: ^15.0.1
+  firebase_storage: ^12.0.1
+  
+  # 엑셀 및 파일 선택
+  excel: ^4.0.6
+  file_picker: ^8.1.2 
+  
+  # 데이터 저장 및 유틸리티
+  shared_preferences: ^2.2.3
+  intl: ^0.20.2
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  # ✨ 아이콘 생성을 위한 패키지 추가
+  flutter_launcher_icons: ^0.13.1
+
+# ✨ 앱 아이콘 상세 설정
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/swingtiger_logo_02.png" # 👈 사용할 로고 파일명 확인하세요!
+  adaptive_icon_background: "#000000"       # 안드로이드 아이콘 배경색 (검정)
+  adaptive_icon_foreground: "assets/swingtiger_logo_02.png"
+  min_pad_ratio: 0.5
+
+flutter:
+  uses-material-design: true
+
+  # 이미지 및 리소스 폴더 등록
+  assets:
+    - assets/
+
+  # 폰트 등록 (Pretendard - 한글/영문 통일)
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/PretendardVariable.ttf

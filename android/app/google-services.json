@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "975377310670",
+    "project_id": "swingtiger-723f8",
+    "storage_bucket": "swingtiger-723f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975377310670:android:5f345c0031d7b66204019f",
+        "android_client_info": {
+          "package_name": "com.swingtiger.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlmb_ARqMATIu9wjI6QMYps4EfNBYR0nU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
