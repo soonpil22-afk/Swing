@@ -127,6 +127,35 @@ When something fails:
 
 This is the step LLMs skip most often after "run tests". They guess from error keywords and apply the most-recent-pattern fix. That's how a one-line bug becomes a three-file refactor.
 
+## 11. 페이지 코드 정리 컨벤션 (Flutter 페이지 공통)
+
+**모든 페이지 파일(`*_page.dart`, `main.dart`)은 동일한 구조로 상수·로직을 정리한다.** 기존 코드 순서보다 이 컨벤션을 우선한다.
+
+### 상수(디자인 토큰) 구조 — 파일 상단
+1. **공통 색 팔레트** 블록: 여러 섹션이 공유하는 색(`_surface`·`_teal` 등) + 카드 그림자. 헤더는 `// ═══ 공통 색 팔레트 (모든 섹션 공유) ═══`.
+2. 그 아래 **번호 섹션**을 화면에 보이는 순서(위→아래)대로 배치:
+   `1. 전체배경 → 2. 메인배경 → 3. … → N.` (서브는 `7-1`, `7-2` 식).
+   섹션 헤더는 `// ═══ N. 섹션명 ═══`.
+
+### 요소별 묶음 (★ 핵심)
+- **글씨**: 그 글씨의 `크기 + 색`을 같이. **글씨와 숫자는 따로** 둔다.
+- **숫자**(아이콘·박스 크기/여백): 따로.
+- **카드 / 탭 / 버튼**: 그 요소의 `크기 + 여백 + 색 + 테두리`를 같이.
+- ❌ **금지**: "색 전부 모음", "크기 전부 모음" 같은 통뭉치 분류.
+- 인라인 하드코딩 값(`fontSize: 14` 등)은 가능한 한 토큰으로 빼서 해당 요소 코드에서 바로 수정 가능하게 한다.
+
+### 로직(위젯/메서드/클래스) 헤더
+- 각 위젯·페이지 클래스 앞에 **같은 번호 헤더**를 단다: `// ── N. 섹션명 (로직) ──`.
+- Dart는 메서드가 클래스 안에 있어야 하므로 물리적 이동 대신 **번호 헤더로 상수↔로직을 매칭**한다.
+
+### 안전 절차 (큰 파일 재정리 시)
+- 시작 전 **git 커밋(체크포인트)** 으로 되돌릴 지점 확보.
+- 상수는 **블록 단위로 이동**(값 손실/오타 방지). 한 줄씩 새로 타이핑하지 말 것.
+- **매 단계 `flutter analyze`** 로 에러 0 확인. 이동으로 생긴 **orphan 토큰 제거**.
+- 이모지 금지(아이콘만). 한글 문장은 마침표로 끝낸다(콜론 금지).
+
+> 기준 예시: `driver_page.dart`(가장 잘 정리된 본). 새 섹션이 생기면 다음 번호(`N+1`)로 이어 붙인다.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
