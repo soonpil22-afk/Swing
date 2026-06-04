@@ -171,16 +171,27 @@ const Color  _chartPeakLabelColor = _text;   // 꼭짓점 금액 글씨 색
 const double _chartLabelFontSize = 11; // 아래 요일/날짜 라벨 크기
 const Color  _chartLabelColor  = _text2;  // 아래 라벨 색
 const double _chartLabelGap    = 8;    // 차트-라벨 간격
-// ── 출금가능금액 줄 ──
-const Color  _withdrawLabelColor    = _amber; // "출금가능금액" 글씨 색
-const double _withdrawLabelFontSize = 13;     // "출금가능금액" 글씨 크기
-const Color  _withdrawAmtColor      = _amber; // 금액 숫자 색
-const double _withdrawAmtFontSize   = 20;     // 금액 숫자 크기
-const double _withdrawAmtBtnGap     = 10;     // 금액-출금신청 버튼 사이 간격
-const double _withdrawDividerAlpha  = 0.5;    // 구분선 투명도
-// ── 출금신청 버튼 ──
-const double _wBtnFontSize   = 12;  // 글씨 크기
-const double _wBtnRadius     = 20;  // 모서리
+// ── 출금 영역 (그라디언트 프레임: 금액 + 출금신청 버튼) ──
+const double _withdrawDividerAlpha  = 0.5;    // 위 구분선 투명도
+// 프레임 (빛 흐르는 테두리)
+const Color  _wfGold        = Color(0xFFFFD372); // 골드
+const Color  _wfGoldText2   = Color(0xFFFFEAB0); // 금액 골드 그라데이션 끝색
+const Color  _wfGoldDeep    = Color(0xFFF4B64C); // 진한 골드(버튼 시작)
+const Color  _wfPink        = Color(0xFFFF5FC4); // 핑크
+const Color  _wfPurple      = Color(0xFF9D7BFF); // 보라
+const Color  _wfInnerTop    = Color(0xFF141A30); // 안쪽 배경 위
+const Color  _wfInnerBottom = Color(0xFF10142A); // 안쪽 배경 아래
+const double _wfRadius      = 18;   // 프레임 모서리
+const double _wfBorderWidth = 1.5;  // 테두리(빛) 두께
+const int    _wfFlowMs      = 3500; // 빛 한 바퀴 도는 시간(ms, 작을수록 빠름)
+// 금액 글씨
+const double _wfAmtFontSize     = 22; // 금액 숫자 크기
+const double _wfAmtUnitFontSize = 13; // " 원" 크기
+// 출금신청 버튼
+const double _wfBtnFontSize = 14.5; // 버튼 글씨 크기
+const double _wfBtnPadH     = 18;   // 버튼 좌우 여백
+const double _wfBtnPadV     = 12;   // 버튼 위아래 여백
+const double _wfBtnRadius   = 12;   // 버튼 모서리
 // ── 출금신청 확인 다이얼로그 (출금신청 버튼 누르면 뜨는 확인창) ──
 const Color  _wdlgBg            = _surface;   // 배경색
 const Color  _wdlgBorderColor   = _elevated;   // 테두리 색
@@ -200,9 +211,6 @@ const double _wdlgBtnGap         = 10;     // 취소-확인 버튼 사이 간격
 const double _wdlgBtnRadius      = 22;     // 버튼 모서리
 const double _wdlgCancelFontSize = 14;     // 취소 버튼 글씨 크기
 const double _wdlgOkFontSize     = 14;     // 확인 버튼 글씨 크기
-// ── 금액 위젯 공통(차트용): 숫자 + " 원" ──
-const double _chartAmtUnitFontSize = 14;  // " 원" 글씨 기본 크기
-const Color  _chartAmtUnitColor    = _amber; // " 원" 글씨 색
 
 // ═══════════════════════════════════════════════════════════════════════
 // 5. 공지사항 (조정값)
@@ -1128,28 +1136,6 @@ class _DriverPageState extends State<DriverPage> {
         ]),
       );
 
-  // ── 4. 차트 전용 금액 위젯 ──
-  Widget _chartAmt(double v, Color numColor,
-      {double fs = _chartAmtUnitFontSize, bool bold = false}) {
-    return RichText(
-      text: TextSpan(children: [
-        TextSpan(
-          text: _fmt(v),
-          style: TextStyle(
-              color: numColor,
-              fontSize: fs,
-              fontWeight: bold ? FontWeight.w700 : FontWeight.w500),
-        ),
-        TextSpan(
-          text: ' 원',
-          style: TextStyle(
-              color: _chartAmtUnitColor,
-              fontSize: fs,
-              fontWeight: FontWeight.w400),
-        ),
-      ]),
-    );
-  }
 
   // 미출금 항목 하루치 소계 (정산내역 카드 맨 아래 "소계"와 동일한 계산식)
   //  소계 = 배달수수료 + 지원금 − 세금 − (출금수수료+협력사수수료) − 시간제보험 − 리스비(일)
@@ -1251,16 +1237,7 @@ class _DriverPageState extends State<DriverPage> {
           const SizedBox(height: 14),
           Container(height: 1, color: _elevated.withValues(alpha: _withdrawDividerAlpha)),
           const SizedBox(height: 12),
-          Row(children: [
-            const Text('출금가능금액 ',
-                style: TextStyle(
-                    color: _withdrawLabelColor, fontSize: _withdrawLabelFontSize)),
-            const Spacer(),
-            _chartAmt(withdrawable, _withdrawAmtColor,
-                fs: _withdrawAmtFontSize, bold: true),
-            const SizedBox(width: _withdrawAmtBtnGap),
-            _withdrawButton(),
-          ]),
+          _WithdrawFrame(amount: withdrawable.round(), onWithdraw: _onWithdrawTap),
         ],
       ]),
     );
@@ -1316,17 +1293,6 @@ class _DriverPageState extends State<DriverPage> {
       ),
     );
   }
-
-  Widget _withdrawButton() => GlassShineButton(
-        label: '출금신청',
-        onPressed: _onWithdrawTap,
-        accent: _amber,
-        textColor: _amber,
-        width: 90,
-        height: 34,
-        radius: _wBtnRadius,
-        fontSize: _wBtnFontSize,
-      );
 
   void _onWithdrawTap() {
     showDialog(
@@ -2099,6 +2065,128 @@ class _DriverPageState extends State<DriverPage> {
                 height: 44,
                 radius: 10,
                 fontSize: 13,
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// 4-추가. 출금 그라디언트 프레임 (빛 흐르는 테두리 + 금액 + 출금신청)
+// ═══════════════════════════════════════════════════════════════════════
+class _WithdrawFrame extends StatefulWidget {
+  final int amount;
+  final VoidCallback onWithdraw;
+  const _WithdrawFrame({required this.amount, required this.onWithdraw});
+  @override
+  State<_WithdrawFrame> createState() => _WithdrawFrameState();
+}
+
+class _WithdrawFrameState extends State<_WithdrawFrame>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _flow = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: _wfFlowMs))
+    ..repeat();
+  bool _pressed = false;
+
+  @override
+  void dispose() {
+    _flow.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final amtStr = NumberFormat('#,###').format(widget.amount);
+    return AnimatedBuilder(
+      animation: _flow,
+      builder: (context, _) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(_wfRadius),
+          // 빛이 흐르는 테두리: 골드→핑크→퍼플 sweep을 천천히 회전
+          gradient: SweepGradient(
+            transform: GradientRotation(_flow.value * 2 * math.pi),
+            colors: const [_wfGold, _wfPink, _wfPurple, _wfGold],
+          ),
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x55FF5FC4),
+                blurRadius: 16,
+                spreadRadius: -6,
+                offset: Offset(0, 8)),
+          ],
+        ),
+        padding: const EdgeInsets.all(_wfBorderWidth),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(_wfRadius - _wfBorderWidth),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [_wfInnerTop, _wfInnerBottom],
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 13, 13, 13),
+          child: Row(children: [
+            // 금액 (골드 그라데이션 글씨)
+            ShaderMask(
+              shaderCallback: (r) => const LinearGradient(
+                      colors: [_wfGold, _wfGoldText2])
+                  .createShader(r),
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(
+                      text: amtStr,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: _wfAmtFontSize,
+                          fontWeight: FontWeight.w700)),
+                  const TextSpan(
+                      text: ' 원',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: _wfAmtUnitFontSize,
+                          fontWeight: FontWeight.w600)),
+                ]),
+              ),
+            ),
+            const Spacer(),
+            // 출금신청 버튼 (골드→핑크 그라데이션)
+            GestureDetector(
+              onTapDown: (_) => setState(() => _pressed = true),
+              onTapUp: (_) => setState(() => _pressed = false),
+              onTapCancel: () => setState(() => _pressed = false),
+              onTap: widget.onWithdraw,
+              child: AnimatedScale(
+                scale: _pressed ? 0.96 : 1.0,
+                duration: const Duration(milliseconds: 120),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: _wfBtnPadH, vertical: _wfBtnPadV),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(_wfBtnRadius),
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [_wfGoldDeep, _wfPink],
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Color(0x8CFF5FC4),
+                          blurRadius: 16,
+                          spreadRadius: -6,
+                          offset: Offset(0, 6)),
+                    ],
+                  ),
+                  child: const Text('출금신청',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: _wfBtnFontSize,
+                          fontWeight: FontWeight.w800)),
+                ),
               ),
             ),
           ]),
