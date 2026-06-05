@@ -73,7 +73,7 @@ const double _greetHelloFontSize  = 18;  // "안녕하세요," 크기
 const double _greetNameFontSize   = 18;  // 이름 크기
 const double _greetSuffixFontSize = 18;  // " 님" 크기
 // ── 숫자 (아이콘·버튼 크기/여백) ──
-const double _gapGreetToChart     = 6;  // 안녕하세요 ↔ 차트카드 간격
+const double _gapGreetToChart     = 4;  // 안녕하세요 ↔ 차트카드 간격
 const double _greetVPad           = 1;   // 인사줄 위아래 여백
 const double _greetIconOuterSize  = 22;  // 바깥 원 지름
 const double _greetIconInnerSize  = 12;  // 안쪽 원 지름
@@ -96,7 +96,7 @@ const double _gapChartToNotice = 12;  // 차트카드 ↔ 공지사항 간격
 const double _chartCardRadius      = 14;   // 카드 모서리
 const double _chartCardBorderWidth = 1;    // 카드 테두리 두께
 const double _chartCardPadL = 10;   // 카드 안쪽 여백 왼쪽
-const double _chartCardPadT = 14;  // 카드 안쪽 여백 위
+const double _chartCardPadT = 12;  // 카드 안쪽 여백 위
 const double _chartCardPadR = 10;   // 카드 안쪽 여백 오른쪽
 const double _chartCardPadB = 8;   // 카드 안쪽 여백 아래
 const List<BoxShadow> _chartCardShadow = [
@@ -184,12 +184,12 @@ const double _wfBorderWidth = 1.5;  // 테두리(빛) 두께
 const int    _wfFlowMs      = 3500; // 빛 한 바퀴 도는 시간(ms, 작을수록 빠름)
 // 금액 글씨
 const double _wfAmtLeftGap      = 22; // 금액 왼쪽 여백(오른쪽으로 밀기)
-const double _wfAmtFontSize     = 26; // 금액 숫자 크기
+const double _wfAmtFontSize     = 30; // 금액 숫자 크기
 const double _wfAmtUnitFontSize = 13; // " 원" 크기
 // 출금신청 버튼
 const double _wfBtnFontSize = 15; // 버튼 글씨 크기
 const double _wfBtnPadH     = 20;   // 버튼 좌우 여백
-const double _wfBtnPadV     = 12;   // 버튼 위아래 여백
+const double _wfBtnPadV     = 8;   // 버튼 위아래 여백
 const double _wfBtnRadius   = 12;   // 버튼 모서리
 // ── 출금신청 확인 다이얼로그 (출금신청 버튼 누르면 뜨는 확인창) ──
 const Color  _wdlgBg            = _surface;   // 배경색
@@ -215,7 +215,7 @@ const double _wdlgOkFontSize     = 14;     // 확인 버튼 글씨 크기
 // 5. 공지사항 (조정값)
 // ═══════════════════════════════════════════════════════════════════════
 // ── 헤더 (제목 줄) ──
-const double _gapNoticeToMenu  = 6;  // 공지사항 ↔ 정산내역 간격
+const double _gapNoticeToMenu  = 4;  // 공지사항 ↔ 정산내역 간격
 const Color  _ntcIconColor     = _purple;  // 확성기 아이콘 색
 const double _ntcIconSize      = 22;       // 확성기 아이콘 크기
 const double _ntcTitleFontSize = 14;       // "공지사항" 글씨 크기
@@ -1153,7 +1153,6 @@ class _DriverPageState extends State<DriverPage> {
   Widget _chartCard(_PeriodData d) {
     final accent = _periodColor[_period];
     final up = d.delta >= 0;
-    final isDaily = _period == 0;
     final leaseDeduct =
         (_hasDailyLease ? _unpaidItems.length : 0) * _leaseDailyAmt;
     final withdrawable = _unpaidTotal - leaseDeduct;
@@ -1164,8 +1163,8 @@ class _DriverPageState extends State<DriverPage> {
         hasUnpaid ? _itemSubtotal(_unpaidItems.last).round() : d.total;
     final pct = (headlineAmount / _targets[_period]).clamp(0.0, 1.0);
 
-    // ── 출금가능금액 줄: 업로드됐고 + 아직 신청 안 했을 때만 (신청하면 줄 전체 사라짐) ──
-    final showWithdrawRow = isDaily && _adminUploaded && !_withdrawRequested;
+    // ── 출금 프레임: 업로드됐고 + 아직 신청 안 했을 때 (일간·주간·월간 모두 표시) ──
+    final showWithdrawRow = _adminUploaded && !_withdrawRequested;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
