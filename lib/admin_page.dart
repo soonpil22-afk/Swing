@@ -465,7 +465,6 @@ const _stEditColor     = _teal; // 수정 버튼 글씨/테두리 색
 const _stEditActiveBg  = _teal; // 저장(편집중) 버튼 배경
 const _stEditActiveText = _surface;    // 저장(편집중) 버튼 글씨 색
 const double _stEditFontSize = 12;   // 수정/저장 글씨 크기
-const _stSectionDivider = _teal; // 큰 구분선 색
 const _stRowDivider     = _elevated; // 항목 구분선 색
 const _stLabelColor = _text2; // 항목 라벨 색
 const _stValueColor = _text;  // 항목 값 색

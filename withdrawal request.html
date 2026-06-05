@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SwingTiger — 출금 영역 스타일</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --mint: #36e6d8;
+    --cyan: #45d9e6;
+    --blue: #4d8bff;
+    --pink: #ff5fc4;
+    --purple: #9d7bff;
+    --gold: #ffd372;
+    --gold-deep: #f4b64c;
+    --ink: #eef1ff;
+    --muted: #9aa3d4;
+    --card-bd: rgba(120,150,220,0.16);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(1100px 720px at 82% -8%, #131c44, transparent 60%),
+      radial-gradient(900px 620px at -5% 100%, #1c1244, transparent 55%),
+      linear-gradient(180deg, #060912, #090d1e);
+    min-height: 100vh;
+    font-family: 'Pretendard', system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+    padding: 46px 22px 90px;
+  }
+  .num { font-family: 'Space Grotesk', 'Pretendard', sans-serif; font-feature-settings: 'tnum' 1; }
+
+  /* ── intro ── */
+  .head { max-width: 1080px; margin: 0 auto 40px; }
+  .kicker {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 3px; color: var(--mint); text-transform: uppercase;
+    display: flex; align-items: center; gap: 9px;
+  }
+  .kicker::before { content: ''; width: 26px; height: 2px; background: var(--mint); box-shadow: 0 0 10px var(--mint); border-radius: 2px; }
+  .head h1 { font-size: 29px; font-weight: 800; letter-spacing: -0.6px; margin: 14px 0 8px; }
+  .head p { font-size: 15px; color: var(--muted); margin: 0; line-height: 1.65; max-width: 720px; }
+  .head p b { color: #cdd3ff; }
+
+  /* ── grid of phone cards ── */
+  .grid {
+    max-width: 1080px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px 26px;
+  }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  .opt { display: flex; flex-direction: column; }
+  .opt-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .opt-num { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--mint); opacity: 0.9; }
+  .opt-name { font-size: 16px; font-weight: 700; margin: 0; }
+  .opt-desc { font-size: 13px; color: #8b93c4; margin: 3px 0 16px; line-height: 1.55; min-height: 36px; }
+
+  /* ── the recreated card ── */
+  .card {
+    background:
+      radial-gradient(420px 230px at 88% -10%, rgba(74,110,220,0.16), transparent 60%),
+      linear-gradient(168deg, rgba(22,29,54,0.96), rgba(13,17,34,0.98));
+    border: 1px solid var(--card-bd);
+    border-radius: 26px;
+    padding: 20px 18px 18px;
+    box-shadow: 0 26px 60px -30px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .card.ref { outline: 1px dashed rgba(255,211,114,0.4); outline-offset: 5px; }
+
+  /* tabs row */
+  .toprow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 8px; }
+  .tab { font-size: 13px; font-weight: 700; padding: 8px 13px; border-radius: 999px; border: 1px solid rgba(120,150,220,0.18); color: #7e87b6; background: transparent; }
+  .tab.on { color: var(--cyan); border-color: rgba(69,217,230,0.55); background: rgba(69,217,230,0.08); box-shadow: 0 0 16px -6px rgba(69,217,230,0.6); }
+  .goal { font-size: 12.5px; font-weight: 700; color: var(--cyan); padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(69,217,230,0.4); white-space: nowrap; }
+
+  /* amount + ring */
+  .midrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .amt-big { font-size: 33px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+  .amt-big em { font-style: normal; font-size: 16px; font-weight: 600; color: var(--muted); margin-left: 2px; }
+  .delta { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: var(--cyan); margin-top: 9px; }
+  .delta span { color: var(--muted); font-weight: 600; }
+
+  .ring-wrap { position: relative; width: 92px; height: 92px; flex-shrink: 0; }
+  .ring { position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 205deg, var(--cyan), var(--purple) 52%, var(--pink) 78%, var(--cyan));
+    -webkit-mask: radial-gradient(closest-side, transparent 66%, #000 67%);
+            mask: radial-gradient(closest-side, transparent 66%, #000 67%);
+    filter: drop-shadow(0 0 8px rgba(157,123,255,0.35)); }
+  .ring-txt { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-txt b { font-family: 'Space Grotesk', sans-serif; font-size: 21px; font-weight: 700; color: var(--cyan); line-height: 1; }
+  .ring-txt span { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* chart */
+  .chart { margin: 6px 0 4px; position: relative; }
+  .chart svg { display: block; width: 100%; height: 78px; }
+  .chart .endlabel { position: absolute; top: -3px; right: 2px; font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; color: #fff; }
+  .xaxis { display: flex; justify-content: space-between; font-size: 12px; color: #5e6792; padding: 0 2px; margin-top: 2px; }
+
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(120,150,220,0.22), transparent); margin: 14px 0; }
+
+  /* ════════ WITHDRAWAL ROW VARIANTS ════════ */
+  .wd { -webkit-tap-highlight-color: transparent; }
+  .wlabel { font-size: 14px; font-weight: 600; }
+  .wamt { font-family: 'Space Grotesk', 'Pretendard', sans-serif; font-feature-settings: 'tnum' 1; }
+  .wamt em { font-style: normal; }
+
+  .pbtn {
+    position: relative; cursor: pointer; border: none; outline: none; overflow: hidden;
+    font-family: 'Pretendard', sans-serif; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    transition: transform .12s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, background .2s ease, color .2s ease, border-color .2s ease;
+    will-change: transform; user-select: none; white-space: nowrap;
+  }
+  .pbtn svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .ripple { position: absolute; border-radius: 999px; transform: scale(0); pointer-events: none;
+    background: radial-gradient(circle, rgba(255,255,255,0.5), transparent 70%); animation: rip .55s ease-out; }
+  @keyframes rip { to { transform: scale(2.6); opacity: 0; } }
+
+  /* ── 0. CURRENT (plain reference) ── */
+  .wd-plain { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .wd-plain .wlabel { color: #9fb6c9; }
+  .wd-plain .wamt { font-size: 21px; font-weight: 700; color: var(--gold); }
+  .wd-plain .wamt em { font-size: 14px; color: var(--gold); margin-left: 2px; }
+  .wd-plain .pbtn { font-size: 15px; padding: 11px 17px; border-radius: 999px;
+    color: var(--gold); background: transparent; border: 1px solid rgba(255,211,114,0.7); }
+
+  /* ── 1. GOLD SOLID — amount left, glossy gold pill right ── */
+  .wd-gold { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .wd-gold .wleft { display: flex; flex-direction: column; gap: 3px; }
+  .wd-gold .wlabel { color: #8b93c4; font-size: 12.5px; }
+  .wd-gold .wamt { font-size: 23px; font-weight: 700; color: var(--gold);
+    text-shadow: 0 0 18px rgba(255,211,114,0.35); }
+  .wd-gold .wamt em { font-size: 14px; color: var(--gold-deep); margin-left: 3px; }
+  .wd-gold .pbtn { font-size: 15px; padding: 13px 20px; border-radius: 14px; color: #2a1c02;
+    background: linear-gradient(180deg, #ffe7a3, var(--gold) 55%, var(--gold-deep));
+    box-shadow: 0 10px 24px -8px rgba(255,180,70,0.6), inset 0 1px 0 rgba(255,255,255,0.6); }
+  .wd-gold .pbtn:hover { box-shadow: 0 14px 32px -8px rgba(255,180,70,0.8), inset 0 1px 0 rgba(255,255,255,0.7); }
+  .wd-gold .pbtn:active { transform: translateY(3px) scale(0.98); box-shadow: 0 3px 12px -4px rgba(255,180,70,0.9), inset 0 2px 8px rgba(120,70,0,0.35); }
+
+  /* ── 2. FULL-WIDTH CTA — hero amount, gold bar below ── */
+  .wd-cta { display: flex; flex-direction: column; gap: 13px; }
+  .wd-cta .wtop { display: flex; align-items: baseline; justify-content: space-between; }
+  .wd-cta .wlabel { color: #9fb6c9; font-size: 13px; }
+  .wd-cta .wamt { font-size: 26px; font-weight: 700; color: var(--gold); text-shadow: 0 0 20px rgba(255,211,114,0.4); }
+  .wd-cta .wamt em { font-size: 15px; color: var(--gold-deep); margin-left: 3px; }
+  .wd-cta .pbtn { width: 100%; font-size: 16px; padding: 15px; border-radius: 15px; color: #2a1c02;
+    background: linear-gradient(100deg, #ffe7a3, var(--gold) 50%, var(--gold-deep));
+    background-size: 180% 100%; background-position: 0 50%;
+    box-shadow: 0 12px 30px -10px rgba(255,180,70,0.6), inset 0 1px 0 rgba(255,255,255,0.6); }
+  .wd-cta .pbtn:hover { background-position: 100% 50%; box-shadow: 0 16px 38px -10px rgba(255,180,70,0.8), inset 0 1px 0 rgba(255,255,255,0.7); }
+  .wd-cta .pbtn:active { transform: translateY(2px) scale(0.99); box-shadow: 0 4px 14px -6px rgba(255,180,70,0.9), inset 0 2px 10px rgba(120,70,0,0.35); }
+
+  /* ── 3. MINT NEON — matches app cyan, outline→fill ── */
+  .wd-mint { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .wd-mint .wleft { display: flex; flex-direction: column; gap: 3px; }
+  .wd-mint .wlabel { color: #8b93c4; font-size: 12.5px; }
+  .wd-mint .wamt { font-size: 23px; font-weight: 700; color: var(--mint); text-shadow: 0 0 16px rgba(54,230,216,0.4); }
+  .wd-mint .wamt em { font-size: 14px; color: var(--mint); opacity: 0.8; margin-left: 3px; }
+  .wd-mint .pbtn { font-size: 15px; padding: 12px 19px; border-radius: 13px; color: var(--mint);
+    background: rgba(54,230,216,0.05); border: 1.5px solid var(--mint);
+    box-shadow: inset 0 0 14px rgba(54,230,216,0.12); }
+  .wd-mint .pbtn:hover { box-shadow: 0 0 22px -2px rgba(54,230,216,0.5), inset 0 0 18px rgba(54,230,216,0.18); }
+  .wd-mint .pbtn:active { color: #04201d; background: var(--mint); transform: scale(0.97);
+    box-shadow: 0 0 34px -2px rgba(54,230,216,0.85); }
+
+  /* ── 4. GLASS PANEL — frosted sub-panel, gold pill ── */
+  .wd-glass { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: linear-gradient(160deg, rgba(255,211,114,0.07), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,211,114,0.22); border-radius: 18px; padding: 14px 14px 14px 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+  .wd-glass .wleft { display: flex; flex-direction: column; gap: 3px; }
+  .wd-glass .wlabel { color: #9fb6c9; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+  .wd-glass .wlabel svg { width: 14px; height: 14px; color: var(--gold); }
+  .wd-glass .wamt { font-size: 22px; font-weight: 700; color: var(--gold); }
+  .wd-glass .wamt em { font-size: 13px; color: var(--gold-deep); margin-left: 3px; }
+  .wd-glass .pbtn { font-size: 14.5px; padding: 12px 18px; border-radius: 999px; color: #fff;
+    background: rgba(255,211,114,0.12); border: 1.5px solid rgba(255,211,114,0.6);
+    box-shadow: 0 6px 20px -8px rgba(255,180,70,0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+  .wd-glass .pbtn:hover { background: rgba(255,211,114,0.2); box-shadow: 0 10px 28px -8px rgba(255,180,70,0.6), 0 0 20px -4px rgba(255,180,70,0.5); }
+  .wd-glass .pbtn:active { transform: scale(0.96); color: #2a1c02;
+    background: linear-gradient(180deg, #ffe7a3, var(--gold)); box-shadow: 0 0 36px -4px rgba(255,180,70,0.8); }
+
+  /* ── 5. GRADIENT BORDER — gold→pink animated frame ── */
+  .wd-frame { position: relative; border-radius: 18px; padding: 1.4px;
+    background: linear-gradient(120deg, var(--gold), var(--pink) 55%, var(--purple));
+    background-size: 200% 100%; box-shadow: 0 10px 30px -14px rgba(255,95,196,0.4); }
+  .wd-frame .inner { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: linear-gradient(168deg, #141a30, #10142a); border-radius: 16.6px; padding: 13px 13px 13px 16px; }
+  .wd-frame .wleft { display: flex; flex-direction: column; gap: 3px; }
+  .wd-frame .wlabel { color: #9fb6c9; font-size: 12.5px; }
+  .wd-frame .wamt { font-size: 22px; font-weight: 700;
+    background: linear-gradient(90deg, var(--gold), #ffeab0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .wd-frame .wamt em { font-size: 13px; -webkit-text-fill-color: var(--gold-deep); margin-left: 3px; }
+  .wd-frame .pbtn { font-size: 14.5px; padding: 12px 18px; border-radius: 12px; color: #fff;
+    background: linear-gradient(100deg, var(--gold-deep), var(--pink) 90%);
+    box-shadow: 0 8px 22px -8px rgba(255,95,196,0.55), inset 0 1px 0 rgba(255,255,255,0.3); }
+  .wd-frame .pbtn:hover { box-shadow: 0 12px 30px -8px rgba(255,95,196,0.75), inset 0 1px 0 rgba(255,255,255,0.4); }
+  .wd-frame .pbtn:active { transform: translateY(2px) scale(0.98); box-shadow: 0 3px 12px -4px rgba(255,95,196,0.9), inset 0 2px 8px rgba(80,0,50,0.4); }
+
+  /* ── 6. HUD TECH — brackets, mono, scanline ── */
+  .wd-hud { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    border: 1px solid rgba(54,230,216,0.28); border-radius: 4px; padding: 14px 14px 14px 16px;
+    background: rgba(54,230,216,0.04); box-shadow: inset 0 0 18px rgba(54,230,216,0.07); }
+  .wd-hud::before, .wd-hud::after { content: ''; position: absolute; width: 11px; height: 11px; border: 2px solid var(--mint); box-shadow: 0 0 8px rgba(54,230,216,0.6); }
+  .wd-hud::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+  .wd-hud::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+  .wd-hud .wleft { display: flex; flex-direction: column; gap: 4px; }
+  .wd-hud .wlabel { font-family: 'Space Grotesk', sans-serif; color: #7e9ab0; font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase; }
+  .wd-hud .wamt { font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 0.5px; }
+  .wd-hud .wamt em { font-size: 13px; color: var(--gold-deep); margin-left: 3px; }
+  .wd-hud .pbtn { font-family: 'Space Grotesk', sans-serif; font-size: 14px; letter-spacing: 0.5px; padding: 12px 17px; border-radius: 4px;
+    color: #04201d; background: linear-gradient(180deg, #62f0e2, var(--mint)); font-weight: 700;
+    box-shadow: 0 8px 22px -8px rgba(54,230,216,0.6), inset 0 1px 0 rgba(255,255,255,0.4); }
+  .wd-hud .pbtn:hover { box-shadow: 0 12px 28px -8px rgba(54,230,216,0.8), inset 0 1px 0 rgba(255,255,255,0.5); }
+  .wd-hud .pbtn:active { transform: scale(0.97); box-shadow: 0 3px 12px -4px rgba(54,230,216,0.9), inset 0 2px 8px rgba(0,60,55,0.4); }
+
+  .hint { max-width: 1080px; margin: 36px auto 0; font-size: 13.5px; color: #6d75a3; text-align: center; line-height: 1.6; }
+  .hint b { color: var(--gold); }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="kicker">SwingTiger · 출금 영역</div>
+    <h1>"출금가능금액 · 출금신청" 스타일 6종</h1>
+    <p>밋밋했던 출금 줄을 화면 톤(다크 네온 + 골드)에 맞춰 다시 디자인했어요. 실제 카드 안에 넣어 비교할 수 있게 했고, <b>버튼을 직접 눌러</b> 누르는 느낌도 확인하실 수 있어요. 맨 위는 기존 모습입니다 — 마음에 드는 번호를 알려주시면 앱에 적용할게요.</p>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="hint">팁: 각 버튼은 <b>호버 · 누름</b>에 따라 글로우와 깊이감이 달라집니다 · 금액 <b>255,495 원</b> 기준</p>
+
+<script>
+  const WON = '255,495';
+  const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const COIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.2c0-1 1.1-1.6 2.5-1.6s2.5.6 2.5 1.6-1.1 1.6-2.5 1.6-2.5.6-2.5 1.6 1.1 1.6 2.5 1.6 2.5-.6 2.5-1.6"/></svg>';
+
+  // recreated upper card (context) — identical for every option
+  const cardTop = `
+    <div class="toprow">
+      <div class="tabs">
+        <button class="tab on">일간</button>
+        <button class="tab">주간</button>
+        <button class="tab">월간</button>
+      </div>
+      <div class="goal">목표 150,000 원</div>
+    </div>
+    <div class="midrow">
+      <div>
+        <div class="amt-big num">255,495<em>원</em></div>
+        <div class="delta num">↗ +0% <span>전일 대비</span></div>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring"></div>
+        <div class="ring-txt"><b>100%</b><span>달성</span></div>
+      </div>
+    </div>
+    <div class="chart">
+      <div class="endlabel num">255,495</div>
+      <svg viewBox="0 0 320 78" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="ln" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#36e6d8"/><stop offset="1" stop-color="#45d9e6"/>
+          </linearGradient>
+        </defs>
+        <path d="M2,66 L150,65 C205,64 232,60 256,44 C276,30 292,24 316,22"
+              fill="none" stroke="url(#ln)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="316" cy="22" r="4" fill="#0a0e1e" stroke="#fff" stroke-width="2.5"/>
+      </svg>
+      <div class="xaxis"><span>목</span><span>금</span><span>토</span><span>일</span><span>월</span><span>화</span><span>수</span></div>
+    </div>
+    <div class="divider"></div>`;
+
+  const options = [
+    { tag: 'ref', num: '00', name: '현재 (기존)', desc: '지금 화면 모습 — 비교용입니다.',
+      row: `<div class="wd wd-plain">
+        <span class="wlabel">출금가능금액</span>
+        <span class="wamt">${WON} <em>원</em></span>
+        <button class="pbtn plain">출금신청</button>
+      </div>` },
+
+    { num: '01', name: '골드 솔리드', desc: '꽉 찬 골드 그라디언트 버튼. 누르면 아래로 가라앉습니다.',
+      row: `<div class="wd wd-gold">
+        <div class="wleft"><span class="wlabel">출금가능금액</span><span class="wamt">${WON}<em> 원</em></span></div>
+        <button class="pbtn">출금신청</button>
+      </div>` },
+
+    { num: '02', name: '풀와이드 CTA', desc: '금액을 크게 띄우고 폭이 꽉 찬 골드 버튼으로 강조.',
+      row: `<div class="wd wd-cta">
+        <div class="wtop"><span class="wlabel">출금가능금액</span><span class="wamt">${WON}<em> 원</em></span></div>
+        <button class="pbtn">출금신청 ${ARROW}</button>
+      </div>` },
+
+    { num: '03', name: '민트 네온', desc: '앱 시안 컬러와 통일. 누르면 민트로 가득 차오릅니다.',
+      row: `<div class="wd wd-mint">
+        <div class="wleft"><span class="wlabel">출금가능금액</span><span class="wamt">${WON}<em> 원</em></span></div>
+        <button class="pbtn">출금신청</button>
+      </div>` },
+
+    { num: '04', name: '글래스 패널', desc: '반투명 골드 패널 안에 금액과 둥근 버튼을 담았습니다.',
+      row: `<div class="wd wd-glass">
+        <div class="wleft"><span class="wlabel">${COIN} 출금가능금액</span><span class="wamt">${WON}<em> 원</em></span></div>
+        <button class="pbtn">출금신청</button>
+      </div>` },
+
+    { num: '05', name: '그라디언트 프레임', desc: '골드→핑크 그라디언트 테두리. 금액도 골드로 빛납니다.',
+      row: `<div class="wd wd-frame"><div class="inner">
+        <div class="wleft"><span class="wlabel">출금가능금액</span><span class="wamt">${WON}<em> 원</em></span></div>
+        <button class="pbtn">출금신청</button>
+      </div></div>` },
+
+    { num: '06', name: 'HUD 테크', desc: '코너 브래킷 + 모노 숫자. 대시보드 무드의 깔끔한 라인.',
+      row: `<div class="wd wd-hud">
+        <div class="wleft"><span class="wlabel">Available</span><span class="wamt">${WON}<em> 원</em></span></div>
+        <button class="pbtn">출금신청</button>
+      </div>` },
+  ];
+
+  const grid = document.getElementById('grid');
+  options.forEach(o => {
+    const opt = document.createElement('div');
+    opt.className = 'opt';
+    opt.innerHTML = `
+      <div class="opt-head"><span class="opt-num">${o.num}</span><h3 class="opt-name">${o.name}</h3></div>
+      <div class="opt-desc">${o.desc}</div>
+      <div class="card${o.tag === 'ref' ? ' ref' : ''}">${cardTop}${o.row}</div>`;
+    grid.appendChild(opt);
+  });
+
+  // press ripple on every button
+  document.querySelectorAll('.pbtn').forEach(btn => {
+    btn.addEventListener('pointerdown', e => {
+      const r = btn.getBoundingClientRect();
+      const rip = document.createElement('span');
+      rip.className = 'ripple';
+      const size = Math.max(r.width, r.height) * 0.85;
+      rip.style.width = rip.style.height = size + 'px';
+      rip.style.left = (e.clientX - r.left - size / 2) + 'px';
+      rip.style.top = (e.clientY - r.top - size / 2) + 'px';
+      btn.appendChild(rip);
+      setTimeout(() => rip.remove(), 560);
+    });
+  });
+</script>
+</body>
+</html>
