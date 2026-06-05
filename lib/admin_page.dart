@@ -1872,7 +1872,7 @@ class _AdminPageState extends State<AdminPage> {
         Expanded(
             child: _bottomMenuItem(Icons.payment_rounded, _teal, "출금신청", () {
           setState(() => _homeView = 'withdraw');
-          if (!lLoaded && !lLoading) _loadWithdrawalData();
+          if (!lLoading) _loadWithdrawalData(); // 진입할 때마다 최신으로 다시 로드
         },
                 badgeStream: FirebaseFirestore.instance
                     .collection('withdrawal_requests')
@@ -2277,7 +2277,7 @@ class _AdminPageState extends State<AdminPage> {
             ),
           ),
         ]),
-        Container(height: 1, color: _stSectionDivider, margin: const EdgeInsets.only(top: 16, bottom: 12)),
+        Container(height: 1, color: _elevated, margin: const EdgeInsets.only(top: 16, bottom: 12)),
         _rateRow("고용 보험", _employmentCtrl, "%"),
         _rateRow("산재 보험", _accidentCtrl, "%"),
         _rateRow("원천세", _taxCtrl, "%"),
@@ -2291,7 +2291,7 @@ class _AdminPageState extends State<AdminPage> {
         _rateRow("출금 수수료", _feeCtrl, "원"),
         const SizedBox(height: 4),
         _rateRow("협력사수수료", _commissionCtrl, "%"),
-        Container(height: 1, color: _stSectionDivider, margin: const EdgeInsets.only(top: 16, bottom: 12)),
+        Container(height: 1, color: _elevated, margin: const EdgeInsets.only(top: 16, bottom: 12)),
         Center(
           child: SizedBox(
             width: _stUploadW, height: _stUploadH,
