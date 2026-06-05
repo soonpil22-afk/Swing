@@ -490,7 +490,7 @@ const double _ntBoxBorderWidth = 1;      // 공지 박스 테두리 두께
 const double _ntJoinCardBorderWidth = 1; // 가입신청 카드 테두리 두께
 const double _ntStatCardRadius = 16;// 통계 카드 모서리
 const _ntStatDivider = _borderDim;  // 통계 항목 구분선
-const _ntStatLabelColor = _text2;   // 통계 라벨 색
+const _ntStatLabelColor = _text;   // 통계 라벨 색
 const double _ntStatLabelFontSize = 10; // 통계 라벨 크기
 const _ntStatValueColor = _teal;  // 통계 숫자 색
 const double _ntStatValueFontSize = 16; // 통계 숫자 크기
@@ -498,7 +498,7 @@ const _ntBoxBg     = _surface; // 공지 박스 배경
 const _ntBoxBorder = _elevated;  // 공지 박스 테두리
 const double _ntBoxRadius = 16;// 공지 박스 모서리
 const _ntTitleIconColor = _teal; // 공지 헤더 아이콘 색
-const _ntTitleColor = _text2;      // "공지사항" 글씨 색
+const _ntTitleColor = _text;      // "공지사항" 글씨 색
 const double _ntTitleFontSize = 13;// "공지사항" 글씨 크기
 const _ntEditColor      = _teal; // 수정 버튼 글씨/테두리
 const _ntEditActiveText = _surface;  // 저장(편집중) 글씨
@@ -530,17 +530,15 @@ const double _csCardRadius = 12;// 상담 카드 모서리
 const _csCardBorder       = _elevated; // 읽음 카드 테두리
 const _csCardBorderUnread = _teal;    // 안읽음 카드 테두리
 const _csAvatarBg         = _surface;  // 아바타 배경
-const _csAvatarIconColor  = _text2;     // 아바타 아이콘(읽음)
+const _csAvatarIconColor  = _text;     // 아바타 아이콘(읽음)
 const _csAvatarIconUnread = _teal;    // 아바타 아이콘(안읽음)
-const _csNameColor  = _text2;  // 이름(읽음) 색
-const _csNameUnread = _text2;   // 이름(안읽음) 색
-const double _csNameFontSize = 13; // 이름 글씨 크기
+const _csNameColor  = _text;  // 이름(읽음) 색
+const _csNameUnread = _teal;   // 이름(안읽음) 색
+const double _csNameFontSize = 16; // 이름 글씨 크기
 const _csNewBg   = _pink;   // NEW 뱃지 배경
 const _csNewText = _text;  // NEW 뱃지 글씨
-const _csTimeColor = _text2;       // 시간 색
-const double _csTimeFontSize = 10; // 시간 크기
-const _csLastColor = _text2;       // 마지막 메시지 색
-const double _csLastFontSize = 11; // 마지막 메시지 크기
+const _csTimeColor = _text;       // 시간 색
+const double _csTimeFontSize = 16; // 시간 크기
 const _csChevronColor = _text2;    // 화살표 색
 const _csEmptyColor = _text2;      // "접수된 상담이 없습니다" 색
 const double _csEmptyFontSize = 13;// 빈 안내 글씨 크기
@@ -1370,7 +1368,10 @@ class _AdminPageState extends State<AdminPage> {
         child: Row(children: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: _text, size: 18),
-            onPressed: () => setState(() => _homeView = null),
+            onPressed: () {
+              setState(() => _homeView = null);
+              _loadAdminChart(); // 대시보드 복귀 시 차트·출금랭킹 최신화
+            },
           ),
           Text(title,
               style: const TextStyle(
@@ -2454,7 +2455,8 @@ class _AdminPageState extends State<AdminPage> {
 }
 
 // === [공통] 서브페이지 패널 래퍼 (전체배경 → 메인배경 패널 → 뒤로가기 헤더 + 내용) ===
-Widget _adminPanelScaffold(BuildContext context, String title, Widget child) {
+Widget _adminPanelScaffold(BuildContext context, String title, Widget child,
+    {Color? dividerColor, double dividerInset = 0}) {
   return Scaffold(
     backgroundColor: _appBg,
     resizeToAvoidBottomInset: true,
@@ -2485,7 +2487,10 @@ Widget _adminPanelScaffold(BuildContext context, String title, Widget child) {
                           color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
                 ]),
               ),
-              Container(height: 1, color: _teal.withValues(alpha: 0.6)),
+              Container(
+                  height: 1,
+                  margin: EdgeInsets.symmetric(horizontal: dividerInset),
+                  color: dividerColor ?? _teal.withValues(alpha: 0.6)),
               Expanded(child: child),
             ]),
           ),
@@ -4679,7 +4684,6 @@ class _ChatListPage extends StatelessWidget {
               final d    = docs[i].data() as Map<String, dynamic>;
               final uid  = docs[i].id;
               final name = d['riderName'] as String? ?? uid;
-              final last = d['lastMessage'] as String? ?? '';
               final at   = d['lastAt'] as Timestamp?;
               final unread = d['unreadByAdmin'] as bool? ?? false;
 
@@ -4722,9 +4726,6 @@ class _ChatListPage extends StatelessWidget {
                             Text(DateFormat('MM/dd HH:mm').format(at.toDate()),
                                 style: const TextStyle(color: _csTimeColor, fontSize: _csTimeFontSize)),
                         ]),
-                        const SizedBox(height: 3),
-                        Text(last, maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: _csLastColor, fontSize: _csLastFontSize)),
                       ]),
                     ),
                     const SizedBox(width: 6),
@@ -4827,6 +4828,8 @@ class _AdminChatPageState extends State<_AdminChatPage> {
     return _adminPanelScaffold(
       context,
       "${widget.riderName} 님",
+      dividerColor: _elevated,
+      dividerInset: 15,
       Column(children: [
         // 메시지 목록
         Expanded(
