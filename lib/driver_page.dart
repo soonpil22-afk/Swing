@@ -453,8 +453,8 @@ const double _lpOverSubFontSize = 12;      // 부제 글씨 크기
 // 7-2. 리스비 전체현황 카드 (조정값)
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _lsCardBg          = _surface;   // 카드 배경색
-const Color  _lsCardBorderNormal = _cardBorder; // 일반 테두리
-const Color  _lsCardBorderAlert = _amber;     // 알림 시 테두리 색
+const Color  _lsCardBorderNormal = _elevated; // 일반 테두리(기본)
+const Color  _lsCardBorderAlert = _teal;      // 알림 시 테두리 색(강조)
 const double _lsCardAlertBorderAlpha = 0.40;  // 알림 테두리 투명도
 const double _lsCardRadius      = 14;  // 카드 모서리
 const double _lsCardPadL = 16;  // 안쪽 여백 왼
@@ -471,9 +471,9 @@ const Color  _lsTypeChipText    = _teal;   // 타입 칩 글씨 색
 const double _lsTypeChipFontSize = 11;     // 타입 칩 글씨 크기
 const Color  _lsInfoLabelColor  = _text;   // 정보 라벨 색
 const Color  _lsInfoValueColor  = _text;   // 정보 값 색
-const Color  _lsInfoPinkColor   = _amber;  // "출금 시 자동공제" 값 색
+const Color  _lsInfoPinkColor   = _pink;  // "출금 시 자동공제" 값 색
 const double _lsInfoFontSize    = 12;      // 정보 글씨 크기
-const Color  _lsPayMethodLabelColor    = _amber; // "납부 방식" 라벨 글씨 색
+const Color  _lsPayMethodLabelColor    = _pink; // "납부 방식" 라벨 글씨 색
 const double _lsPayMethodLabelFontSize = 13;     // "납부 방식" 라벨 글씨 크기
 const Color  _lsProgressColor   = _amber;  // "진행 현황" 글씨·숫자 색
 const double _lsProgressLabelFontSize = 12; // "진행 현황" 라벨 크기
@@ -2275,17 +2275,21 @@ class _AreaChartPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round,
     );
 
-    int maxIdx = 0;
-    for (int i = 1; i < n; i++) {
-      if (data[i] > data[maxIdx]) maxIdx = i;
+    // 차트 선 라벨 = 최근(마지막 입금완료) 지점의 금액 → 밑 큰 금액과 일치
+    int labelIdx = n - 1;
+    for (int i = n - 1; i >= 0; i--) {
+      if (data[i] != 0) {
+        labelIdx = i;
+        break;
+      }
     }
-    final peak = Offset(xs[maxIdx], ys[maxIdx]);
+    final peak = Offset(xs[labelIdx], ys[labelIdx]);
     canvas.drawCircle(peak, _chartPeakDotOuter, Paint()..color = _chartPeakDotColor);
     canvas.drawCircle(peak, _chartPeakDotInner, Paint()..color = _panel);
 
     final tp = TextPainter(
       text: TextSpan(
-        text: _comma(data[maxIdx]),
+        text: _comma(data[labelIdx]),
         style: const TextStyle(
             color: _chartPeakLabelColor,
             fontSize: _chartPeakLabelFontSize,
