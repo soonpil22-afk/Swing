@@ -14,6 +14,7 @@ import 'admin_chat_page.dart';
 import 'admin_withdrawal_page.dart';
 import 'admin_lease_alerts_page.dart';
 import 'admin_rider_manage_page.dart';
+import 'admin_ranking_page.dart';
 
 // ═══════════════════════════════════════════════════════════════════════
 // 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
@@ -51,8 +52,6 @@ const double _panelRadius      = 24;
 // 서브페이지 헤더 아래 경계선 (더보기·출금신청·라이더관리·공제설정·공지사항 공통)
 const Color  _subDivColor       = _elevated; // 경계선 색
 const double _subDivMarginH     = 15;        // 경계선 좌우 여백(끝까지 안 붙음)
-const double _subGapHeaderToDiv = 6;         // (더보기 전용) 뒤로가기 ↔ 경계선 갭
-const double _subGapDivToBody   = 0;         // (더보기 전용) 경계선 ↔ 내용 갭
 // 페이지별 헤더↔경계선 / 경계선↔카드 갭 (각자 따로 조정)
 const double _wrPageGapHeaderDiv = 0; const double _wrPageGapDivCard = 4; // 출금신청
 const double _rmPageGapHeaderDiv = 0; const double _rmPageGapDivCard = 4; // 라이더관리
@@ -1427,7 +1426,7 @@ class _AdminPageState extends State<AdminPage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (_) => _FullRankingPage(title: title, ranking: list)));
+            builder: (_) => FullRankingPage(title: title, ranking: list)));
   }
 
   Widget _targetButton() {
@@ -2407,128 +2406,6 @@ class _AdminAreaChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _AdminAreaChartPainter old) => old.data != data;
 }
-
-// === 전체 출금 랭킹 페이지 (더보기) ==========================================
-// ═══════════════════════ 5-1. 더보기 (전체 랭킹 페이지, 로직) ═══════════════════════
-class _FullRankingPage extends StatelessWidget {
-  final String title;
-  final List<MapEntry<String, double>> ranking;
-  const _FullRankingPage({required this.title, required this.ranking});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _appBg,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(_panelOuterPad),
-          child: Container(
-            decoration: BoxDecoration(
-              color: _panel,
-              borderRadius: BorderRadius.circular(_panelRadius),
-              border: Border.all(
-                  color: _elevated.withValues(alpha: _panelBorderAlpha), width: 1),
-              boxShadow: _panelShadow,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(_panelRadius),
-              child: Column(children: [
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(6, 6, 16, 0),
-                  child: Row(children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: _text, size: 18),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    Text(title,
-                        style: const TextStyle(
-                            color: _text,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700)),
-                  ]),
-                ),
-                const SizedBox(height: _subGapHeaderToDiv),
-                Container(
-                    height: 1,
-                    margin: const EdgeInsets.symmetric(horizontal: _subDivMarginH),
-                    color: _subDivColor),
-                const SizedBox(height: _subGapDivToBody),
-                Expanded(
-                  child: ranking.isEmpty
-                      ? const Center(
-                          child: Text("지급 내역이 없습니다.",
-                              style: TextStyle(
-                                  color: _rankEmptyColor,
-                                  fontSize: _rankEmptyFontSize)))
-                      : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                          itemCount: ranking.length,
-                          itemBuilder: (_, i) {
-                            final e = ranking[i];
-                            final rank = i + 1;
-                            final badgeColor = rank == 1
-                                ? _rankGold
-                                : rank == 2
-                                    ? _rankSilver
-                                    : rank == 3
-                                        ? _rankBronze
-                                        : _rankEtc;
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(children: [
-                                // 1·2·3등 = 금·은·동 메달 / 4등~ = 숫자
-                                SizedBox(
-                                  width: _rankBadgeSize,
-                                  height: _rankBadgeSize,
-                                  child: rank <= 3
-                                      ? Icon(Icons.military_tech,
-                                          color: badgeColor, size: _rankMedalSize)
-                                      : Center(
-                                          child: Text("$rank",
-                                              style: TextStyle(
-                                                  color: badgeColor,
-                                                  fontSize: _rankBadgeFontSize,
-                                                  fontWeight: FontWeight.w700)),
-                                        ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(e.key,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          color: _rankNameColor,
-                                          fontSize: _rankNameFontSize,
-                                          fontWeight: FontWeight.w600)),
-                                ),
-                                Text.rich(TextSpan(children: [
-                                  TextSpan(
-                                      text:
-                                          NumberFormat('#,###').format(e.value),
-                                      style: const TextStyle(
-                                          color: _rankAmtColor,
-                                          fontSize: _rankAmtFontSize,
-                                          fontWeight: FontWeight.w700)),
-                                  const TextSpan(
-                                      text: ' 원',
-                                      style: TextStyle(
-                                          color: _text,
-                                          fontSize: _rankAmtUnitFontSize)),
-                                ])),
-                              ]),
-                            );
-                          },
-                        ),
-                ),
-              ]),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // === 링 게이지 Painter (기사페이지 포팅) =====================================
 class _RingGaugePainter extends CustomPainter {
   final double pct;
