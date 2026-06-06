@@ -3721,10 +3721,11 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
               final hasRiderPaid = riderPaidList.isNotEmpty;
               final uid          = payments.first['uid'] as String? ?? '';
 
-              Color borderColor = _elevated;
-              if (paidCount == totalCount) borderColor = _teal.withAlpha(60);
-              if (hasDue)                  borderColor = _amber.withAlpha(100);
-              if (hasRiderPaid)            borderColor = _teal.withAlpha(120);
+              // 기본 _elevated, 강조(완납·납기·입금완료 신고) = _teal
+              final borderColor =
+                  (paidCount == totalCount || hasDue || hasRiderPaid)
+                      ? _teal
+                      : _elevated;
 
               // 리스비 요약 정보 (lease_payments 데이터 기반)
               final leaseType  = payments.first['leaseType']  as String? ?? '';
@@ -3747,7 +3748,7 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                   color: _surface, borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: _elevated,
+                  border: Border.all(color: borderColor,
                       width: hasRiderPaid || isDueToday || (hasDue && !isDueToday) ? 1.5 : 1),
                   boxShadow: _cardShadow,
                 ),
