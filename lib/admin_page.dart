@@ -308,7 +308,7 @@ const double _ntStatCardBorderWidth = 1; // 통계 카드 테두리 두께
 const double _ntBoxBorderWidth = 1;      // 공지 박스 테두리 두께
 const double _ntJoinCardBorderWidth = 1; // 가입신청 카드 테두리 두께
 const double _ntStatCardRadius = 16;// 통계 카드 모서리
-const _ntStatDivider = _borderDim;  // 통계 항목 구분선
+const _ntStatDivider = _elevated;  // 통계 항목 구분선
 const _ntStatLabelColor = _text;   // 통계 라벨 색
 const double _ntStatLabelFontSize = 10; // 통계 라벨 크기
 const _ntStatValueColor = _teal;  // 통계 숫자 색
@@ -1970,7 +1970,6 @@ class _AdminPageState extends State<AdminPage> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         decoration: BoxDecoration(color: _whCardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: _whCardBorder, width: _whCardBorderWidth)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _divider(),
           Row(children: [
             Flexible(child: _sheetDateBtn(context, lStart, "시작일",   (d) => setState(() => lStart = d))),
             const Text(" ~ ", style: TextStyle(color: _text2, fontSize: 12)),
@@ -1984,7 +1983,7 @@ class _AdminPageState extends State<AdminPage> {
               _loadWithdrawalData(); // 전체 다시 로드
             }),
           ]),
-          _divider(),
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
           if (lLoading)
             const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: _teal)))
           else if (!lLoaded)

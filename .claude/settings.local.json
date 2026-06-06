@@ -15,7 +15,13 @@
       "Bash(cmd.exe /c \"cd /d C:\\\\JejuProject\\\\swing_tiger && flutter analyze lib/driver_page.dart 2>&1\")",
       "Bash(grep -v \"^[0-9]\\\\{4,\\\\}\")",
       "Bash(/mnt/c/src/flutter/bin/flutter.bat analyze *)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(sed -i 's/dividerColor ?? _teal.withValues\\(alpha: 0.6\\)/dividerColor ?? _elevated/' admin_common.dart)",
+      "Bash(sed -i 's/Container\\(height: 1, color: _teal.withValues\\(alpha: 0.6\\)/Container\\(height: 1, color: _elevated/g' admin_rider_history_page.dart)",
+      "Bash(sed -i 's/Container\\(height: 1, color: _teal,/Container\\(height: 1, color: _elevated,/g' admin_page.dart admin_withdrawal_page.dart)",
+      "Bash(sed -i 's/Container\\(height: 1, color: _teal.withAlpha\\(80\\),/Container\\(height: 1, color: _elevated,/g' admin_withdrawal_page.dart)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }

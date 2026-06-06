@@ -43,7 +43,6 @@ const _rhHeadAmtColor    = _text;      // 헤더 금액 색
 const double _rhHeadAmtFontSize = 13;  // 헤더 금액 크기
 const _rhPaidBadgeColor  = _teal;      // "입금완료" 박스 색
 const double _rhPaidFontSize = 10;     // "입금완료" 박스 글씨 크기
-const _rhDividerColor    = _borderDim; // 헤더 ↔ 내용 구분선 색
 // 상세 내역 행 (정산내역·누적정산 공통 헬퍼)
 const _rhMainColor       = _text;      // "배달수수료(세전)" 등 메인 행 색
 const double _rhMainFontSize = 12;     // 메인 행 글씨 크기
@@ -417,7 +416,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
 
         // 펼침 내용
         if (logExp) ...[
-          Container(height: 1, color: _rhDividerColor),
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
           Padding(
             padding: const EdgeInsets.fromLTRB(_rhLogBodyPadL, _rhLogBodyPadT, _rhLogBodyPadR, _rhLogBodyPadB),
             child: Column(children: [
@@ -525,7 +524,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           ),
         ),
         if (iExp) ...[
-          Container(height: 1, color: _borderDim),
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
           Padding(
             padding: const EdgeInsets.fromLTRB(_rhItemBodyPadL, _rhItemBodyPadT, _rhItemBodyPadR, _rhItemBodyPadB),
             child: Column(children: [

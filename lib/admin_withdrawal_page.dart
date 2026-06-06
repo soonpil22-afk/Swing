@@ -60,7 +60,6 @@ const double _wrGapNameDate    = 2;    // 이름줄 ↔ 날짜 갭
 const double _wrGapAmtChevron  = 8;    // 금액 ↔ 펼침아이콘 갭
 const double _wrChevronSize    = 18;   // 펼침 아이콘 크기
 const _wrChevronColor          = _text2; // 펼침 아이콘 색
-const _wrDividerColor          = _borderDim; // 헤더 ↔ 내용 구분선 색
 const double _wrGapAcctFinal   = 8;    // 계좌행 ↔ 최종금액 갭
 const double _wrGapFinalItems  = 10;   // 최종금액 ↔ 날짜상세 갭
 // 날짜별 상세 내역 행
@@ -246,7 +245,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
 
         // ── 펼침 내용 ──
         if (cardExp) ...[
-          Container(height: 1, color: _wrDividerColor),
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -412,7 +411,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
                               subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
                             ]),
-                            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
+                            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

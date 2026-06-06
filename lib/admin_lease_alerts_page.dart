@@ -14,7 +14,6 @@ const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
 const _amber    = kAmber;
-const _borderDim = kBorderDim;
 const List<BoxShadow> _cardShadow = kCardShadow;
 
 // ═══════════════ 리스비 납기 현황 카드 상수(_la*) ═══════════════
@@ -32,7 +31,7 @@ const double _laBtnFontSize = 12; // 버튼 글씨 크기
 // 리스비 카드 내용 (글씨·테두리)
 const double _laRiderNameFontSize = 14; // 라이더 이름 칩 글씨 크기
 const double _laBadgeFontSize  = 10;    // 상태·타입 뱃지 글씨 크기
-const _laCardBorder            = Color(0x4D303854); // 전체현황 카드 테두리 색
+const _laCardBorder            = _elevated; // 전체현황 카드 테두리 색
 const double _laCardBorderWidth = 1;    // 전체현황 카드 테두리 두께
 const _laCardTitleColor        = _text; // "리스비 전체 현황" 색
 const double _laCardTitleFontSize = 13; // "리스비 전체 현황" 크기
@@ -276,7 +275,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
 
                   // 펼침: 리스비전체현황 카드 + (매주/매월) 회차별 입금확인
                   if (isExpanded) ...[
-                    Container(height: 1, color: _borderDim),
+                    Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                       child: Column(children: [
