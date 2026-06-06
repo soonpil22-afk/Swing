@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
+import 'firebase_options.dart';
 import 'super_admin_page.dart';
 import 'register_page.dart';
 import 'admin_page.dart';
@@ -109,7 +110,7 @@ const double _signupLinkFontSize = 13;     // "회원가입" 글씨 크기
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     debugPrint("✅ Firebase 초기화 성공");
   } catch (e) {
     debugPrint("❌ Firebase 초기화 실패: $e");
