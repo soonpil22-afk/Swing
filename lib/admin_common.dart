@@ -7,7 +7,6 @@ const _appBg    = kAppBg;
 const _panel    = kPanel;
 const _elevated = kElevated;
 const _text     = kText;
-const _teal     = kTeal;
 const List<BoxShadow> _panelShadow = kPanelShadow;
 
 // 패널 레이아웃 공통값 (admin_page.dart 메인 패널과 동일)
