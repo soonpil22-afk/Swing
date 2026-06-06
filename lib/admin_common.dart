@@ -51,7 +51,7 @@ Widget adminPanelScaffold(BuildContext context, String title, Widget child,
               Container(
                   height: 1,
                   margin: EdgeInsets.symmetric(horizontal: dividerInset),
-                  color: dividerColor ?? _teal.withValues(alpha: 0.6)),
+                  color: dividerColor ?? _elevated),
               Expanded(child: child),
             ]),
           ),

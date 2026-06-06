@@ -412,7 +412,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
                               subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
                             ]),
-                            Container(height: 1, color: _teal, margin: const EdgeInsets.symmetric(vertical: 5)),
+                            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -476,7 +476,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                       _sub("출금수수료", "${_fmtC(withdrawFee)} 원"),
                       _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
                     ]),
-                    Container(height: 1, color: _teal.withAlpha(80), margin: const EdgeInsets.symmetric(vertical: 8)),
+                    Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 8)),
                     _row("최종출금금액", "${_fmtC(finalWd)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),
                   ]);
                 }(),

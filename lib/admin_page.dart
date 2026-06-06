@@ -2019,7 +2019,7 @@ class _AdminPageState extends State<AdminPage> {
               _subC("시간제보험", "${_fmtC(lIns)} 원",   vc: _text2),
               _subC("리스비",     "${_fmtC(lLease)} 원", vc: _text2),
             ]),
-            Container(height: 1, color: _teal, margin: const EdgeInsets.symmetric(vertical: 10)),
+            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
             _row("총 출금금액", "${_fmtC(lTotal)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),
           ],
         ]),

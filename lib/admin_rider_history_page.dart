@@ -557,7 +557,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                 subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
                 subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
               ]),
-              Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 5)),
+              Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -620,7 +620,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
         _sub("출금수수료", "${_fmtC(withdrawFee)} 원"),
         _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
       ]),
-      Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 8)),
+      Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 8)),
       _row("최종출금금액", "${_fmtC(finalWd)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),
     ]);
   }
@@ -658,7 +658,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               _loadCumulative(); // 전체 다시 로드
             }),
           ]),
-          Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 12)),
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 12)),
           if (!_cumLoaded)
             const Center(child: Padding(
               padding: EdgeInsets.all(20),
@@ -693,7 +693,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               _subC("시간제보험", "${_fmtC(_ins)} 원",   vc: _text2),
               _subC("리스비",     "${_fmtC(_lease)} 원", vc: _text2),
             ]),
-            Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 10)),
+            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
             _row("총 출금금액", "${_fmtC(_total)} 원",
                 lc: _teal, vc: _teal, bold: true, fs: 14),
           ],
