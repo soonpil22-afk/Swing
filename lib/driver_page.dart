@@ -713,6 +713,10 @@ class _DriverPageState extends State<DriverPage> {
   bool   _hasDailyLease  = false;
   double _leaseDailyAmt  = 0;
 
+  // ── 실시간 구독 (관리자 입금완료/미출금 업로드 → 차트·금액 즉시 반영) ──
+  StreamSubscription<QuerySnapshot>?    _settlementSub;
+  StreamSubscription<DocumentSnapshot>? _unpaidSub;
+
   // ── 사용자/공지/상태 ──
   String _riderName  = '';
   String _noticeText = '';
@@ -731,12 +735,33 @@ class _DriverPageState extends State<DriverPage> {
     _checkAppStatus();
     _loadUser();
     _loadNotice();
-    _loadWithdrawState();
+    _attachWithdrawListeners();
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkLeaseDue());
+  }
+
+  // 관리자 입금완료(정산로그)·미출금 업로드 변경을 실시간 감지 → 차트/금액 자동 갱신
+  void _attachWithdrawListeners() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      _loadWithdrawState();
+      return;
+    }
+    _settlementSub = FirebaseFirestore.instance
+        .collection('admin_settlement_logs')
+        .where('uid', isEqualTo: user.uid)
+        .snapshots()
+        .listen((_) => _loadWithdrawState());
+    _unpaidSub = FirebaseFirestore.instance
+        .collection('unpaid_balance')
+        .doc(user.uid)
+        .snapshots()
+        .listen((_) => _loadWithdrawState());
   }
 
   @override
   void dispose() {
+    _settlementSub?.cancel();
+    _unpaidSub?.cancel();
     _balloonCtrl.dispose();
     _chatScrollCtrl.dispose();
     super.dispose();
