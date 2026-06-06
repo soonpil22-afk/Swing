@@ -185,7 +185,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 Container(
                   height: 1,
                   margin: const EdgeInsets.symmetric(horizontal: _lpDivMarginH),
-                  color: _elevated.withValues(alpha: 0.6),
+                  color: _elevated,
                 ),
                 const SizedBox(height: _lpGapDivToCard),
                 Expanded(child: _buildBody()),
@@ -345,7 +345,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
         ]),
         Container(
             height: 1,
-            color: _elevated.withValues(alpha: 0.6),
+            color: _elevated,
             margin: const EdgeInsets.symmetric(vertical: 10)),
         _infoRow2("1$cycleLabel 금액", "${NumberFormat('#,###').format(leaseAmt)} 원"),
         const SizedBox(height: 5),

@@ -671,7 +671,7 @@ class _HistoryPageState extends State<HistoryPage>
           ),
         ),
         if (exp) ...[
-          Container(height: 1, color: _borderDim),
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 10)),
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 _stBodyPadL, _stBodyPadT, _stBodyPadR, _stBodyPadB),
@@ -752,7 +752,7 @@ class _HistoryPageState extends State<HistoryPage>
                         _stSubRow("리스비", dailyLease, _stSubRowColor),
                       ]),
                     const SizedBox(height: 6),
-                    Container(height: 1, color: _chip),
+                    Container(height: 1, color: _elevated),
                     const SizedBox(height: 6),
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       const Text("소계",

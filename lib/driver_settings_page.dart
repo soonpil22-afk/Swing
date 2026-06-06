@@ -46,7 +46,7 @@ const double _siLabelFontSize   = 13;      // 라벨 글씨 크기
 const Color  _siValueColor      = _text2;   // 값(오른쪽) 글씨 색
 const double _siValueFontSize   = 13;      // 값 글씨 크기
 const double _siRowPadV         = 6;      // 행 위아래 여백
-const Color  _siDividerColor    = _borderDim; // 행 구분선 색
+const Color  _siDividerColor    = _elevated; // 행 구분선 색
 const double _siLabelGap        = 12;      // 라벨-값 사이 간격
 // ── 값 표시 배경박스 (각 값을 감싸는 칸) ──
 const Color  _siBoxBg           = _appBg;     // 값 박스 배경색
