@@ -22,7 +22,6 @@ const _text  = kText;
 const _text2 = kText2;
 const _teal     = kTeal;      // 민트 (메인 액센트)
 const _amber    = kAmber;     // 노랑
-const _borderDim = kBorderDim; // 보조 테두리(옅은)
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. 전체배경
@@ -71,7 +70,7 @@ const double _fieldHintFontSize  = 13;         // 힌트 글씨 크기
 const Color  _fieldFillColor     = _surface;   // 입력칸 배경
 const Color  _fieldIconColor     = _teal;      // 아이콘 색
 const double _fieldIconSize      = 22;         // 아이콘 크기
-const Color  _fieldBorderColor   = _borderDim; // 기본 테두리 색
+const Color  _fieldBorderColor   = _elevated; // 기본 테두리 색
 const double _fieldBorderWidth   = 1;          // 기본 테두리 두께
 const Color  _fieldFocusColor    = _teal;      // 포커스 테두리 색
 const double _fieldFocusWidth    = 1.5;        // 포커스 테두리 두께

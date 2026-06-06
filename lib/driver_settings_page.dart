@@ -12,8 +12,6 @@ const _elevated  = kElevated;
 const _text      = kText;
 const _text2     = kText2;
 const _teal      = kTeal;
-const _borderDim = kBorderDim;
-const _cardBorder = kCardBorder;
 const Color _bgScaffold = _appBg;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 const List<BoxShadow> _panelShadow = kPanelShadow;
@@ -38,7 +36,7 @@ const Color  _spHeadTitleColor  = _text;   // "내 정보" 글씨 색
 const double _spHeadTitleFontSize = 15;    // "내 정보" 글씨 크기
 
 const Color  _siCardBg          = _surface;    // 카드 배경색
-const Color  _siCardBorder      = _cardBorder; // 카드 테두리 색
+const Color  _siCardBorder      = _elevated; // 카드 테두리 색
 const double _siCardRadius      = 14;  // 카드 모서리
 const double _siCardPadH        = 10;  // 카드 좌우 안쪽 여백
 const Color  _siLabelColor      = _text;  // 라벨(왼쪽) 글씨 색
@@ -50,7 +48,7 @@ const Color  _siDividerColor    = _elevated; // 행 구분선 색
 const double _siLabelGap        = 12;      // 라벨-값 사이 간격
 // ── 값 표시 배경박스 (각 값을 감싸는 칸) ──
 const Color  _siBoxBg           = _appBg;     // 값 박스 배경색
-const Color  _siBoxBorder       = _borderDim; // 값 박스 테두리 색
+const Color  _siBoxBorder       = _elevated; // 값 박스 테두리 색
 const double _siBoxRadius       = 8;          // 값 박스 모서리
 const double _siBoxPadH         = 10;         // 값 박스 좌우 여백
 const double _siBoxPadV         = 6;          // 값 박스 위아래 여백

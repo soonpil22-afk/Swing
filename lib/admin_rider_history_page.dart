@@ -12,7 +12,6 @@ const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
 const _amber    = kAmber;
-const _borderDim = kBorderDim;
 const _appBg    = kAppBg;
 const _panel    = kPanel;
 const List<BoxShadow> _panelShadow = kPanelShadow;
@@ -703,7 +702,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
 
   // ── 공통 위젯 ──────────────────────────────────────────────────
 
-  Widget _divider() => Container(height: 1, color: _borderDim, margin: const EdgeInsets.symmetric(vertical: 5));
+  Widget _divider() => Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5));
 
   Widget _row(String label, String value,
       {Color lc = _text2, Color vc = _text2, bool bold = false, double fs = 12}) =>

@@ -27,7 +27,6 @@ const _teal     = kTeal;     // 민트 (메인 액센트)
 const _purple   = kPurple;   // 보라
 const _pink     = kPink;     // 핑크
 const _amber    = kAmber;    // 노랑
-const _borderDim = kBorderDim; // 보조 테두리(옅은)
 // 카드 그림자 (모든 카드 공통)
 const List<BoxShadow> _cardShadow = kCardShadow;
 
@@ -2070,7 +2069,7 @@ class _AdminPageState extends State<AdminPage> {
               padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
               decoration: BoxDecoration(
                 color: _settingsLocked ? Colors.transparent : (isEditingRates ? _stEditActiveBg : Colors.transparent),
-                border: Border.all(color: _settingsLocked ? _borderDim : _elevated, width: 1),
+                border: Border.all(color: _settingsLocked ? _elevated : _elevated, width: 1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(isEditingRates ? "저장" : "수정",
@@ -2208,7 +2207,7 @@ class _AdminPageState extends State<AdminPage> {
 
   // === 공통 위젯 =================================================================================
 
-  Widget _divider() => Container(height: 1, color: _borderDim, margin: const EdgeInsets.symmetric(vertical: 5));
+  Widget _divider() => Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5));
 
   Widget _row(String label, String value, {Color lc = _text2, Color vc = _text2, bool bold = false, double fs = 12}) =>
       Padding(padding: const EdgeInsets.symmetric(vertical: 4),

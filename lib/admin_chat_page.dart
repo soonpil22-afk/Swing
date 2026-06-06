@@ -13,7 +13,6 @@ const _amber    = kAmber;
 const _text     = kText;
 const _text2    = kText2;
 const _pink     = kPink;
-const _borderDim = kBorderDim;
 
 // ── [10-2] 1:1 상담 — 목록 카드 ──
 const double _csListPadH = 14; // 목록 좌우 여백
@@ -194,7 +193,7 @@ class _AdminChatPageState extends State<_AdminChatPage> {
             bottomRight: Radius.circular(isAdmin ? 2 : 12),
           ),
           border: Border.all(
-            color: isAdmin ? _teal.withValues(alpha: 0.4) : _borderDim, width: 0.8),
+            color: isAdmin ? _teal.withValues(alpha: 0.4) : _elevated, width: 0.8),
         ),
         child: Column(crossAxisAlignment: isAdmin ? CrossAxisAlignment.end : CrossAxisAlignment.start, children: [
           Text(text, style: const TextStyle(color: _text, fontSize: 13, height: 1.4)),

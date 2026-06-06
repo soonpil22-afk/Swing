@@ -21,7 +21,11 @@
       "Bash(sed -i 's/Container\\(height: 1, color: _teal,/Container\\(height: 1, color: _elevated,/g' admin_page.dart admin_withdrawal_page.dart)",
       "Bash(sed -i 's/Container\\(height: 1, color: _teal.withAlpha\\(80\\),/Container\\(height: 1, color: _elevated,/g' admin_withdrawal_page.dart)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(sed -n '670,680p' driver_history_page.dart)",
+      "Bash(sed -n '748,758p' driver_history_page.dart)",
+      "Bash(grep -oE \"_[a-zA-Z]+$\")",
+      "Bash(awk '{print $3}')"
     ]
   }
 }

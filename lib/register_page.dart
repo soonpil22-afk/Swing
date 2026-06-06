@@ -14,7 +14,6 @@ const _text2 = kText2;
 const _teal     = kTeal;     // 민트 (메인 액센트)
 const _pink     = kPink;     // 핑크
 const _amber    = kAmber;    // 노랑
-const _borderDim = kBorderDim; // 보조 테두리(옅은)
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. 전체배경
@@ -81,7 +80,7 @@ const double _choiceLabelGap      = 6;         // 라벨 ↔ 칩 갭
 const Color  _choiceSelColor      = _teal;     // 선택 색(글씨·테두리·아이콘)
 const Color  _choiceUnselColor    = _text2;    // 미선택 색
 const Color  _choiceUnselBg       = _surface;  // 미선택 배경
-const Color  _choiceUnselBorder   = _borderDim;// 미선택 테두리
+const Color  _choiceUnselBorder   = _elevated;// 미선택 테두리
 const double _choiceFontSize      = 13;        // 칩 글씨 크기
 const double _choiceIconSize      = 16;        // 칩 아이콘 크기
 const double _gapChoice           = 8;         // 선택칩 줄 사이 갭

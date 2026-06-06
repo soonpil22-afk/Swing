@@ -15,8 +15,6 @@ const kPurple     = Color(0xFF9F66E6); // 보라
 const kPink       = Color(0xFFE672BA); // 핑크
 const kAmber      = Color(0xFFE6C97F); // 노랑
 const kRed        = Color(0xFFE05252);
-const kBorderDim  = Color(0x33303854); // 보조 테두리(옅은)
-const kCardBorder = Color(0x4D303854);
 
 // ═══ 그림자 ═══
 const List<BoxShadow> kCardShadow = [

@@ -16,7 +16,6 @@ const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
 const _amber    = kAmber;
-const _borderDim = kBorderDim;
 const List<BoxShadow> _cardShadow = kCardShadow;
 
 const double _rmTabToCardGap = 2; // 라이더 탭 ↔ 이름목록 카드 갭
@@ -267,7 +266,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
       builder: (ctx) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(margin: const EdgeInsets.only(top: 12), width: 36, height: 4, decoration: BoxDecoration(color: _text2, borderRadius: BorderRadius.circular(2))),
         const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text("은행 선택", style: TextStyle(color: _teal, fontSize: 14, fontWeight: FontWeight.w700))),
-        Container(height: 1, color: _borderDim),
+        Container(height: 1, color: _elevated),
         Flexible(child: ListView.builder(shrinkWrap: true, itemCount: bankList.length,
           itemBuilder: (ctx, i) => ListTile(dense: true,
             title: Text(bankList[i], style: const TextStyle(color: _text, fontSize: 13)),
@@ -399,7 +398,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
               Expanded(child: GestureDetector(
                 onTap: isEditingAccount ? () => _showBankPicker(uid, bankCtrl) : null,
                 child: Container(height: 38, padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: isEditingAccount ? _teal.withAlpha(100) : _borderDim)),
+                  decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: isEditingAccount ? _teal.withAlpha(100) : _elevated)),
                   child: Row(children: [
                     Expanded(child: Text(bankCtrl.text.isNotEmpty ? bankCtrl.text : "은행 선택", style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), overflow: TextOverflow.ellipsis)),
                     if (isEditingAccount) const Icon(Icons.arrow_drop_down, color: _teal, size: 18),
@@ -423,7 +422,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
               controller: accountCtrl, enabled: isEditingAccount, keyboardType: TextInputType.number,
               style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), cursorColor: _teal,
               decoration: InputDecoration(hintText: "계좌번호", hintStyle: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _borderDim)),
+                disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _elevated)),
                 enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal.withAlpha(100))),
                 focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1.5)),
               ),
@@ -435,7 +434,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                 controller: idCtrl, enabled: isEditingId,
                 style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), cursorColor: _teal,
                 decoration: InputDecoration(hintText: "User ID", hintStyle: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                  disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _borderDim)),
+                  disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _elevated)),
                   enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal.withAlpha(100))),
                   focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1.5)),
                 ),
@@ -485,7 +484,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                     onTap: isEditingLease ? () => setState(() => _leaseTypeCache[uid] = 'monthly_fixed') : null,
                     child: AnimatedContainer(duration: const Duration(milliseconds: 150),
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(color: leaseType == 'monthly_fixed' ? _teal : Colors.transparent, border: Border.all(color: leaseType == 'monthly_fixed' ? _teal : _borderDim), borderRadius: BorderRadius.circular(5)),
+                      decoration: BoxDecoration(color: leaseType == 'monthly_fixed' ? _teal : Colors.transparent, border: Border.all(color: leaseType == 'monthly_fixed' ? _teal : _elevated), borderRadius: BorderRadius.circular(5)),
                       child: Text("매월", style: TextStyle(color: leaseType == 'monthly_fixed' ? _surface : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
                     ),
                   ),
@@ -495,7 +494,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                     style: const TextStyle(color: _text, fontSize: _rmLeaseInputFontSize), cursorColor: _teal, onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(isDense: true, hintText: "0", hintStyle: const TextStyle(color: _text2, fontSize: _rmLeaseHintFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(vertical: 4),
                       enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: _teal.withAlpha(80))),
-                      disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _borderDim)),
+                      disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _elevated)),
                       focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _teal))),
                   )),
                   Text(leaseType == 'daily' ? "  일" : "  회차", style: const TextStyle(color: _rmLeaseUnitColor, fontSize: _rmLeaseUnitFontSize)),
@@ -507,7 +506,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                       final p = await showDatePicker(context: context, initialDate: startDate ?? DateTime.now(), firstDate: DateTime(2026), lastDate: DateTime(2030), builder: (ctx, child) => Theme(data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: _teal)), child: child!));
                       if (p != null) setState(() => _leaseStartCache[uid] = p);
                     } : null,
-                    child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal.withAlpha(100) : _borderDim), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal.withAlpha(100) : _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(children: [
                         Icon(Icons.calendar_today_rounded, color: isEditingLease ? _teal : _text2, size: 12), const SizedBox(width: 4),
                         Expanded(child: Text(startDate != null ? DateFormat('yyyy-MM-dd').format(startDate) : "시작일", textAlign: TextAlign.right, style: TextStyle(color: startDate != null ? _text : _text2, fontSize: _rmLeaseInputFontSize))),
@@ -517,7 +516,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                   const SizedBox(width: 8),
                   Expanded(child: Row(children: [
                     Expanded(child: Container(height: 32,
-                      decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal.withAlpha(100) : _borderDim), borderRadius: BorderRadius.circular(7)),
+                      decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal.withAlpha(100) : _elevated), borderRadius: BorderRadius.circular(7)),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       alignment: Alignment.centerRight,
                       child: TextField(
@@ -553,7 +552,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                       final paidAt = (d['paidAt'] as Timestamp?)?.toDate();
                       final dateStr = paidAt != null ? DateFormat('yyyy-MM-dd').format(paidAt) : '';
                       return Column(children: [
-                        Container(height: 1, color: _borderDim, margin: const EdgeInsets.symmetric(vertical: 6)),
+                        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 6)),
                         Row(children: [
                           Text("$pCycle회차", style: const TextStyle(color: _text2, fontSize: _rmLeasePaidFontSize)), const SizedBox(width: 8),
                           Text(dateStr, style: const TextStyle(color: _text2, fontSize: _rmLeasePaidFontSize)), const Spacer(),
@@ -576,7 +575,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
       onTap: isEditing ? () => setState(() => _leaseTypeCache[uid] = type) : null,
       child: AnimatedContainer(duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        decoration: BoxDecoration(color: selected ? _teal : Colors.transparent, border: Border.all(color: selected ? _teal : _borderDim), borderRadius: BorderRadius.circular(5)),
+        decoration: BoxDecoration(color: selected ? _teal : Colors.transparent, border: Border.all(color: selected ? _teal : _elevated), borderRadius: BorderRadius.circular(5)),
         child: Text(label, style: TextStyle(color: selected ? _surface : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
       ),
     );

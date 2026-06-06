@@ -18,8 +18,6 @@ const _teal      = kTeal;
 const _purple    = kPurple;
 const _amber     = kAmber;
 const _pink      = kPink;
-const _borderDim = kBorderDim;
-const _cardBorder = kCardBorder;
 const Color _bgScaffold = _appBg;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 const List<BoxShadow> _panelShadow = kPanelShadow;
@@ -32,7 +30,7 @@ const double _hpOuterPad         = 10;  // 패널 바깥 여백
 const double _hpPanelRadius      = 24;  // 패널 모서리
 const Color  _hpTabTrackColor    = _surface;   // 탭 전체 배경(트랙)
 const Color  _hpTabIndicatorColor = _chip;     // 선택된 탭 배경
-const Color  _hpTabIndicatorBorder = _cardBorder; // 선택탭 테두리
+const Color  _hpTabIndicatorBorder = _elevated; // 선택탭 테두리
 const Color  _hpTabSelColor      = _teal;      // 선택된 탭 글씨 색
 const Color  _hpTabUnselColor    = _text2;     // 미선택 탭 글씨 색
 const double _hpTabFontSize      = 14;         // 탭 글씨 크기
@@ -65,14 +63,14 @@ const double _stListPadT = 2;  // 위 갭
 const double _stListPadR = 12;  // 우측 갭
 const double _stListPadB = 15;  // 아래 갭
 const Color  _stCardBg          = _surface;    // 카드 배경색
-const Color  _stCardBorderOpen  = _cardBorder; // 펼친 상태 테두리
-const Color  _stCardBorderClose = _borderDim;  // 접힌 상태 테두리
+const Color  _stCardBorderOpen  = _elevated; // 펼친 상태 테두리
+const Color  _stCardBorderClose = _elevated;  // 접힌 상태 테두리
 const double _stCardRadius      = 12;  // 카드 모서리
 const double _stCardGap         = 6;   // 카드 사이 간격
 const double _stCardHeadPadH    = 4;   // 카드 머리 좌우 여백
 const double _stCardHeadPadV    = 12;  // 카드 머리 위아래 여백
 const Color  _stDateChipBg      = _chip;   // 날짜 칩 배경
-const Color  _stDateChipBorder  = _cardBorder; // 날짜 칩 테두리
+const Color  _stDateChipBorder  = _elevated; // 날짜 칩 테두리
 const Color  _stDateChipText    = _teal;   // 날짜 칩 글씨 색
 const double _stDateChipFontSize = 12;     // 날짜 칩 글씨 크기
 const Color  _stDayCountColor   = _amber;  // "N일" 글씨 색
@@ -84,7 +82,7 @@ const double _stBodyPadT = 10;  // 상세 안쪽 여백 위
 const double _stBodyPadR = 14;  // 상세 안쪽 여백 오른
 const double _stBodyPadB = 14;  // 상세 안쪽 여백 아래
 const Color  _stDayChipBg       = _chip;   // 일자 칩 배경
-const Color  _stDayChipBorder   = _borderDim; // 일자 칩 테두리
+const Color  _stDayChipBorder   = _elevated; // 일자 칩 테두리
 const Color  _stDayChipText     = _teal;   // 일자 칩 글씨 색
 const double _stDayChipFontSize = 11;      // 일자 칩 글씨 크기
 const double _stRowFontSize     = 12;      // 행 라벨 글씨 크기
@@ -94,7 +92,7 @@ const Color  _stRowPinkColor    = _pink;   // 세금/수수료/공제 라벨 색
 const Color  _stToggleIconColor = _text2;  // 토글 화살표 색
 const double _stToggleIconSize  = 15;      // 토글 화살표 크기
 const Color  _stSubBoxBg        = _appBg;  // 하위 박스 배경
-const Color  _stSubBoxBorder    = _borderDim; // 하위 박스 테두리
+const Color  _stSubBoxBorder    = _elevated; // 하위 박스 테두리
 const double _stSubBoxRadius    = 8;       // 하위 박스 모서리
 const Color  _stSubRowColor     = _text2;  // 하위 행 금액 색
 const Color  _stSubLabelColor   = _text2;  // 하위 행 라벨 색
@@ -117,7 +115,7 @@ const int    _stCutoffHour    = 23;       // 출금 마감 시각(23시)
 // 6-3. 출금내역 탭 (시작일 카드 등) (조정값)
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _htCardBg          = _surface;    // 카드 배경색
-const Color  _htCardBorder      = _cardBorder; // 카드 테두리 색
+const Color  _htCardBorder      = _elevated; // 카드 테두리 색
 const double _htCardRadius      = 14;  // 카드 모서리
 const double _htCardPadL = 16;  // 카드 안쪽 여백 왼
 const double _htCardPadT = 14;  // 카드 안쪽 여백 위
@@ -150,7 +148,7 @@ const Color  _htRowPinkColor    = _pink;  // 세금/수수료/공제 라벨 색
 const Color  _htToggleIconColor = _text2; // 토글 화살표 색
 const double _htToggleIconSize  = 15;     // 토글 화살표 크기
 const Color  _htSubBoxBg        = _appBg;     // 하위 박스 배경
-const Color  _htSubBoxBorder    = _borderDim; // 하위 박스 테두리
+const Color  _htSubBoxBorder    = _elevated; // 하위 박스 테두리
 const double _htSubBoxRadius    = 8;       // 하위 박스 모서리
 const Color  _htSubRowColor     = _text2;  // 하위 행 금액 색
 const Color  _htSubLabelColor   = _text2;  // 하위 행 라벨 색
@@ -706,7 +704,7 @@ class _HistoryPageState extends State<HistoryPage>
                     if (i > 0)
                       Container(
                         height: 1,
-                        color: _borderDim,
+                        color: _elevated,
                         margin: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     Container(

@@ -19,7 +19,6 @@ const _teal     = kTeal;     // 민트 (메인 액센트)
 const _pink     = kPink;     // 핑크
 const _purple   = kPurple;   // 보라
 const _amber    = kAmber;    // 노랑
-const _cardBorder = kCardBorder;
 
 const List<BoxShadow> _cardShadow = kCardShadow;
 
@@ -70,7 +69,7 @@ const String _greetName           = '운영자';   // 이름 자리(고정)
 // 4. 어플 사용 ON/OFF 카드
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _appCardBg          = _surface;     // 카드 배경색
-const Color  _appCardBorder      = _cardBorder;  // 카드 테두리 색
+const Color  _appCardBorder      = _elevated;  // 카드 테두리 색
 const double _appCardRadius      = 14;  // 카드 모서리
 const double _appCardBorderWidth = 1;   // 카드 테두리 두께
 const double _appCardPad         = 16;  // 카드 안쪽 여백

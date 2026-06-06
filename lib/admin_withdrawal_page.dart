@@ -15,7 +15,6 @@ const _text2    = kText2;
 const _teal     = kTeal;
 const _amber    = kAmber;
 const _pink     = kPink;
-const _borderDim = kBorderDim;
 const List<BoxShadow> _cardShadow = kCardShadow;
 
 const double _wrTabToCardGap = 2; // 출금신청 탭 ↔ 카드 갭
@@ -581,7 +580,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
     ),
   );
 
-  Widget _divider() => Container(height: 1, color: _borderDim, margin: const EdgeInsets.symmetric(vertical: 5));
+  Widget _divider() => Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5));
 
   Widget _row(String label, String value, {Color lc = _text2, Color vc = _text2, bool bold = false, double fs = 12}) =>
       Padding(padding: const EdgeInsets.symmetric(vertical: 4),
