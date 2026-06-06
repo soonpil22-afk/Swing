@@ -713,6 +713,9 @@ class _DriverPageState extends State<DriverPage> {
   // ── 실시간 구독 (관리자 입금완료/미출금 업로드 → 차트·금액 즉시 반영) ──
   StreamSubscription<QuerySnapshot>?    _settlementSub;
   StreamSubscription<DocumentSnapshot>? _unpaidSub;
+  // ── 실시간 구독 (앱 점검 on/off·공지 → 세션 중 즉시 반영) ──
+  StreamSubscription<DocumentSnapshot>? _appStatusSub;
+  StreamSubscription<DocumentSnapshot>? _noticeSub;
 
   // ── 사용자/공지/상태 ──
   String _riderName  = '';
@@ -729,9 +732,9 @@ class _DriverPageState extends State<DriverPage> {
   @override
   void initState() {
     super.initState();
-    _checkAppStatus();
+    _listenAppStatus();
     _loadUser();
-    _loadNotice();
+    _listenNotice();
     _attachWithdrawListeners();
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkLeaseDue());
   }
@@ -759,25 +762,37 @@ class _DriverPageState extends State<DriverPage> {
   void dispose() {
     _settlementSub?.cancel();
     _unpaidSub?.cancel();
+    _appStatusSub?.cancel();
+    _noticeSub?.cancel();
     _balloonCtrl.dispose();
     _chatScrollCtrl.dispose();
     super.dispose();
   }
 
   // ── 데이터 로드 ─────────────────────────────────────────────────────
-  Future<void> _checkAppStatus() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('system_settings').doc('app_status').get();
+  // 앱 점검 on/off 실시간 구독 (운영자가 끄면 점검화면으로 즉시 전환)
+  void _listenAppStatus() {
+    _appStatusSub = FirebaseFirestore.instance
+        .collection('system_settings').doc('app_status').snapshots()
+        .listen((doc) {
       if (mounted) {
         setState(() {
           _isAppOn = doc.data()?['isAppOn'] ?? true;
           _appLoaded = true;
         });
       }
-    } catch (_) {
+    }, onError: (_) {
       if (mounted) setState(() => _appLoaded = true);
-    }
+    });
+  }
+
+  // 점검화면 "새로고침" 버튼용 1회성 재조회 (평소엔 위 실시간 리스너가 자동 갱신)
+  Future<void> _refreshAppStatus() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('system_settings').doc('app_status').get();
+      if (mounted) setState(() => _isAppOn = doc.data()?['isAppOn'] ?? true);
+    } catch (_) {}
   }
 
   Future<void> _loadUser() async {
@@ -789,15 +804,16 @@ class _DriverPageState extends State<DriverPage> {
     } catch (_) {}
   }
 
-  Future<void> _loadNotice() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('system_settings').doc('notice').get();
+  // 공지 실시간 구독 (운영자가 공지 올리면 세션 중 즉시 반영)
+  void _listenNotice() {
+    _noticeSub = FirebaseFirestore.instance
+        .collection('system_settings').doc('notice').snapshots()
+        .listen((doc) {
       if (!doc.exists) return;
       final content   = doc.data()?['content']  as String? ?? '';
       final isVisible = doc.data()?['isVisible'] as bool?   ?? false;
       if (mounted) setState(() => _noticeText = isVisible ? content : '');
-    } catch (_) {}
+    });
   }
 
   Future<void> _loadWithdrawState() async {
@@ -2064,7 +2080,7 @@ class _DriverPageState extends State<DriverPage> {
               width: double.infinity,
               child: GlassShineButton(
                 label: "새로고침",
-                onPressed: _checkAppStatus,
+                onPressed: _refreshAppStatus,
                 accent: _text2,
                 textColor: _text2,
                 height: 44,
