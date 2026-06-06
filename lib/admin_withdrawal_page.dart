@@ -379,7 +379,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                         ),
                       ),
                       if (iExp) ...[
-                        Container(height: 1, color: _borderDim),
+                        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 10)),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
                           child: Column(children: [

@@ -9,6 +9,7 @@ import 'admin_common.dart';
 const _surface  = kSurface;
 const _elevated = kElevated;
 const _teal     = kTeal;
+const _amber    = kAmber;
 const _text     = kText;
 const _text2    = kText2;
 const _pink     = kPink;
@@ -254,7 +255,7 @@ class _AdminChatPageState extends State<_AdminChatPage> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
           decoration: const BoxDecoration(
             color: _surface,
-            border: Border(top: BorderSide(color: Color(0x22C9A84C))),
+            border: Border(top: BorderSide(color: _elevated)),
           ),
           child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Expanded(
@@ -270,10 +271,10 @@ class _AdminChatPageState extends State<_AdminChatPage> {
                   filled: true, fillColor: _surface,
                   isDense: true, contentPadding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                   enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0x22C9A84C)),
+                      borderSide: const BorderSide(color: _amber),
                       borderRadius: BorderRadius.circular(12)),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: _teal),
+                      borderSide: const BorderSide(color: _amber),
                       borderRadius: BorderRadius.circular(12)),
                 ),
               ),
