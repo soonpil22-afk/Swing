@@ -25,7 +25,14 @@
       "Bash(sed -n '670,680p' driver_history_page.dart)",
       "Bash(sed -n '748,758p' driver_history_page.dart)",
       "Bash(grep -oE \"_[a-zA-Z]+$\")",
-      "Bash(awk '{print $3}')"
+      "Bash(awk '{print $3}')",
+      "Bash(sed -i 's/_csCardBorderUnread.withValues\\(alpha: 0.5\\)/_csCardBorderUnread/g' admin_chat_page.dart)",
+      "Bash(sed -i 's/\\(_settingsLocked ? _stWarnLockedColor : _stWarnColor\\).withAlpha\\(60\\)/\\(_settingsLocked ? _stWarnLockedColor : _stWarnColor\\)/g' admin_page.dart)",
+      "Bash(sed -i 's/_teal.withAlpha\\(80\\) : _elevated/_teal : _elevated/g' admin_rider_history_page.dart)",
+      "Bash(sed -i 's/_teal.withAlpha\\(100\\) : _elevated/_teal : _elevated/g' admin_rider_manage_page.dart)",
+      "Bash(sed -i 's/_teal.withAlpha\\(60\\) : _elevated/_teal : _elevated/g' admin_withdrawal_page.dart)",
+      "Bash(sed -i -E 's/, width: 1\\\\.5\\\\\\)/, width: 1\\)/g' admin_page.dart admin_rider_manage_page.dart)",
+      "Bash(sed -i -E 's/\\(_fieldFocusWidth *= *\\)1\\\\.5/\\\\11/' main.dart)"
     ]
   }
 }

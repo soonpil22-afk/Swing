@@ -120,7 +120,6 @@ const double _chUnitFontSize   = 14;  // " 원" 글씨 크기
 const double _chDeltaFontSize  = 13;  // 증감률 글씨 크기
 const double _chCompareFontSize = 12; // "전일 대비" 글씨 크기
 // 차트 카드 테두리·줄 간격
-const double _chartCardBorderAlpha = 0.3; // 카드 테두리 투명도
 const double _chartCardBorderWidth = 1;   // 카드 테두리 두께
 const double _chGapToggleHead = 14; // 토글줄 ↔ 총지급액 갭
 const double _chGapTextRing   = 12; // 텍스트 ↔ 링게이지 갭
@@ -151,7 +150,6 @@ const double _targetPadH        = 11;
 const double _targetPadV        = 5;
 const double _targetRadius      = 20;
 const double _targetBgAlpha     = 0.12;
-const double _targetBorderAlpha = 0.5;
 // 목표 금액 입력 다이얼로그
 const _tgtDlgBg          = _surface;  // 다이얼로그 배경색
 const _tgtDlgBorderColor = _elevated;   // 다이얼로그 테두리 색
@@ -190,7 +188,7 @@ const _rankEmptyColor   = _text2;
 const double _rankEmptyFontSize = 12;
 // 랭킹 카드 테두리·아이콘·줄 간격
 const _rankTitleIconColor    = _amber;   // 트로피 아이콘 색
-const double _rankCardBorderWidth = 0.5;   // 카드 테두리 두께
+const double _rankCardBorderWidth = 1;   // 카드 테두리 두께
 const double _rankMoreIconSize    = 16;  // 더보기 화살표 크기
 const _rankAmtUnitColor      = _text;    // " 원" 글씨 색
 const double _rankGapIconTitle   = 8;    // 트로피 ↔ 제목 갭
@@ -1205,7 +1203,7 @@ class _AdminPageState extends State<AdminPage> {
       decoration: BoxDecoration(
         color: _chartCardBg,
         borderRadius: BorderRadius.circular(_chartCardRadius),
-        border: Border.all(color: _chartCardBorder.withValues(alpha: _chartCardBorderAlpha), width: _chartCardBorderWidth),
+        border: Border.all(color: _chartCardBorder, width: _chartCardBorderWidth),
         boxShadow: _cardShadow,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1437,7 +1435,7 @@ class _AdminPageState extends State<AdminPage> {
         decoration: BoxDecoration(
           color: c.withValues(alpha: _targetBgAlpha),
           borderRadius: BorderRadius.circular(_targetRadius),
-          border: Border.all(color: c.withValues(alpha: _targetBorderAlpha)),
+          border: Border.all(color: c),
         ),
         child: Text('목표 ${NumberFormat('#,###').format(_ringTargets[_chartPeriod])} 원',
             style: TextStyle(
@@ -1634,7 +1632,7 @@ class _AdminPageState extends State<AdminPage> {
       decoration: BoxDecoration(
         color: _menuCardBg,
         borderRadius: BorderRadius.circular(_menuCardRadius),
-        border: Border.all(color: _elevated.withValues(alpha: _panelBorderAlpha), width: 1),
+        border: Border.all(color: _elevated, width: 1),
         boxShadow: _cardShadow,
       ),
       child: Row(children: [
@@ -1869,7 +1867,7 @@ class _AdminPageState extends State<AdminPage> {
                     onTap: () => _rejectUser(doc.id),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                      decoration: BoxDecoration(border: Border.all(color: _pink.withAlpha(80)), borderRadius: BorderRadius.circular(7)),
+                      decoration: BoxDecoration(border: Border.all(color: _pink), borderRadius: BorderRadius.circular(7)),
                       child: const Text("거절", style: TextStyle(color: _pink, fontSize: _ntJoinBtnFontSize)),
                     ),
                   ),
@@ -1927,8 +1925,8 @@ class _AdminPageState extends State<AdminPage> {
             decoration: InputDecoration(
               hintText: "공지사항 내용을 입력하세요...", hintStyle: const TextStyle(color: _ntHintColor, fontSize: _ntFontSize),
               filled: true, fillColor: _ntFieldBg, contentPadding: const EdgeInsets.all(12),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: _teal.withAlpha(60))),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: _teal, width: 1.5)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: _teal)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: _teal, width: 1)),
             ),
           )
         else
@@ -2039,7 +2037,7 @@ class _AdminPageState extends State<AdminPage> {
             decoration: BoxDecoration(
               color: (_settingsLocked ? _stWarnLockedColor : _stWarnColor).withAlpha(15),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: (_settingsLocked ? _stWarnLockedColor : _stWarnColor).withAlpha(60)),
+              border: Border.all(color: (_settingsLocked ? _stWarnLockedColor : _stWarnColor)),
             ),
             child: Row(children: [
               Icon(Icons.warning_amber_rounded, color: _settingsLocked ? _stWarnLockedColor : _stWarnColor, size: 20),
@@ -2134,7 +2132,7 @@ class _AdminPageState extends State<AdminPage> {
                 },
                 decoration: InputDecoration(
                   isDense: true, border: InputBorder.none,
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _teal.withAlpha(60))),
+                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _teal)),
                   focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: _teal)),
                 ),
               ))
@@ -2166,7 +2164,7 @@ class _AdminPageState extends State<AdminPage> {
             style: const TextStyle(color: _stValueColor, fontSize: _stValueFontSize), cursorColor: _teal.withAlpha(60),
             onChanged: (v) { final raw = v.replaceAll(',', ''); final n = int.tryParse(raw); if (n != null) { final f = NumberFormat('#,###').format(n); if (f != v) c.value = TextEditingValue(text: f, selection: TextSelection.collapsed(offset: f.length)); } },
             decoration: InputDecoration(isDense: true, contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _teal.withAlpha(60))),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _teal)),
                 focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: _teal))),
           ))
         : Container(
@@ -2192,7 +2190,7 @@ class _AdminPageState extends State<AdminPage> {
                 style: const TextStyle(color: _stValueColor, fontSize: _stValueFontSize), cursorColor: _teal.withAlpha(60),
                 onChanged: (v) { final raw = v.replaceAll(',', ''); final n = int.tryParse(raw); if (n != null) { final f = NumberFormat('#,###').format(n); if (f != v) row['amount']!.value = TextEditingValue(text: f, selection: TextSelection.collapsed(offset: f.length)); } },
                 decoration: InputDecoration(isDense: true, contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _teal.withAlpha(60))),
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _teal)),
                     focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: _teal))),
               )
             : Container(

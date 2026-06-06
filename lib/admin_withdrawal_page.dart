@@ -356,7 +356,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                     margin: const EdgeInsets.only(bottom: _wrItemGap),
                     decoration: BoxDecoration(
                       color: _surface, borderRadius: BorderRadius.circular(9),
-                      border: Border.all(color: iExp ? _teal.withAlpha(60) : _elevated),
+                      border: Border.all(color: iExp ? _teal : _elevated),
                     ),
                     child: Column(children: [
                       GestureDetector(

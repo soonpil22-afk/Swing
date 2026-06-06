@@ -80,14 +80,14 @@ class ChatListPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _csCardBg,
                     borderRadius: BorderRadius.circular(_csCardRadius),
-                    border: Border.all(color: unread ? _csCardBorderUnread.withValues(alpha: 0.5) : _csCardBorder, width: unread ? 1 : 0.6),
+                    border: Border.all(color: unread ? _csCardBorderUnread : _csCardBorder, width: 1),
                   ),
                   child: Row(children: [
                     Container(
                       width: _csAvatarSize, height: _csAvatarSize,
                       decoration: BoxDecoration(
                         color: _csAvatarBg, shape: BoxShape.circle,
-                        border: Border.all(color: unread ? _csCardBorderUnread : _csCardBorder, width: unread ? 1 : 0.6),
+                        border: Border.all(color: unread ? _csCardBorderUnread : _csCardBorder, width: 1),
                       ),
                       child: Icon(Icons.person_outline_rounded, color: unread ? _csAvatarIconUnread : _csAvatarIconColor, size: _csAvatarIconSize),
                     ),
@@ -193,7 +193,7 @@ class _AdminChatPageState extends State<_AdminChatPage> {
             bottomRight: Radius.circular(isAdmin ? 2 : 12),
           ),
           border: Border.all(
-            color: isAdmin ? _teal.withValues(alpha: 0.4) : _elevated, width: 0.8),
+            color: isAdmin ? _teal.withValues(alpha: 0.4) : _elevated, width: 1),
         ),
         child: Column(crossAxisAlignment: isAdmin ? CrossAxisAlignment.end : CrossAxisAlignment.start, children: [
           Text(text, style: const TextStyle(color: _text, fontSize: 13, height: 1.4)),
@@ -285,7 +285,7 @@ class _AdminChatPageState extends State<_AdminChatPage> {
                 width: 44, height: 44,
                 decoration: BoxDecoration(
                   color: _teal.withValues(alpha: 0.18), shape: BoxShape.circle,
-                  border: Border.all(color: _teal, width: 0.8),
+                  border: Border.all(color: _teal, width: 1),
                 ),
                 child: _sending
                     ? const Padding(padding: EdgeInsets.all(11),

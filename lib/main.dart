@@ -73,7 +73,7 @@ const double _fieldIconSize      = 22;         // 아이콘 크기
 const Color  _fieldBorderColor   = _elevated; // 기본 테두리 색
 const double _fieldBorderWidth   = 1;          // 기본 테두리 두께
 const Color  _fieldFocusColor    = _teal;      // 포커스 테두리 색
-const double _fieldFocusWidth    = 1.5;        // 포커스 테두리 두께
+const double _fieldFocusWidth    = 1;        // 포커스 테두리 두께
 const double _fieldRadius        = 10;         // 입력칸 모서리
 const double _fieldPadV          = 13;         // 안쪽 위아래 여백
 const double _fieldPadH          = 14;         // 안쪽 좌우 여백
@@ -305,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Checkbox(
                     value:       _isRememberMe,
                     onChanged:   (v) => setState(() => _isRememberMe = v!),
-                    side:        const BorderSide(color: _checkBorderColor, width: 1.5),
+                    side:        const BorderSide(color: _checkBorderColor, width: 1),
                     activeColor: _checkActiveColor,
                     checkColor:  _panel,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),

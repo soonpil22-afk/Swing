@@ -313,8 +313,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
                 child: const Icon(Icons.close_rounded, color: _text2, size: 16)) : null,
               filled: true, fillColor: _rmSearchBg,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: BorderSide(color: _teal.withAlpha(50))),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: _teal, width: 1.5)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: BorderSide(color: _teal)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(9), borderSide: const BorderSide(color: _teal, width: 1)),
             ),
           )),
           filtered.isEmpty
@@ -385,9 +385,9 @@ class _RiderManagePageState extends State<RiderManagePage> {
           ),
         ]),
         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-          GestureDetector(onTap: () => _call(data['phone'] ?? ""), child: Container(width: 32, height: 32, decoration: BoxDecoration(color: _rmCallColor.withAlpha(20), border: Border.all(color: _rmCallColor.withAlpha(60)), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.wifi_calling_3, color: _rmCallColor, size: 15))),
+          GestureDetector(onTap: () => _call(data['phone'] ?? ""), child: Container(width: 32, height: 32, decoration: BoxDecoration(color: _rmCallColor.withAlpha(20), border: Border.all(color: _rmCallColor), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.wifi_calling_3, color: _rmCallColor, size: 15))),
           const SizedBox(width: 6),
-          GestureDetector(onTap: () => _sms(data['phone'] ?? ""),  child: Container(width: 32, height: 32, decoration: BoxDecoration(color: _rmSmsColor.withAlpha(20), border: Border.all(color: _rmSmsColor.withAlpha(60)), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.sms, color: _rmSmsColor, size: 15))),
+          GestureDetector(onTap: () => _sms(data['phone'] ?? ""),  child: Container(width: 32, height: 32, decoration: BoxDecoration(color: _rmSmsColor.withAlpha(20), border: Border.all(color: _rmSmsColor), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.sms, color: _rmSmsColor, size: 15))),
           const SizedBox(width: 6),
         ]),
         children: [Container(
@@ -398,7 +398,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
               Expanded(child: GestureDetector(
                 onTap: isEditingAccount ? () => _showBankPicker(uid, bankCtrl) : null,
                 child: Container(height: 38, padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: isEditingAccount ? _teal.withAlpha(100) : _elevated)),
+                  decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: isEditingAccount ? _teal : _elevated)),
                   child: Row(children: [
                     Expanded(child: Text(bankCtrl.text.isNotEmpty ? bankCtrl.text : "은행 선택", style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), overflow: TextOverflow.ellipsis)),
                     if (isEditingAccount) const Icon(Icons.arrow_drop_down, color: _teal, size: 18),
@@ -423,8 +423,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
               style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), cursorColor: _teal,
               decoration: InputDecoration(hintText: "계좌번호", hintStyle: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                 disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _elevated)),
-                enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal.withAlpha(100))),
-                focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1.5)),
+                enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal)),
+                focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1)),
               ),
             )),
             const SizedBox(height: _rmGapRow),
@@ -435,8 +435,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
                 style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), cursorColor: _teal,
                 decoration: InputDecoration(hintText: "User ID", hintStyle: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _elevated)),
-                  enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal.withAlpha(100))),
-                  focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1.5)),
+                  enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal)),
+                  focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1)),
                 ),
               ))),
               const SizedBox(width: 8),
@@ -454,7 +454,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
             // 리스비 섹션
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: _elevated.withAlpha(80))),
+              decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: _elevated)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                 Row(children: [
                   const Text("리스비", style: TextStyle(color: _rmLeaseTitleColor, fontSize: _rmLeaseTitleFontSize, fontWeight: FontWeight.w700)),
@@ -493,7 +493,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                     controller: cycleCtrl, enabled: isEditingLease, keyboardType: TextInputType.number, textAlign: TextAlign.center,
                     style: const TextStyle(color: _text, fontSize: _rmLeaseInputFontSize), cursorColor: _teal, onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(isDense: true, hintText: "0", hintStyle: const TextStyle(color: _text2, fontSize: _rmLeaseHintFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                      enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: _teal.withAlpha(80))),
+                      enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: _teal)),
                       disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _elevated)),
                       focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _teal))),
                   )),
@@ -506,7 +506,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                       final p = await showDatePicker(context: context, initialDate: startDate ?? DateTime.now(), firstDate: DateTime(2026), lastDate: DateTime(2030), builder: (ctx, child) => Theme(data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: _teal)), child: child!));
                       if (p != null) setState(() => _leaseStartCache[uid] = p);
                     } : null,
-                    child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal.withAlpha(100) : _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal : _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(children: [
                         Icon(Icons.calendar_today_rounded, color: isEditingLease ? _teal : _text2, size: 12), const SizedBox(width: 4),
                         Expanded(child: Text(startDate != null ? DateFormat('yyyy-MM-dd').format(startDate) : "시작일", textAlign: TextAlign.right, style: TextStyle(color: startDate != null ? _text : _text2, fontSize: _rmLeaseInputFontSize))),
@@ -516,7 +516,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                   const SizedBox(width: 8),
                   Expanded(child: Row(children: [
                     Expanded(child: Container(height: 32,
-                      decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal.withAlpha(100) : _elevated), borderRadius: BorderRadius.circular(7)),
+                      decoration: BoxDecoration(color: _surface, border: Border.all(color: isEditingLease ? _teal : _elevated), borderRadius: BorderRadius.circular(7)),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       alignment: Alignment.centerRight,
                       child: TextField(

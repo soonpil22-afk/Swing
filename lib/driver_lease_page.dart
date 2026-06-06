@@ -40,9 +40,8 @@ const Color  _lpEmptySubColor   = _text2;  // 부제 색
 const double _lpEmptySubFontSize = 12;     // 부제 크기
 const Color  _lpDueBoxColor     = _teal; // 박스 강조색
 const double _lpDueBoxBgAlpha   = 0.06;    // 배경 투명도
-const double _lpDueBoxBorderAlpha = 0.4;   // 테두리 투명도
 const double _lpDueBoxRadius    = 12;      // 박스 모서리
-const double _lpDueBoxBorderWidth = 1.5;   // 테두리 두께
+const double _lpDueBoxBorderWidth = 1;   // 테두리 두께
 const double _lpDueIconSize     = 22;      // 아이콘 크기
 const double _lpDueTitleFontSize = 13;     // 제목 글씨 크기
 const Color  _lpDueAmtColor     = _text2;  // 금액 안내 글씨 색
@@ -52,15 +51,13 @@ const double _lpPayBtnRadius    = 22;      // 버튼 모서리
 const double _lpPayBtnFontSize  = 14;      // 버튼 글씨 크기
 const Color  _lpPaidBoxBg       = _chip;   // 박스 배경색
 const Color  _lpPaidBorderColor = _teal;   // 테두리 색
-const double _lpPaidBorderAlpha = 0.24;    // 테두리 투명도
 const Color  _lpPaidTextColor   = _text2;  // 글씨 색
 const double _lpPaidFontSize    = 12;      // 글씨 크기
 const double _lpPaidRadius      = 22;      // 박스 모서리
 const Color  _lpOverBoxColor    = _red;    // 박스 강조색
 const double _lpOverBoxBgAlpha  = 0.06;    // 배경 투명도
-const double _lpOverBoxBorderAlpha = 0.4;  // 테두리 투명도
 const double _lpOverBoxRadius   = 12;      // 박스 모서리
-const double _lpOverBoxBorderWidth = 1.5;  // 테두리 두께
+const double _lpOverBoxBorderWidth = 1;  // 테두리 두께
 const double _lpOverIconSize    = 22;      // 아이콘 크기
 const double _lpOverTitleFontSize = 13;    // 제목 글씨 크기
 const Color  _lpOverSubColor    = _text2;  // 부제 글씨 색
@@ -69,7 +66,6 @@ const double _lpOverSubFontSize = 12;      // 부제 글씨 크기
 const Color  _lsCardBg          = _surface;   // 카드 배경색
 const Color  _lsCardBorderNormal = _elevated; // 일반 테두리(기본)
 const Color  _lsCardBorderAlert = _teal;      // 알림 시 테두리 색(강조)
-const double _lsCardAlertBorderAlpha = 0.40;  // 알림 테두리 투명도
 const double _lsCardRadius      = 14;  // 카드 모서리
 const double _lsCardPadL = 16;  // 안쪽 여백 왼
 const double _lsCardPadT = 14;  // 안쪽 여백 위
@@ -259,7 +255,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                         color: _lpOverBoxColor.withValues(alpha: _lpOverBoxBgAlpha),
                         borderRadius: BorderRadius.circular(_lpOverBoxRadius),
                         border: Border.all(
-                            color: _lpOverBoxColor.withValues(alpha: _lpOverBoxBorderAlpha),
+                            color: _lpOverBoxColor,
                             width: _lpOverBoxBorderWidth)),
                     child: Row(children: [
                       const Icon(Icons.warning_rounded,
@@ -313,10 +309,8 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
           color: _lsCardBg,
           borderRadius: BorderRadius.circular(_lsCardRadius),
           border: Border.all(
-              color: hasAlert
-                  ? _lsCardBorderAlert.withValues(alpha: _lsCardAlertBorderAlpha)
-                  : _lsCardBorderNormal,
-              width: hasAlert ? 1.5 : 1),
+              color: hasAlert ? _lsCardBorderAlert : _lsCardBorderNormal,
+              width: 1),
           boxShadow: _cardShadow),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -416,7 +410,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                   color: _lpDueBoxColor.withValues(alpha: _lpDueBoxBgAlpha),
                   borderRadius: BorderRadius.circular(_lpDueBoxRadius),
                   border: Border.all(
-                      color: _lpDueBoxColor.withValues(alpha: _lpDueBoxBorderAlpha),
+                      color: _lpDueBoxColor,
                       width: _lpDueBoxBorderWidth)),
               child: Row(children: [
                 const Icon(Icons.notifications_active_rounded,
@@ -457,7 +451,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 color: _lpPaidBoxBg,
                 borderRadius: BorderRadius.circular(_lpPaidRadius),
                 border: Border.all(
-                    color: _lpPaidBorderColor.withValues(alpha: _lpPaidBorderAlpha)),
+                    color: _lpPaidBorderColor),
               ),
               child: const Center(
                   child: Text("입금완료 처리됨 · 관리자 확인 대기중",

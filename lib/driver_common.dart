@@ -24,7 +24,7 @@ void showInfoDialog(BuildContext context, String msg) {
         decoration: BoxDecoration(
           color: _surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _teal.withValues(alpha: 0.4), width: 1),
+          border: Border.all(color: _teal, width: 1),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(msg,
@@ -68,7 +68,7 @@ Widget statusBadge(String label, Color c) => Container(
       decoration: BoxDecoration(
         color: c.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: c.withValues(alpha: 0.5)),
+        border: Border.all(color: c),
       ),
       child: Text(label,
           style: TextStyle(color: c, fontSize: 11, fontWeight: FontWeight.w700)),

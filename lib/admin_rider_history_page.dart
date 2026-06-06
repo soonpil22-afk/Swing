@@ -398,7 +398,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
                   color: _surface, borderRadius: BorderRadius.circular(7),
-                  border: Border.all(color: _elevated.withAlpha(150)),
+                  border: Border.all(color: _elevated),
                 ),
                 child: Text(dateLabel,
                     style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w700)),
@@ -494,7 +494,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
       margin: const EdgeInsets.only(bottom: _rhItemGap),
       decoration: BoxDecoration(
         color: _surface, borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: iExp ? _teal.withAlpha(80) : _elevated),
+        border: Border.all(color: iExp ? _teal : _elevated),
       ),
       child: Column(children: [
         GestureDetector(
@@ -514,7 +514,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                 decoration: BoxDecoration(
                   color: _rhPaidBadgeColor.withAlpha(20),
                   borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: _rhPaidBadgeColor.withAlpha(80)),
+                  border: Border.all(color: _rhPaidBadgeColor),
                 ),
                 child: const Text("입금완료",
                     style: TextStyle(color: _rhPaidBadgeColor, fontSize: _rhPaidFontSize, fontWeight: FontWeight.w700)),
