@@ -538,8 +538,8 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               ),
               togRow("지원금합계", iPromo, _text, '${key}_promo'),
               if (tog('${key}_promo')) subGroup([
-                if (iPOrd > 0) subRow("건당프로모션", "${_fmtC(iPOrd)} 원"),
-                if (iRng  > 0) subRow("구간프로모션", "${_fmtC(iRng)} 원"),
+                subRow("건당프로모션", "${_fmtC(iPOrd)} 원"),
+                subRow("구간프로모션", "${_fmtC(iRng)} 원"),
               ]),
               togRow("세금합계", iTax, _pink, '${key}_tax'),
               if (tog('${key}_tax')) subGroup([
@@ -547,15 +547,15 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                 subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
                 subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
               ]),
-              if (iFee > 0) togRow("수수료합계", iFee, _pink, '${key}_comm'),
-              if (iFee > 0 && tog('${key}_comm')) subGroup([
-                if (iWd   > 0) subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
-                if (iComm > 0) subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
+              togRow("수수료합계", iFee, _pink, '${key}_comm'),
+              if (tog('${key}_comm')) subGroup([
+                subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
+                subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
               ]),
-              if (iDedu > 0) togRow("공제합계", iDedu, _pink, '${key}_dedu'),
-              if (iDedu > 0 && tog('${key}_dedu')) subGroup([
-                if (iIns        > 0) subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
-                if (leasePerDay > 0) subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
+              togRow("공제합계", iDedu, _pink, '${key}_dedu'),
+              if (tog('${key}_dedu')) subGroup([
+                subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
+                subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
               ]),
               Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 5)),
               Padding(
@@ -618,7 +618,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           () => setState(() => _dateExp['${docId}_dedu'] = !deduExp), [
         _sub("시간제보험", "${_fmtC(insuranceFee)} 원"),
         _sub("출금수수료", "${_fmtC(withdrawFee)} 원"),
-        if (leaseDailyAmt > 0) _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
+        _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
       ]),
       Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 8)),
       _row("최종출금금액", "${_fmtC(finalWd)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),
@@ -674,8 +674,8 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             ),
             _toggle("지원금합계", "${_fmtC(totalPromo)} 원", _text, _promoExp,
                 () => setState(() => _promoExp = !_promoExp), [
-              if (_perOrder > 0) _subC("건당프로모션", "${_fmtC(_perOrder)} 원"),
-              if (_range    > 0) _sub("구간프로모션", "${_fmtC(_range)} 원"),
+              _subC("건당프로모션", "${_fmtC(_perOrder)} 원"),
+              _sub("구간프로모션", "${_fmtC(_range)} 원"),
             ]),
             _toggle("세금합계", "${_fmtC(totalTax)} 원", _pink, _taxExp,
                 () => setState(() => _taxExp = !_taxExp), [
@@ -683,15 +683,15 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               _subC("산재보험", "${_fmtC(_acc)} 원", vc: _text2),
               _subC("원천세",   "${_fmtC(_tax)} 원", vc: _text2),
             ]),
-            if (totalFee > 0) _toggle("수수료합계", "${_fmtC(totalFee)} 원", _pink, _commExp,
+            _toggle("수수료합계", "${_fmtC(totalFee)} 원", _pink, _commExp,
                 () => setState(() => _commExp = !_commExp), [
-              if (_wdFee > 0) _subC("출금수수료",   "${_fmtC(_wdFee)} 원", vc: _text2),
-              if (_comm  > 0) _subC("협력사수수료", "${_fmtC(_comm)} 원",  vc: _text2),
+              _subC("출금수수료",   "${_fmtC(_wdFee)} 원", vc: _text2),
+              _subC("협력사수수료", "${_fmtC(_comm)} 원",  vc: _text2),
             ]),
-            if (totalDedu > 0) _toggle("공제합계", "${_fmtC(totalDedu)} 원", _pink, _deduExp,
+            _toggle("공제합계", "${_fmtC(totalDedu)} 원", _pink, _deduExp,
                 () => setState(() => _deduExp = !_deduExp), [
-              if (_ins   > 0) _subC("시간제보험", "${_fmtC(_ins)} 원",   vc: _text2),
-              if (_lease > 0) _subC("리스비",     "${_fmtC(_lease)} 원", vc: _text2),
+              _subC("시간제보험", "${_fmtC(_ins)} 원",   vc: _text2),
+              _subC("리스비",     "${_fmtC(_lease)} 원", vc: _text2),
             ]),
             Container(height: 1, color: _teal.withValues(alpha: 0.6), margin: const EdgeInsets.symmetric(vertical: 10)),
             _row("총 출금금액", "${_fmtC(_total)} 원",
