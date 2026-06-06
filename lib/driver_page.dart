@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'main.dart';
 import 'glass_shine_button.dart';
 import 'tokens.dart';
+import 'driver_common.dart';
 // ═══════════════════════════════════════════════════════════════════════
 // 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
 // ═══════════════════════════════════════════════════════════════════════
@@ -588,7 +589,7 @@ const String _blHintText     = '메시지 입력...';  // 입력창 힌트
 // ═══════════════════════════════════════════════════════════════════════
 // 10. 공통 위젯 · 로직
 // ═══════════════════════════════════════════════════════════════════════
-String _fmt(double v) => NumberFormat('#,###').format(v.abs());
+String _fmt(double v) => fmtAbs(v); // 공용 위임 (driver_common.dart)
 
 // 콤마 (₩ 없음)
 String _comma(num v) {
@@ -602,66 +603,10 @@ String _comma(num v) {
 }
 String _won(int v) => '${_comma(v)} 원';
 
-void _showInfoDialog(BuildContext context, String msg) {
-  showDialog(
-    context: context,
-    builder: (ctx) => Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
-        decoration: BoxDecoration(
-          color: _surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _teal.withValues(alpha: 0.4), width: 1),
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(msg,
-              style: const TextStyle(
-                  color: _teal, fontSize: 15, fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: GlassShineButton(
-              label: "확인",
-              onPressed: () => Navigator.pop(ctx),
-              accent: _teal,
-              pill: true,
-              height: 46,
-              fontSize: 14,
-            ),
-          ),
-        ]),
-      ),
-    ),
-  );
-}
-
-// 서브 페이지 공통 헤더 (뒤로가기 + 제목)
-Widget _pageHeader(BuildContext context, String title) => Padding(
-      padding: const EdgeInsets.fromLTRB(6, 0, 16, 0),
-      child: Row(children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back, color: _text, size: 18),
-          onPressed: () => Navigator.pop(context),
-        ),
-        Text(title,
-            style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
-      ]),
-    );
-
-// 상태 배지 (출금가능 · 입금대기 등)
-Widget _statusBadge(String label, Color c) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: c.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: c.withValues(alpha: 0.5)),
-      ),
-      child: Text(label,
-          style: TextStyle(color: c, fontSize: 11, fontWeight: FontWeight.w700)),
-    );
+// 공용 위임 (driver_common.dart)
+void _showInfoDialog(BuildContext context, String msg) => showInfoDialog(context, msg);
+Widget _pageHeader(BuildContext context, String title) => pageHeader(context, title);
+Widget _statusBadge(String label, Color c) => statusBadge(label, c);
 
 // ═══════════════════════════════════════════════════════════════════════
 // 4. 차트 데이터 모델
