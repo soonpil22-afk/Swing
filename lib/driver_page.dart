@@ -867,9 +867,7 @@ class _DriverPageState extends State<DriverPage> {
         addItems((d['items'] as List<dynamic>?) ?? [],
             (d['leaseDeduction'] as num?)?.toDouble() ?? 0);
       }
-      final leaseDeduct =
-          (_hasDailyLease ? _unpaidItems.length : 0) * _leaseDailyAmt;
-      addItems(_unpaidItems, leaseDeduct);
+      // 차트는 입금완료(지급완료) 분만 표시 — 미출금 업로드분(_unpaidItems)은 제외
 
       const wd = {1: '월', 2: '화', 3: '수', 4: '목', 5: '금', 6: '토', 7: '일'};
 
@@ -1138,17 +1136,6 @@ class _DriverPageState extends State<DriverPage> {
 
   // 미출금 항목 하루치 소계 (정산내역 카드 맨 아래 "소계"와 동일한 계산식)
   //  소계 = 배달수수료 + 지원금 − 세금 − (출금수수료+협력사수수료) − 시간제보험 − 리스비(일)
-  double _itemSubtotal(Map<String, dynamic> it) {
-    double n(String k) => (it[k] as num?)?.toDouble() ?? 0;
-    final dailyLease = _hasDailyLease ? _leaseDailyAmt : 0.0;
-    return n('deliveryFee') +
-        n('promoTotal') -
-        n('tax') -
-        (n('withdrawalFee') + n('commissionAmt')) -
-        n('insuranceFee') -
-        dailyLease;
-  }
-
   // ── 4. 차트 카드 ────────────────────────────────────────────────────
   Widget _chartCard(_PeriodData d) {
     final accent = _periodColor[_period];
@@ -1157,10 +1144,8 @@ class _DriverPageState extends State<DriverPage> {
         (_hasDailyLease ? _unpaidItems.length : 0) * _leaseDailyAmt;
     final withdrawable = _unpaidTotal - leaseDeduct;
 
-    // ── 차트 큰 금액: 미출금(업로드분)이 있으면 "가장 마지막 날 소계 하나", 없으면 기존 집계값 ──
-    final hasUnpaid = _adminUploaded && _unpaidItems.isNotEmpty;
-    final headlineAmount =
-        hasUnpaid ? _itemSubtotal(_unpaidItems.last).round() : d.total;
+    // ── 차트 큰 금액 = 해당 기간(일/주/월) 입금완료 합계 (미출금분 제외) ──
+    final headlineAmount = d.total;
     final pct = (headlineAmount / _targets[_period]).clamp(0.0, 1.0);
 
     // ── 출금 프레임: 업로드됐고 + 아직 신청 안 했을 때 (일간·주간·월간 모두 표시) ──
