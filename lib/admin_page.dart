@@ -549,7 +549,6 @@ const double _csChevronSize    = 16; // 화살표 크기
 const double _csRowGap         = 8;  // 카드 사이 갭
 const double _csTabToCardGap   = 2; // 1:1상담 탭 ↔ 첫 카드 갭
 
-
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
   @override
@@ -563,7 +562,6 @@ class _AdminPageState extends State<AdminPage> {
   // 차트(누적 지급액) 상태
   int _chartPeriod = 0; // 0=일간 1=주간 2=월간
   bool _chLoaded = false;
-  int _chGrandTotal = 0;
   List<List<double>> _chSeries = [[], [], []];
   List<List<String>> _chLabels = [[], [], []];
   final List<int> _ringTargets = [200000, 1000000, 4000000]; // 일/주/월 목표
@@ -650,11 +648,9 @@ class _AdminPageState extends State<AdminPage> {
       final Map<String, double> riderDay = {};
       final Map<String, double> riderWeek = {};
       final Map<String, double> riderMonth = {};
-      double grand = 0;
       for (final d in snap.docs) {
         final data = d.data();
         final amount = (data['amount'] as num?)?.toDouble() ?? 0;
-        grand += amount;
         String? key;
         final ts = data['approvedAt'] as Timestamp?;
         if (ts != null) {
@@ -723,7 +719,6 @@ class _AdminPageState extends State<AdminPage> {
 
       if (mounted) {
         setState(() {
-          _chGrandTotal = grand.round();
           _chSeries = [seriesD, seriesW, seriesM];
           _chLabels = [labelsD, labelsW, labelsM];
           _rankDay = rd;
@@ -1421,7 +1416,7 @@ class _AdminPageState extends State<AdminPage> {
                 padding: const EdgeInsets.only(left: _chLine2LeftPad),
                 child: Text.rich(TextSpan(children: [
                   TextSpan(
-                      text: NumberFormat('#,###').format(_chGrandTotal),
+                      text: NumberFormat('#,###').format(last.round()),
                       style: const TextStyle(
                           color: _chAmtColor,
                           fontSize: _chAmtFontSize,
@@ -3752,7 +3747,7 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                   color: _surface, borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: borderColor,
+                  border: Border.all(color: _elevated,
                       width: hasRiderPaid || isDueToday || (hasDue && !isDueToday) ? 1.5 : 1),
                   boxShadow: _cardShadow,
                 ),
@@ -3778,16 +3773,16 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
                         const Spacer(),
                         if (hasRiderPaid) Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                          decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _teal.withAlpha(80))),
-                          child: const Text("입금완료!", style: TextStyle(color: _teal, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+                          decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _amber.withAlpha(80))),
+                          child: const Text("입금완료!", style: TextStyle(color: _amber, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
                         ) else if (isDueToday) Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _teal.withAlpha(80))),
                           child: const Text("오늘 납기", style: TextStyle(color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
                         ) else if (hasDue) Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                          decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _teal.withAlpha(80))),
-                          child: const Text("납기초과", style: TextStyle(color: _teal, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+                          decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _pink.withAlpha(80))),
+                          child: const Text("납기초과", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
                         ),
                         const SizedBox(width: 6),
                         Icon(isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: _laChevronSize),
@@ -3859,7 +3854,7 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
                             ]),
                             if (isDaily) ...[
                               const SizedBox(height: 5),
-                              _infoRow("납부 방식", "출금 시 자동 공제", vc: _amber, labelColor: _amber, labelFs: 13),
+                              _infoRow("납부 방식", "출금 시 자동 공제", vc: _pink, labelColor: _pink, labelFs: 13),
                             ],
                             const SizedBox(height: 10),
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -3933,7 +3928,7 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
                         if (!isDaily && !hasRiderPaid && paidCount < totalCount) ...[
                           const SizedBox(height: 8),
                           GlassShineButton(
-                            label: "입금완료 (+1회)",
+                            label: "입금완료",
                             onPressed: () =>
                                 _payNextCycle(payments, uid, riderName),
                             accent: _teal,
