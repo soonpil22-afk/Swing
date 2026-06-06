@@ -234,8 +234,7 @@ const double _tabIndicatorRadius = 7;  // 선택탭 모서리
 const double _tabTrackPad        = 3;  // 트랙 안쪽 여백
 // ── [7-1] 출금신청 카드 ──
 const _wrCardBg     = _surface;
-const _wrCardBorder       = _elevated; // 기본 테두리
-const _wrCardBorderActive = _teal;     // 펼침(강조) 테두리
+const _wrCardBorder = _teal; // 출금신청(요청대기) 카드 강조 테두리
 const double _wrCardRadius = 14;   // 카드 모서리
 const double _wrCardGap    = 10;   // 카드 사이 간격
 const double _wrHeadPadH   = 16;   // 헤더 좌우 여백
@@ -2645,7 +2644,7 @@ class _WithdrawalRequestPageState extends State<_WithdrawalRequestPage> {
       decoration: BoxDecoration(
           color: _wrCardBg,
           borderRadius: BorderRadius.circular(_wrCardRadius),
-          border: Border.all(color: cardExp ? _wrCardBorderActive : _wrCardBorder, width: _wrCardBorderWidth),
+          border: Border.all(color: _wrCardBorder, width: _wrCardBorderWidth),
           boxShadow: _cardShadow),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
