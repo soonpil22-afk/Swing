@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 import 'firebase_options.dart';
+import 'tokens.dart';
 import 'super_admin_page.dart';
 import 'register_page.dart';
 import 'admin_page.dart';
@@ -15,32 +16,30 @@ import 'glass_shine_button.dart';
 // ═══════════════════════════════════════════════════════════════════════
 // 공통 색 팔레트 (모든 섹션 공유)
 // ═══════════════════════════════════════════════════════════════════════
-const _surface  = Color(0xFF0D1427); // 카드·입력칸 배경
-const _elevated = Color(0xFF303854); // 테두리
-const _text  = Color(0xFFFBFBFB);
-const _text2 = Color(0xFF787C8D);
-const _teal     = Color(0xFF4AE3ED); // 민트 (메인 액센트)
-const _amber    = Color(0xFFE6C97F); // 노랑
-const _borderDim = Color(0x33303854); // 보조 테두리(옅은)
+const _surface  = kSurface;  // 카드·입력칸 배경
+const _elevated = kElevated; // 테두리
+const _text  = kText;
+const _text2 = kText2;
+const _teal     = kTeal;      // 민트 (메인 액센트)
+const _amber    = kAmber;     // 노랑
+const _borderDim = kBorderDim; // 보조 테두리(옅은)
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. 전체배경
 // ═══════════════════════════════════════════════════════════════════════
-const _appBg = Color(0xFF090E1A); // 전체 화면 Scaffold 배경색
+const _appBg = kAppBg; // 전체 화면 Scaffold 배경색
 
 // ═══════════════════════════════════════════════════════════════════════
 // 2. 메인배경 (로그인 패널)
 // ═══════════════════════════════════════════════════════════════════════
-const _panel = Color(0xFF070C18); // 패널 배경색
+const _panel = kPanel; // 패널 배경색
 const double _loginOuterPad         = 10;  // 패널 바깥 여백
 const double _loginPanelRadius      = 24;  // 패널 모서리
 const Color  _loginPanelBorderColor = _elevated; // 패널 테두리 색
 const double _loginPanelBorderAlpha = 1.0; // 패널 테두리 투명도(1.0=솔리드)
 const double _loginPanelBorderWidth = 1;   // 패널 테두리 두께
 const double _loginInnerHPad        = 32;  // 내용 좌우 여백
-const List<BoxShadow> _panelShadow = [
-  BoxShadow(color: Color(0xFF18203A), blurRadius: 11, offset: Offset(4, 6)),
-];
+const List<BoxShadow> _panelShadow = kPanelShadow;
 
 // ═══════════════════════════════════════════════════════════════════════
 // 3. 로고 / 브랜드

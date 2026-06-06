@@ -10,38 +10,35 @@ import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart' hide Border, BorderStyle, TextSpan;
 import 'main.dart';
 import 'glass_shine_button.dart';
+import 'tokens.dart';
 
 // ═══════════════════════════════════════════════════════════════════════
-// 공통 색 팔레트 (모든 섹션 공유)
+// 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
 // ═══════════════════════════════════════════════════════════════════════
-const _surface  = Color(0xFF0D1427); // 카드
-const _elevated = Color(0xFF303854); // 트랙 · 테두리
-const _text  = Color(0xFFFBFBFB);
-const _text2 = Color(0xFF787C8D);
-const _teal     = Color(0xFF4AE3ED); // 민트 (메인 액센트)
-const _purple   = Color(0xFF9F66E6); // 보라
-const _pink     = Color(0xFFE672BA); // 핑크
-const _amber    = Color(0xFFE6C97F); // 노랑
-const _orange   = Color(0xFFE08F2A);  // 테두리 강조
-const _borderDim = Color(0x33303854); // 보조 테두리(옅은)
+const _surface  = kSurface;  // 카드
+const _elevated = kElevated; // 트랙 · 테두리
+const _text  = kText;
+const _text2 = kText2;
+const _teal     = kTeal;     // 민트 (메인 액센트)
+const _purple   = kPurple;   // 보라
+const _pink     = kPink;     // 핑크
+const _amber    = kAmber;    // 노랑
+const _orange   = kOrange;   // 테두리 강조
+const _borderDim = kBorderDim; // 보조 테두리(옅은)
 // 카드 그림자 (모든 카드 공통)
-const List<BoxShadow> _cardShadow = [
-  BoxShadow(color: Color(0xD9000000), blurRadius: 11, offset: Offset(4, 6)),
-];
+const List<BoxShadow> _cardShadow = kCardShadow;
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. 전체배경
 // ═══════════════════════════════════════════════════════════════════════
-const _appBg    = Color(0xFF090E1A); // 전체 화면 Scaffold 배경색
+const _appBg    = kAppBg; // 전체 화면 Scaffold 배경색
 
 // ═══════════════════════════════════════════════════════════════════════
 // 2. 메인배경 (inset 패널) — 모든 페이지 공통
 // ═══════════════════════════════════════════════════════════════════════
-const _panel    = Color(0xFF070C18); // 메인 배경(패널) 배경색
+const _panel    = kPanel; // 메인 배경(패널) 배경색
 // 메인 패널 그림자
-const List<BoxShadow> _panelShadow = [
-  BoxShadow(color: Color(0xFF18203A), blurRadius: 11, offset: Offset(4, 6)),
-];
+const List<BoxShadow> _panelShadow = kPanelShadow;
 // 메인 패널 테두리·여백
 const Color  _panelBorderColor = _elevated; // 패널 테두리 색
 const double _panelBorderAlpha = 1.0;        // 패널 테두리 투명도 (1.0=솔리드)

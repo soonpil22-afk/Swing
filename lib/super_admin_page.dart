@@ -4,25 +4,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
 import 'glass_shine_button.dart';
+import 'tokens.dart';
 
 // ═══════════════════════════════════════════════════════════════════════
-// 공통 색 팔레트 (모든 섹션 공유)
+// 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
 // ═══════════════════════════════════════════════════════════════════════
-const _appBg    = Color(0xFF090E1A); // 전체 배경
-const _panel    = Color(0xFF070C18); // 메인 배경 (inset 패널)
-const _surface  = Color(0xFF0D1427); // 카드
-const _elevated = Color(0xFF303854); // 트랙 · 테두리
-const _text  = Color(0xFFFBFBFB);
-const _text3 = Color(0xFF515D6D);
-const _teal     = Color(0xFF4AE3ED); // 민트 (메인 액센트)
-const _pink     = Color(0xFFE672BA); // 핑크
-const _purple   = Color(0xFF9F66E6); // 보라
-const _amber    = Color(0xFFE6C97F); // 노랑
-const _cardBorder = Color(0x4D303854);
+const _appBg    = kAppBg;    // 전체 배경
+const _panel    = kPanel;    // 메인 배경 (inset 패널)
+const _surface  = kSurface;  // 카드
+const _elevated = kElevated; // 트랙 · 테두리
+const _text  = kText;
+const _text3 = kText3;
+const _teal     = kTeal;     // 민트 (메인 액센트)
+const _pink     = kPink;     // 핑크
+const _purple   = kPurple;   // 보라
+const _amber    = kAmber;    // 노랑
+const _cardBorder = kCardBorder;
 
-const List<BoxShadow> _cardShadow = [
-  BoxShadow(color: Color(0xD9000000), blurRadius: 11, offset: Offset(4, 6)),
-];
+const List<BoxShadow> _cardShadow = kCardShadow;
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. 전체배경
@@ -42,9 +41,7 @@ const double _panelPadL = 12;  // 안쪽 여백 왼쪽
 const double _panelPadT = 8;   // 안쪽 여백 위
 const double _panelPadR = 12;  // 안쪽 여백 오른쪽
 const double _panelPadB = 8;   // 안쪽 여백 아래
-const List<BoxShadow> _panelShadow = [
-  BoxShadow(color: Color(0xFF18203A), blurRadius: 11, offset: Offset(4, 6)),
-];
+const List<BoxShadow> _panelShadow = kPanelShadow;
 
 // ═══════════════════════════════════════════════════════════════════════
 // 3. 안녕하세요 (인사)
