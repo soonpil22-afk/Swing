@@ -634,8 +634,10 @@ class _AdminPageState extends State<AdminPage> {
           .get();
 
       String dk(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
-      DateTime weekStart(DateTime d) =>
-          DateTime(d.year, d.month, d.day).subtract(Duration(days: d.weekday - 1));
+      DateTime weekStart(DateTime d) {
+        final b = DateTime(d.year, d.month, d.day);
+        return b.subtract(Duration(days: (b.weekday - DateTime.wednesday + 7) % 7));
+      }
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final curWeekStart = weekStart(today);
@@ -651,6 +653,22 @@ class _AdminPageState extends State<AdminPage> {
       for (final d in snap.docs) {
         final data = d.data();
         final amount = (data['amount'] as num?)?.toDouble() ?? 0;
+
+        // ── 차트: 배달 날짜별 정산액 (누적정산과 동일하게 항목별 net 합산) ──
+        final items = (data['items'] as List<dynamic>?) ?? [];
+        final lease = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+        final perDayLease = items.isNotEmpty ? lease / items.length : 0.0;
+        for (final raw in items) {
+          final it = Map<String, dynamic>.from(raw as Map);
+          final idate = it['date'] as String? ?? '';
+          if (idate.length < 10) continue;
+          double n(String k) => (it[k] as num?)?.toDouble() ?? 0;
+          final net = n('deliveryFee') + n('promoTotal') - n('tax') -
+              (n('withdrawalFee') + n('commissionAmt')) - n('insuranceFee') - perDayLease;
+          byDay[idate] = (byDay[idate] ?? 0) + net;
+        }
+
+        // ── 랭킹: 기사별 지급 합계 (입금완료 처리일 기준, 출금 총액) ──
         String? key;
         final ts = data['approvedAt'] as Timestamp?;
         if (ts != null) {
@@ -659,8 +677,6 @@ class _AdminPageState extends State<AdminPage> {
           key = data['date'] as String;
         }
         if (key == null) continue;
-        byDay[key] = (byDay[key] ?? 0) + amount;
-        // 랭킹: 기사별 이번주/이번달 지급 합계
         final rnRaw = (data['riderName'] as String?)?.trim();
         final rn = (rnRaw == null || rnRaw.isEmpty) ? '이름없음' : rnRaw;
         final dt = DateTime.tryParse(key);
@@ -686,7 +702,7 @@ class _AdminPageState extends State<AdminPage> {
         return wd[d.weekday - 1];
       }).toList();
 
-      // 주간: 최근 7주(월요일 시작)
+      // 주간: 최근 7주(수요일 시작, 수~화)
       final Map<String, double> byWeek = {};
       byDay.forEach((k, v) {
         final dt = DateTime.tryParse(k);
