@@ -27,7 +27,6 @@ const _teal     = kTeal;     // 민트 (메인 액센트)
 const _purple   = kPurple;   // 보라
 const _pink     = kPink;     // 핑크
 const _amber    = kAmber;    // 노랑
-const _orange   = kOrange;   // 테두리 강조
 const _borderDim = kBorderDim; // 보조 테두리(옅은)
 // 카드 그림자 (모든 카드 공통)
 const List<BoxShadow> _cardShadow = kCardShadow;
@@ -1672,7 +1671,7 @@ class _AdminPageState extends State<AdminPage> {
                       .toSet()
                       .length;
                 },
-                badgeColor: _orange)),
+                badgeColor: _pink)),
         divider(),
         Expanded(
             child: _bottomMenuItem(Icons.payment_rounded, _teal, "출금신청", () {

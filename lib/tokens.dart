@@ -14,7 +14,6 @@ const kTeal       = Color(0xFF4AE3ED); // 민트(메인 액센트)
 const kPurple     = Color(0xFF9F66E6); // 보라
 const kPink       = Color(0xFFE672BA); // 핑크
 const kAmber      = Color(0xFFE6C97F); // 노랑
-const kOrange     = Color(0xFFE08F2A); // 테두리 강조
 const kRed        = Color(0xFFE05252);
 const kBorderDim  = Color(0x33303854); // 보조 테두리(옅은)
 const kCardBorder = Color(0x4D303854);
