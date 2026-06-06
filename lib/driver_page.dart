@@ -2275,21 +2275,17 @@ class _AreaChartPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round,
     );
 
-    // 차트 선 라벨 = 최근(마지막 입금완료) 지점의 금액 → 밑 큰 금액과 일치
-    int labelIdx = n - 1;
-    for (int i = n - 1; i >= 0; i--) {
-      if (data[i] != 0) {
-        labelIdx = i;
-        break;
-      }
+    int maxIdx = 0;
+    for (int i = 1; i < n; i++) {
+      if (data[i] > data[maxIdx]) maxIdx = i;
     }
-    final peak = Offset(xs[labelIdx], ys[labelIdx]);
+    final peak = Offset(xs[maxIdx], ys[maxIdx]);
     canvas.drawCircle(peak, _chartPeakDotOuter, Paint()..color = _chartPeakDotColor);
     canvas.drawCircle(peak, _chartPeakDotInner, Paint()..color = _panel);
 
     final tp = TextPainter(
       text: TextSpan(
-        text: _comma(data[labelIdx]),
+        text: _comma(data[maxIdx]),
         style: const TextStyle(
             color: _chartPeakLabelColor,
             fontSize: _chartPeakLabelFontSize,
