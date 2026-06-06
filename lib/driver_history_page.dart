@@ -745,14 +745,12 @@ class _HistoryPageState extends State<HistoryPage>
                         _stSubRow("출금수수료", wd, _stSubRowColor),
                         _stSubRow("협력사수수료", comm, _stSubRowColor),
                       ]),
-                    if (iDedu > 0) ...[
-                      _stToggleRow(deduK, "공제합계", iDedu, _stRowPinkColor),
-                      if (_itemToggles[deduK] == true)
-                        _stSubGroup([
-                          if (ins > 0) _stSubRow("시간제보험", ins, _stSubRowColor),
-                          if (dailyLease > 0) _stSubRow("리스비", dailyLease, _stSubRowColor),
-                        ]),
-                    ],
+                    _stToggleRow(deduK, "공제합계", iDedu, _stRowPinkColor),
+                    if (_itemToggles[deduK] == true)
+                      _stSubGroup([
+                        _stSubRow("시간제보험", ins, _stSubRowColor),
+                        _stSubRow("리스비", dailyLease, _stSubRowColor),
+                      ]),
                     const SizedBox(height: 6),
                     Container(height: 1, color: _chip),
                     const SizedBox(height: 6),
@@ -927,8 +925,8 @@ class _HistoryPageState extends State<HistoryPage>
             _htToggleRow('h_dedu', "공제합계", _hIns + _hLease, _htRowPinkColor),
             if (_itemToggles['h_dedu'] == true)
               _htSubGroup([
-                if (_hIns > 0) _htSubRow("시간제보험", _hIns, _htSubRowColor),
-                if (_hLease > 0) _htSubRow("리스비", _hLease, _htSubRowColor),
+                _htSubRow("시간제보험", _hIns, _htSubRowColor),
+                _htSubRow("리스비", _hLease, _htSubRowColor),
               ]),
             Container(
                 height: 1,

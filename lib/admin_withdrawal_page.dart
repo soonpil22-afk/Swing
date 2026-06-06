@@ -393,8 +393,8 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             ),
                             togRow("지원금합계", iPromo, _text, '${iDate}_promo'),
                             if (tog('${iDate}_promo')) subGroup([
-                              if (iPOrder > 0) subRow("건당프로모션", "${_fmtC(iPOrder)} 원"),
-                              if (iRange  > 0) subRow("구간프로모션", "${_fmtC(iRange)} 원"),
+                              subRow("건당프로모션", "${_fmtC(iPOrder)} 원"),
+                              subRow("구간프로모션", "${_fmtC(iRange)} 원"),
                             ]),
                             togRow("세금합계", iTax, _pink, '${iDate}_tax'),
                             if (tog('${iDate}_tax')) subGroup([
@@ -402,15 +402,15 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
                               subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
                             ]),
-                            if (iFee > 0) togRow("수수료합계", iFee, _pink, '${iDate}_comm'),
-                            if (iFee > 0 && tog('${iDate}_comm')) subGroup([
-                              if (iWd   > 0) subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
-                              if (iComm > 0) subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
+                            togRow("수수료합계", iFee, _pink, '${iDate}_comm'),
+                            if (tog('${iDate}_comm')) subGroup([
+                              subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
+                              subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
                             ]),
-                            if (iDedu > 0) togRow("공제합계", iDedu, _pink, '${iDate}_dedu'),
-                            if (iDedu > 0 && tog('${iDate}_dedu')) subGroup([
-                              if (iIns   > 0) subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
-                              if (iLease > 0) subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
+                            togRow("공제합계", iDedu, _pink, '${iDate}_dedu'),
+                            if (tog('${iDate}_dedu')) subGroup([
+                              subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
+                              subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
                             ]),
                             Container(height: 1, color: _teal, margin: const EdgeInsets.symmetric(vertical: 5)),
                             Padding(
@@ -474,7 +474,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                         () => setState(() => _dateItemExp[docId]!['_dedu'] = !oldDeduExp), [
                       _sub("시간제보험", "${_fmtC(insuranceFee)} 원"),
                       _sub("출금수수료", "${_fmtC(withdrawFee)} 원"),
-                      if (leaseDailyAmt > 0) _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
+                      _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
                     ]),
                     Container(height: 1, color: _teal.withAlpha(80), margin: const EdgeInsets.symmetric(vertical: 8)),
                     _row("최종출금금액", "${_fmtC(finalWd)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),
