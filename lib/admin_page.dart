@@ -234,7 +234,8 @@ const double _tabIndicatorRadius = 7;  // 선택탭 모서리
 const double _tabTrackPad        = 3;  // 트랙 안쪽 여백
 // ── [7-1] 출금신청 카드 ──
 const _wrCardBg     = _surface;
-const _wrCardBorder = _elevated;
+const _wrCardBorder       = _elevated; // 기본 테두리
+const _wrCardBorderActive = _teal;     // 펼침(강조) 테두리
 const double _wrCardRadius = 14;   // 카드 모서리
 const double _wrCardGap    = 10;   // 카드 사이 간격
 const double _wrHeadPadH   = 16;   // 헤더 좌우 여백
@@ -2644,7 +2645,7 @@ class _WithdrawalRequestPageState extends State<_WithdrawalRequestPage> {
       decoration: BoxDecoration(
           color: _wrCardBg,
           borderRadius: BorderRadius.circular(_wrCardRadius),
-          border: Border.all(color: _wrCardBorder, width: _wrCardBorderWidth),
+          border: Border.all(color: cardExp ? _wrCardBorderActive : _wrCardBorder, width: _wrCardBorderWidth),
           boxShadow: _cardShadow),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
@@ -3607,8 +3608,8 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
             Text("${NumberFormat('#,###').format(amount)}원",
                 style: const TextStyle(color: _teal, fontSize: 17, fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
-            const Text("입금을 확인하시겠습니까?",
-                style: TextStyle(color: _text2, fontSize: 13)),
+            const Text("입금완료 확인 하셨나요!!",
+                style: TextStyle(color: _text, fontSize: 13)),
             const SizedBox(height: 20),
             Row(children: [
               Expanded(child: GlassShineButton(
