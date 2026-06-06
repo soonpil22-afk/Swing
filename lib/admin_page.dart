@@ -11,6 +11,7 @@ import 'package:excel/excel.dart' hide Border, BorderStyle, TextSpan;
 import 'main.dart';
 import 'glass_shine_button.dart';
 import 'tokens.dart';
+import 'admin_common.dart';
 
 // ═══════════════════════════════════════════════════════════════════════
 // 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
@@ -2462,52 +2463,6 @@ class _AdminPageState extends State<AdminPage> {
   );
 }
 
-// === [공통] 서브페이지 패널 래퍼 (전체배경 → 메인배경 패널 → 뒤로가기 헤더 + 내용) ===
-Widget _adminPanelScaffold(BuildContext context, String title, Widget child,
-    {Color? dividerColor, double dividerInset = 0}) {
-  return Scaffold(
-    backgroundColor: _appBg,
-    resizeToAvoidBottomInset: true,
-    body: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(_panelOuterPad),
-        child: Container(
-          decoration: BoxDecoration(
-            color: _panel,
-            borderRadius: BorderRadius.circular(_panelRadius),
-            border: Border.all(
-                color: _elevated.withValues(alpha: _panelBorderAlpha), width: 1),
-            boxShadow: _panelShadow,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(_panelRadius),
-            child: Column(children: [
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(6, 6, 16, 6),
-                child: Row(children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: _text, size: 18),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Text(title,
-                      style: const TextStyle(
-                          color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
-                ]),
-              ),
-              Container(
-                  height: 1,
-                  margin: EdgeInsets.symmetric(horizontal: dividerInset),
-                  color: dividerColor ?? _teal.withValues(alpha: 0.6)),
-              Expanded(child: child),
-            ]),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
 // === 출금신청 페이지 ==============================================================================
 
 // ═══════════════════════ 7. 출금신청 페이지 (로직) ═══════════════════════
@@ -2598,7 +2553,7 @@ class _WithdrawalRequestPageState extends State<_WithdrawalRequestPage> {
           );
         },
       );
-    return widget.embedded ? body : _adminPanelScaffold(context, "출금 신청", body);
+    return widget.embedded ? body : adminPanelScaffold(context, "출금 신청", body);
   }
 
   // 3단계: items 배열 기반 카드 (하위 호환 유지)
@@ -3269,7 +3224,7 @@ class _RiderManagePageState extends State<_RiderManagePage> {
   Widget build(BuildContext context) {
     return widget.embedded
         ? _riderList()
-        : _adminPanelScaffold(context, "라이더 관리", _riderList());
+        : adminPanelScaffold(context, "라이더 관리", _riderList());
   }
 
   Widget _riderList() => StreamBuilder<QuerySnapshot>(
@@ -3962,7 +3917,7 @@ class _LeaseAlertsPageState extends State<_LeaseAlertsPage> {
       );
     return widget.embedded
         ? body
-        : _adminPanelScaffold(context, "리스비 납기 현황", body);
+        : adminPanelScaffold(context, "리스비 납기 현황", body);
   }
 }
 
@@ -4746,7 +4701,7 @@ class _ChatListPage extends StatelessWidget {
           );
         },
       );
-    return embedded ? body : _adminPanelScaffold(context, "1:1 상담", body);
+    return embedded ? body : adminPanelScaffold(context, "1:1 상담", body);
   }
 }
 
@@ -4834,7 +4789,7 @@ class _AdminChatPageState extends State<_AdminChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _adminPanelScaffold(
+    return adminPanelScaffold(
       context,
       "${widget.riderName} 님",
       dividerColor: _elevated,
