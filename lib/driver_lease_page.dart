@@ -98,10 +98,19 @@ const double _lsPaidFontSize    = 12;      // "납부 완료" 글씨 크기
 const Color  _lsRemainColor     = _teal;   // "잔여 금액" 라벨·금액 색
 const double _lsRemainFontSize  = 12;      // "잔여 금액" 글씨 크기
 
-// ═══════════════ 리스비 페이지 (로직) ═══════════════
+// ═══════════════ 리스비/기타 공제 현황 페이지 (로직) ═══════════════
 class DriverLeasePage extends StatefulWidget {
   final String uid;
-  const DriverLeasePage({super.key, required this.uid});
+  final String prefix;     // users 필드 prefix: 'lease' / 'etc'
+  final String collection; // 회차 컬렉션: 'lease_payments' / 'etc_payments'
+  final String title;      // '리스비' / '기타'
+  const DriverLeasePage({
+    super.key,
+    required this.uid,
+    this.prefix = 'lease',
+    this.collection = 'lease_payments',
+    this.title = '리스비',
+  });
   @override
   State<DriverLeasePage> createState() => _DriverLeasePageState();
 }
@@ -118,7 +127,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
   Future<void> _markAsSeen() async {
     try {
       final snap = await FirebaseFirestore.instance
-          .collection('lease_payments')
+          .collection(widget.collection)
           .where('uid', isEqualTo: widget.uid)
           .where('isPaid', isEqualTo: true)
           .where('seenByRider', isEqualTo: false)
@@ -137,7 +146,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     try {
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final snap = await FirebaseFirestore.instance
-          .collection('lease_payments')
+          .collection(widget.collection)
           .where('uid', isEqualTo: widget.uid)
           .where('dueDate', isEqualTo: today)
           .where('isPaid', isEqualTo: false)
@@ -175,7 +184,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
               borderRadius: BorderRadius.circular(_lpPanelRadius),
               child: Column(children: [
                 const SizedBox(height: 8),
-                pageHeader(context, "리스비 납부 현황"),
+                pageHeader(context, "${widget.title} 납부 현황"),
                 const SizedBox(height: _lpGapHeaderToDiv),
                 Container(
                   height: 1,
@@ -199,7 +208,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
         final userData = userSnap.data?.data() as Map<String, dynamic>?;
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection('lease_payments')
+              .collection(widget.collection)
               .where('uid', isEqualTo: widget.uid)
               .orderBy('dueDate')
               .snapshots(),
@@ -210,22 +219,22 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
             final docs = snap.data!.docs;
             if (docs.isEmpty) {
               return Center(
-                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
-                Icon(Icons.moped,
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Icon(Icons.moped,
                     color: _lpEmptyIconColor, size: _lpEmptyIconSize),
-                SizedBox(height: 12),
-                Text("리스비 납부 내역이 없습니다.",
-                    style: TextStyle(
+                const SizedBox(height: 12),
+                Text("${widget.title} 납부 내역이 없습니다.",
+                    style: const TextStyle(
                         color: _lpEmptyTitleColor,
                         fontSize: _lpEmptyTitleFontSize,
                         fontWeight: FontWeight.w600)),
-                SizedBox(height: 6),
-                Text("관리자에게 문의해 주세요.",
+                const SizedBox(height: 6),
+                const Text("관리자에게 문의해 주세요.",
                     style: TextStyle(color: _lpEmptySubColor, fontSize: _lpEmptySubFontSize)),
               ]));
             }
             final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-            final isDaily = (userData?['leaseType'] as String?) == 'daily';
+            final isDaily = (userData?['${widget.prefix}Type'] as String?) == 'daily';
             final paid = docs.where((d) => (d.data() as Map)['isPaid'] == true).toList();
             final unpaid = docs.where((d) => (d.data() as Map)['isPaid'] != true).toList();
             final todayDue =
@@ -287,11 +296,11 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
       {bool hasAlert = false,
       bool hasTodayDue = false,
       bool riderAlreadyPaid = false}) {
-    final leaseType = u['leaseType'] as String? ?? '';
-    final leaseAmt = u['leaseAmount'] as int? ?? 0;
-    final leaseCycle = u['leaseCycle'] as int? ?? 0;
-    final startStr = u['leaseStartDate'] as String? ?? '';
-    final endStr = u['leaseLastDate'] as String? ?? '';
+    final leaseType = u['${widget.prefix}Type'] as String? ?? '';
+    final leaseAmt = u['${widget.prefix}Amount'] as int? ?? 0;
+    final leaseCycle = u['${widget.prefix}Cycle'] as int? ?? 0;
+    final startStr = u['${widget.prefix}StartDate'] as String? ?? '';
+    final endStr = u['${widget.prefix}LastDate'] as String? ?? '';
     final isDaily = leaseType == 'daily';
     final typeLabel = isDaily ? '매일' : (leaseType == 'weekly' ? '주1회' : '매월');
     final cycleLabel = isDaily ? '일' : '회차';
@@ -317,8 +326,8 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
           const Icon(Icons.moped,
               color: _lsHeadIconColor, size: _lsHeadIconSize),
           const SizedBox(width: 6),
-          const Text("리스비 전체 현황",
-              style: TextStyle(
+          Text("${widget.title} 전체 현황",
+              style: const TextStyle(
                   color: _lsHeadTitleColor,
                   fontSize: _lsHeadTitleFontSize,
                   fontWeight: FontWeight.w700)),
@@ -344,7 +353,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
         const SizedBox(height: 5),
         _infoRow2("총 $cycleLabel", "$leaseCycle $cycleLabel"),
         const SizedBox(height: 5),
-        _infoRow2("총 리스비", "${NumberFormat('#,###').format(totalAmt)} 원"),
+        _infoRow2("총 ${widget.title}", "${NumberFormat('#,###').format(totalAmt)} 원"),
         const SizedBox(height: 5),
         _infoRow2("기간", "$startShort  ~  $endShort"),
         if (isDaily) ...[
@@ -418,8 +427,8 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 const SizedBox(width: 10),
                 Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text("오늘 리스비 납기일입니다!",
-                      style: TextStyle(
+                  Text("오늘 ${widget.title} 납기일입니다!",
+                      style: const TextStyle(
                           color: _lpDueBoxColor,
                           fontSize: _lpDueTitleFontSize,
                           fontWeight: FontWeight.w700)),

@@ -415,7 +415,12 @@ class _DriverPageState extends State<DriverPage> {
     _loadUser();
     _listenNotice();
     _attachWithdrawListeners();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkLeaseDue());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkDeductDue(
+          collection: 'lease_payments', typeField: 'leaseType', title: '리스비');
+      _checkDeductDue(
+          collection: 'etc_payments', typeField: 'etcType', title: '기타', delayMs: 900);
+    });
   }
 
   // 관리자 입금완료(정산로그)·미출금 업로드 변경을 실시간 감지 → 차트/금액 자동 갱신
@@ -669,24 +674,28 @@ class _DriverPageState extends State<DriverPage> {
     } catch (_) {}
   }
 
-  Future<void> _checkLeaseDue() async {
+  Future<void> _checkDeductDue(
+      {required String collection,
+      required String typeField,
+      required String title,
+      int delayMs = 500}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     try {
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final snap = await FirebaseFirestore.instance
-          .collection('lease_payments')
+          .collection(collection)
           .where('uid',     isEqualTo: user.uid)
           .where('dueDate', isEqualTo: today)
           .where('isPaid',  isEqualTo: false).get();
       if (snap.docs.isNotEmpty) {
         final d    = snap.docs.first.data();
-        final type = (d['leaseType'] as String?) ?? '';
+        final type = (d[typeField] as String?) ?? '';
         if (type == 'daily') return;
         final amt = d['amount'] as int? ?? 0;
         final cyc = d['cycle']  as int? ?? 0;
         if (!mounted) return;
-        Future.delayed(const Duration(milliseconds: 500), () {
+        Future.delayed(Duration(milliseconds: delayMs), () {
           if (!mounted) return;
           showDialog(
             context: context,
@@ -701,11 +710,11 @@ class _DriverPageState extends State<DriverPage> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: _elevated, width: 1)),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const Row(children: [
-                    Icon(Icons.moped, color: _teal, size: 20),
-                    SizedBox(width: 8),
-                    Text("리스비 납기일 안내",
-                        style: TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
+                  Row(children: [
+                    const Icon(Icons.moped, color: _teal, size: 20),
+                    const SizedBox(width: 8),
+                    Text("$title 납기일 안내",
+                        style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
                   ]),
                   const SizedBox(height: 4),
                   const Divider(color: _elevated, height: 16),
@@ -796,7 +805,20 @@ class _DriverPageState extends State<DriverPage> {
                     }, padV: _menuStPadV),
                     const SizedBox(height: kGapCard),
                     // ── 7. 리스비 카드 ───────────────────────────────
-                    _leaseMenuCard(uid),
+                    _deductMenuCard(uid,
+                        collection: 'lease_payments',
+                        label: '리스비',
+                        prefix: 'lease',
+                        icon: Icons.moped,
+                        iconColor: _pink),
+                    const SizedBox(height: kGapCard),
+                    // ── 7-1. 기타 카드 ───────────────────────────────
+                    _deductMenuCard(uid,
+                        collection: 'etc_payments',
+                        label: '기타',
+                        prefix: 'etc',
+                        icon: Icons.account_balance_wallet,
+                        iconColor: _purple),
                     const SizedBox(height: kGapCard),
                     // ── 8. 설정 카드 ─────────────────────────────────
                     _menuCard('설정', Icons.settings, _purple, () {
@@ -1394,10 +1416,16 @@ class _DriverPageState extends State<DriverPage> {
         ),
       );
 
-  // ── 리스비 메뉴 카드 ──────────────────────────────────────────────
-  Widget _leaseMenuCard(String uid) => StreamBuilder<QuerySnapshot>(
+  // ── 공제 메뉴 카드 (리스비 / 기타 공용) ────────────────────────────
+  Widget _deductMenuCard(String uid,
+          {required String collection,
+          required String label,
+          required String prefix,
+          required IconData icon,
+          required Color iconColor}) =>
+      StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('lease_payments')
+            .collection(collection)
             .where('uid', isEqualTo: uid)
             .where('isPaid', isEqualTo: false)
             .snapshots(),
@@ -1409,8 +1437,14 @@ class _DriverPageState extends State<DriverPage> {
               }) ??
               false;
           return GestureDetector(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => DriverLeasePage(uid: uid))),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => DriverLeasePage(
+                        uid: uid,
+                        prefix: prefix,
+                        collection: collection,
+                        title: label))),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: _menuLsPadV),
               decoration: BoxDecoration(
@@ -1420,11 +1454,11 @@ class _DriverPageState extends State<DriverPage> {
                 boxShadow: _cardShadow,
               ),
               child: Row(children: [
-                const Icon(Icons.moped, color: _pink, size: 24),
+                Icon(icon, color: iconColor, size: 24),
                 const SizedBox(width: 14),
                 Stack(clipBehavior: Clip.none, children: [
-                  const Text('리스비',
-                      style: TextStyle(
+                  Text(label,
+                      style: const TextStyle(
                           color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
                   if (hasDue)
                     Positioned(
