@@ -485,8 +485,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
                     onTap: isEditingLease ? () => setState(() => _leaseTypeCache[uid] = 'monthly_fixed') : null,
                     child: AnimatedContainer(duration: const Duration(milliseconds: 150),
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(color: leaseType == 'monthly_fixed' ? _purple : Colors.transparent, border: Border.all(color: leaseType == 'monthly_fixed' ? _purple : _elevated), borderRadius: BorderRadius.circular(5)),
-                      child: Text("매월", style: TextStyle(color: leaseType == 'monthly_fixed' ? _surface : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
+                      decoration: BoxDecoration(color: leaseType == 'monthly_fixed' ? _purple.withValues(alpha: 0.16) : Colors.transparent, border: Border.all(color: leaseType == 'monthly_fixed' ? _purple.withValues(alpha: 0.6) : _elevated), borderRadius: BorderRadius.circular(5)),
+                      child: Text("매월", style: TextStyle(color: leaseType == 'monthly_fixed' ? _purple : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const Spacer(),
@@ -577,8 +577,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
       onTap: isEditing ? () => setState(() => _leaseTypeCache[uid] = type) : null,
       child: AnimatedContainer(duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        decoration: BoxDecoration(color: selected ? accent : Colors.transparent, border: Border.all(color: selected ? accent : _elevated), borderRadius: BorderRadius.circular(5)),
-        child: Text(label, style: TextStyle(color: selected ? _surface : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
+        decoration: BoxDecoration(color: selected ? accent.withValues(alpha: 0.16) : Colors.transparent, border: Border.all(color: selected ? accent.withValues(alpha: 0.6) : _elevated), borderRadius: BorderRadius.circular(5)),
+        child: Text(label, style: TextStyle(color: selected ? accent : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
       ),
     );
   }
