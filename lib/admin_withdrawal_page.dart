@@ -66,8 +66,6 @@ const double _wrItemGap        = kGapCard;    // 날짜 카드 사이 갭
 const _wrItemChipColor         = _teal; // 날짜칩 글씨 색
 const double _wrItemChipFontSize = 11; // 날짜칩 글씨 크기
 const double _wrItemChevronSize  = 15; // 날짜 펼침 아이콘 크기
-const _wrItemAmtColor          = _text; // 날짜 합계 색
-const double _wrItemAmtFontSize  = 12; // 날짜 합계 크기
 const _wrDtMainColor           = _text; // "배달수수료(세전)" 색
 const double _wrDtMainFontSize   = 12; // "배달수수료(세전)" 크기
 const _wrDtTogLabelColor       = _text; // 토글 라벨 색
@@ -372,8 +370,6 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             ),
                             const SizedBox(width: 4),
                             Icon(iExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: _wrItemChevronSize),
-                            const Spacer(),
-                            Text("${_fmtC(iFinal)} 원", style: const TextStyle(color: _wrItemAmtColor, fontSize: _wrItemAmtFontSize, fontWeight: FontWeight.w600)),
                           ]),
                         ),
                       ),
@@ -415,7 +411,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                 const Text("소계", style: TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
-                                Text("${_fmtC(iFinal)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w700)),
+                                Text("${_fmtC(iFinal - iDedu)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w700)),
                               ]),
                             ),
                           ]),
