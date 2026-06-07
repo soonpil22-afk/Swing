@@ -390,18 +390,18 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               subRow("건당프로모션", "${_fmtC(iPOrder)} 원"),
                               subRow("구간프로모션", "${_fmtC(iRange)} 원"),
                             ]),
-                            togRow("세금합계", iTax, _pink, '${iDate}_tax'),
+                            togRow("세금합계", iTax, _text, '${iDate}_tax'),
                             if (tog('${iDate}_tax')) subGroup([
                               subRow("고용보험", "${_fmtC(iETax)} 원", vc: _text2),
                               subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
                               subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
                             ]),
-                            togRow("수수료합계", iFee, _pink, '${iDate}_comm'),
+                            togRow("수수료합계", iFee, _text, '${iDate}_comm'),
                             if (tog('${iDate}_comm')) subGroup([
                               subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
                               subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
                             ]),
-                            togRow("공제합계", iDedu, _pink, '${iDate}_dedu'),
+                            togRow("공제합계", iDedu, _text, '${iDate}_dedu'),
                             if (tog('${iDate}_dedu')) subGroup([
                               subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
                               subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
@@ -455,7 +455,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                       _sub("구간프로모션", "${_fmtC(rangeAmt)} 원"),
                     ]),
                     _divider(),
-                    _toggle("세금", "${_fmtC(tTax)} 원", _pink, oldTaxExp,
+                    _toggle("세금", "${_fmtC(tTax)} 원", _text, oldTaxExp,
                         () => setState(() => _dateItemExp[docId]!['_tax'] = !oldTaxExp), [
                       _sub("고용보험", "${_fmtC(eTax)} 원"),
                       _sub("산재보험", "${_fmtC(aTax)} 원"),
@@ -464,7 +464,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                     _divider(),
                     _row("협력사수수료", "${_fmtC(commAmt)} 원", vc: _pink),
                     _divider(),
-                    _toggle("공제", "${_fmtC(deductTotal)} 원", _pink, oldDeduExp,
+                    _toggle("공제", "${_fmtC(deductTotal)} 원", _text, oldDeduExp,
                         () => setState(() => _dateItemExp[docId]!['_dedu'] = !oldDeduExp), [
                       _sub("시간제보험", "${_fmtC(insuranceFee)} 원"),
                       _sub("출금수수료", "${_fmtC(withdrawFee)} 원"),
