@@ -1998,18 +1998,18 @@ class _AdminPageState extends State<AdminPage> {
               _subC("건당프로모션", "${_fmtC(lPerOrder)} 원"),
               _sub("구간프로모션",  "${_fmtC(lRange)} 원"),
             ]),
-            _toggle("세금합계", "${_fmtC(totalTaxSum)} 원", _text, lTaxExp,
+            _toggle("세금합계", "${_fmtC(totalTaxSum)} 원", _pink, lTaxExp,
                 () => setState(() => lTaxExp = !lTaxExp), [
               _subC("고용보험", "${_fmtC(lEmp)} 원", vc: _text2),
               _subC("산재보험", "${_fmtC(lAcc)} 원", vc: _text2),
               _subC("원천세",   "${_fmtC(lTax)} 원", vc: _text2),
             ]),
-            _toggle("수수료합계", "${_fmtC(totalFeeSum)} 원", _text, lCommExp,
+            _toggle("수수료합계", "${_fmtC(totalFeeSum)} 원", _pink, lCommExp,
                 () => setState(() => lCommExp = !lCommExp), [
               _subC("출금수수료",   "${_fmtC(lWd)} 원",   vc: _text2),
               _subC("협력사수수료", "${_fmtC(lComm)} 원", vc: _text2),
             ]),
-            _toggle("공제합계", "${_fmtC(totalDeduSum)} 원", _text, lDedu,
+            _toggle("공제합계", "${_fmtC(totalDeduSum)} 원", _pink, lDedu,
                 () => setState(() => lDedu = !lDedu), [
               _subC("시간제보험", "${_fmtC(lIns)} 원",   vc: _text2),
               _subC("리스비",     "${_fmtC(lLease)} 원", vc: _text2),
