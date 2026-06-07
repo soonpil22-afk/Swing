@@ -32,7 +32,20 @@
       "Bash(sed -i 's/_teal.withAlpha\\(100\\) : _elevated/_teal : _elevated/g' admin_rider_manage_page.dart)",
       "Bash(sed -i 's/_teal.withAlpha\\(60\\) : _elevated/_teal : _elevated/g' admin_withdrawal_page.dart)",
       "Bash(sed -i -E 's/, width: 1\\\\.5\\\\\\)/, width: 1\\)/g' admin_page.dart admin_rider_manage_page.dart)",
-      "Bash(sed -i -E 's/\\(_fieldFocusWidth *= *\\)1\\\\.5/\\\\11/' main.dart)"
+      "Bash(sed -i -E 's/\\(_fieldFocusWidth *= *\\)1\\\\.5/\\\\11/' main.dart)",
+      "Bash(sed -i -E 's/\\(_lpGapHeaderToDiv *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_lpGapDivToCard *= *\\)[0-9.]+/\\\\1kGapSection/' driver_lease_page.dart)",
+      "Bash(sed -i -E 's/\\(_spGapHeaderToDiv *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_spGapDivToInfo *= *\\)[0-9.]+/\\\\1kGapSection/' driver_settings_page.dart)",
+      "Bash(sed -i -E 's/\\(_hpGapHeaderToDiv *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_hpGapDivToTab *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_stCardGap *= *\\)[0-9.]+/\\\\1kGapCard/' driver_history_page.dart)",
+      "Bash(sed -i -E 's/\\(_lpGapHeaderToDiv *= *\\)kGapSection/\\\\1kGapInner/' driver_lease_page.dart)",
+      "Bash(sed -i -E 's/\\(_spGapHeaderToDiv *= *\\)kGapSection/\\\\1kGapInner/' driver_settings_page.dart)",
+      "Bash(sed -i -E 's/\\(_hpGapHeaderToDiv *= *\\)kGapSection/\\\\1kGapInner/' driver_history_page.dart)",
+      "Bash(sed -i -E 's/\\(_wrCardGap *= *\\)[0-9.]+/\\\\1kGapCard/; s/\\(_wrItemGap *= *\\)[0-9.]+/\\\\1kGapCard/' admin_withdrawal_page.dart)",
+      "Bash(sed -i -E 's/\\(_csRowGap *= *\\)[0-9.]+/\\\\1kGapCard/' admin_chat_page.dart)",
+      "Bash(sed -i -E 's/\\(_rhLogCardGap *= *\\)[0-9.]+/\\\\1kGapCard/; s/\\(_rhItemGap *= *\\)[0-9.]+/\\\\1kGapCard/' admin_rider_history_page.dart)",
+      "Bash(sed -i '776s/height: 10/height: kGapCard/; 779s/height: 10/height: kGapCard/' driver_page.dart)",
+      "Bash(sed -n '776p;779p' driver_page.dart)",
+      "Bash(sed -i -E 's/\\(_wrPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_rmPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_stPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_ntPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_wrPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_rmPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_stPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_ntPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/' admin_page.dart)",
+      "Bash(sed -i -E 's/\\(_subGapHeaderToDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_subGapDivToBody *= *\\)[0-9.]+/\\\\1kGapSection/' admin_ranking_page.dart)"
     ]
   }
 }
