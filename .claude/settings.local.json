@@ -50,7 +50,21 @@
       "Bash(sed -n '344,356p' admin_lease_alerts_page.dart)",
       "Bash(sed -i -E 's/\\(_whBtnLineBorder *= *\\)_elevated/\\\\1_pink/; s/\\(_whBtnLineText *= *\\)_teal/\\\\1_pink/' admin_page.dart)",
       "Bash(sed -i -E 's/\\(_htBtnLineBorder *= *\\)_elevated/\\\\1_pink/; s/\\(_htBtnLineText *= *\\)_text;/\\\\1_pink;/' driver_history_page.dart)",
-      "Bash(sed -i -E 's/\\(_rmLeaseSmallBtnColor *= *\\)_text2/\\\\1_pink/' admin_rider_manage_page.dart)"
+      "Bash(sed -i -E 's/\\(_rmLeaseSmallBtnColor *= *\\)_text2/\\\\1_pink/' admin_rider_manage_page.dart)",
+      "Bash(sed -i -E 's/\\(_htBtnFilledText *= *\\)_appBg/\\\\1_teal/' driver_history_page.dart)",
+      "Bash(sed -i 's/color: filled ? _htBtnFilledBg : Colors.transparent/color: Colors.transparent/' driver_history_page.dart)",
+      "Bash(sed -i 's/원\", _pink,/원\", _text,/g' admin_page.dart)",
+      "Bash(sed -i -e 's/원\", _pink,/원\", _text,/g' -e \"s/, _pink, '/, _text, '/g\" admin_rider_history_page.dart)",
+      "Bash(sed -i \"s/, _pink, '/, _text, '/g\" admin_withdrawal_page.dart)",
+      "Bash(git revert *)",
+      "Bash(sed -n '477,495p' admin_rider_history_page.dart)",
+      "Bash(sed -n '729,745p' admin_rider_history_page.dart)",
+      "Bash(grep -v \"^.*//\")",
+      "Bash(curl -sL -o DoHyeon-Regular.ttf \"https://github.com/google/fonts/raw/main/ofl/dohyeon/DoHyeon-Regular.ttf\")",
+      "Bash(file DoHyeon-Regular.ttf)",
+      "Bash(flutter pub *)",
+      "Bash(sed -n '1168,1178p' admin_page.dart)",
+      "Bash(sed -n '288,300p' admin_rider_history_page.dart)"
     ]
   }
 }
