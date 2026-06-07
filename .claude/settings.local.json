@@ -64,7 +64,18 @@
       "Bash(file DoHyeon-Regular.ttf)",
       "Bash(flutter pub *)",
       "Bash(sed -n '1168,1178p' admin_page.dart)",
-      "Bash(sed -n '288,300p' admin_rider_history_page.dart)"
+      "Bash(sed -n '288,300p' admin_rider_history_page.dart)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5001)",
+      "Bash(cmd //c start '' 'C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe' '--user-data-dir=C:\\\\Users\\\\Owner\\\\AppData\\\\Local\\\\Temp\\\\st_admin' --window-size=380,1000 --window-position=0,0 --app=http://localhost:5001)",
+      "Bash(cmd //c start '' 'C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe' '--user-data-dir=C:\\\\Users\\\\Owner\\\\AppData\\\\Local\\\\Temp\\\\st_driver' --window-size=500,1010 --window-position=520,0 --app=http://localhost:5001)",
+      "Bash(sed -i '438,550d' admin_rider_manage_page.dart)",
+      "Bash(sed -n '434,445p' admin_rider_manage_page.dart)",
+      "Bash(sed -n '177,182p' admin_rider_manage_page.dart)",
+      "Bash(sed -n '234,238p' admin_rider_manage_page.dart)",
+      "PowerShell(flutter analyze lib/admin_rider_manage_page.dart 2>&1)",
+      "PowerShell($p=\"C:\\\\JejuProject\\\\swing_tiger\\\\lib\\\\admin_rider_manage_page.dart\"; $lines=Get-Content $p -Encoding UTF8; [System.IO.File]::WriteAllLines\\($p, $lines[0..311], \\(New-Object System.Text.UTF8Encoding $false\\)\\); Write-Output \\(\"kept \" + 312 + \" lines\"\\))",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='dart.exe' OR Name='flutter.exe'\" | Select-Object ProcessId, @{n='Cmd';e={$_.CommandLine.Substring\\(0,[Math]::Min\\(120,$_.CommandLine.Length\\)\\)}} | Format-Table -AutoSize)",
+      "PowerShell($c = Test-NetConnection -ComputerName 127.0.0.1 -Port 5001 -WarningAction SilentlyContinue; Write-Output \\(\"5001 open: \" + $c.TcpTestSucceeded\\))"
     ]
   }
 }
