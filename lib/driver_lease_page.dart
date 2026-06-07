@@ -155,7 +155,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     }
   }
 
-  // ── 7-1. 메인배경 ──
+  // ── 메인배경 ──
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -282,7 +282,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     );
   }
 
-  // ── 7-2. 리스비 전체현황 카드 ──
+  // ── 리스비 전체현황 카드 ──
   Widget _leaseSummaryCard(Map<String, dynamic> u, int paidCount, int totalCount,
       {bool hasAlert = false,
       bool hasTodayDue = false,

@@ -1223,7 +1223,7 @@ class _DriverPageState extends State<DriverPage> {
         ),
       ]);
 
-  // ── 5. 공지사항 ──────────────────────────────────────────────────────
+  // ── 공지사항 ──────────────────────────────────────────────────────
   Widget _notice() {
     final lines = _noticeText.trim().isEmpty
         ? <String>[]
@@ -1340,7 +1340,7 @@ class _DriverPageState extends State<DriverPage> {
     );
   }
 
-  // ── 6.8. 정산내역 · 설정 메뉴 카드 ─────────────────────────────────
+  // ── 정산내역 · 설정 메뉴 카드 ─────────────────────────────────
   Widget _menuCard(String title, IconData icon, Color iconColor, VoidCallback onTap,
           {double padV = 16}) =>
       GestureDetector(
@@ -1366,7 +1366,7 @@ class _DriverPageState extends State<DriverPage> {
         ),
       );
 
-  // ── 7. 리스비 메뉴 카드 ──────────────────────────────────────────────
+  // ── 리스비 메뉴 카드 ──────────────────────────────────────────────
   Widget _leaseMenuCard(String uid) => StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('lease_payments')
@@ -1421,7 +1421,7 @@ class _DriverPageState extends State<DriverPage> {
         },
       );
 
-  // ── 9. FAB & 1:1 상담 풍선창 ──────────────────────────────────────────
+  // ── FAB & 1:1 상담 풍선창 ──────────────────────────────────────────
   Widget _buildFABArea(String uid, double bottomInset) {
     final screenH = MediaQuery.of(context).size.height;
     final safeTop = MediaQuery.of(context).padding.top;
@@ -1770,7 +1770,7 @@ class _DriverPageState extends State<DriverPage> {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// 4-추가. 출금 그라디언트 프레임 (빛 흐르는 테두리 + 금액 + 출금신청)
+// 추가. 출금 그라디언트 프레임 (빛 흐르는 테두리 + 금액 + 출금신청)
 // ═══════════════════════════════════════════════════════════════════════
 class _WithdrawFrame extends StatefulWidget {
   final int amount;

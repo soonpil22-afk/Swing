@@ -49,7 +49,7 @@ const double _hpGapDivToTab    = kGapSection;  // 경계선 ↔ 정산내역 탭
 const double _hpDivMarginH     = 15; // 경계선 좌우 여백(끝까지 안 붙음)
 
 // ═══════════════════════════════════════════════════════════════════════
-// 6-2. 정산내역 카드 (리포트 업로드 내용) (조정값)
+// 정산내역 카드 (리포트 업로드 내용) (조정값)
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _stEmptyIconColor  = _text2;  // 아이콘 색
 const double _stEmptyIconSize   = 48;      // 아이콘 크기
@@ -106,13 +106,13 @@ const double _stSubtotalAmtFontSize = 18;  // "소계" 금액 크기
 const Color  _stSubtotalUnitColor    = _teal; // "소계" " 원" 글씨 색
 const double _stSubtotalUnitFontSize = 15;    // "소계" " 원" 글씨 크기
 const Color  _stAmtUnitColor    = _text;   // " 원" 글씨 색(기본·기타 행)
-// ── 6-2 추가. 미출금(23시 마감 경과) 상태 표시 ──
+// ── 추가. 미출금(23시 마감 경과) 상태 표시 ──
 const Color  _stUnpaidColor   = _purple;  // "미출금" 배지/글씨 색 (퍼플)
 const String _stUnpaidLabel   = '미출금';  // 미출금 상태 표시 문구
 const int    _stCutoffHour    = 23;       // 출금 마감 시각(23시)
 
 // ═══════════════════════════════════════════════════════════════════════
-// 6-3. 출금내역 탭 (시작일 카드 등) (조정값)
+// 출금내역 탭 (시작일 카드 등) (조정값)
 // ═══════════════════════════════════════════════════════════════════════
 const Color  _htCardBg          = _surface;    // 카드 배경색
 const Color  _htCardBorder      = _elevated; // 카드 테두리 색
@@ -380,7 +380,7 @@ class _HistoryPageState extends State<HistoryPage>
     }
   }
 
-  // ── 6-1. 메인배경 + 탭 ──
+  // ── 메인배경 + 탭 ──
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -446,7 +446,7 @@ class _HistoryPageState extends State<HistoryPage>
     );
   }
 
-  // ── 6-2. 정산탭 전용 공통 함수 ──
+  // ── 정산탭 전용 공통 함수 ──
   Widget _stAmt(double v, Color numColor,
       {double fs = 13, bool bold = false, Color? unitColor, double? unitFs}) {
     return RichText(
@@ -528,7 +528,7 @@ class _HistoryPageState extends State<HistoryPage>
         ]),
       );
 
-  // 6-2 추가. 미출금 항목이 23시 마감을 지났는지 판별
+  // 추가. 미출금 항목이 23시 마감을 지났는지 판별
   //  · items의 가장 최근 날짜가 '오늘'이 아니면  → 마감 지남(미출금)
   //  · '오늘'인데 현재 시각이 23시를 넘었으면     → 마감 지남(미출금)
   //  · 그 외(오늘 + 23시 전)                      → 아직 신청 가능(신청대기)
@@ -773,7 +773,7 @@ class _HistoryPageState extends State<HistoryPage>
     );
   }
 
-  // ── 6-3. 출금탭 전용 공통 함수 ──
+  // ── 출금탭 전용 공통 함수 ──
   Widget _htAmt(double v, Color numColor,
       {double fs = 13, bool bold = false, Color? unitColor, double? unitFs}) {
     return RichText(

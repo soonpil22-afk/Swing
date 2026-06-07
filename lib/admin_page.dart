@@ -253,11 +253,6 @@ const double _whGapBtnToBtn  = 6;  // 조회 ↔ 초기화 버튼 갭
 const double _whTabToCardGap = 2; // 출금내역 탭 ↔ 카드 갭
 
 // ═══════════════════════════════════════════════════════════════════════
-// 8. 라이더관리 버튼 + 페이지 (탭)
-// ═══════════════════════════════════════════════════════════════════════
-
-
-// ═══════════════════════════════════════════════════════════════════════
 // 9. 공제설정 버튼 + 페이지
 // ═══════════════════════════════════════════════════════════════════════
 // ── [9-1] 리포트 업로드 카드 ──
@@ -296,7 +291,6 @@ const double _stUploadFontSize = 13; // 업로드 버튼 글씨 크기
 
 // ═══════════════════════════════════════════════════════════════════════
 // 10. 공지사항 버튼 + 페이지 (탭)
-// ═══════════════════════════════════════════════════════════════════════
 // ── [10-1] 공지사항 — 통계 카드 + 공지 박스 + 가입신청 ──
 const _ntStatCardBg     = _surface; // 통계 카드 배경
 const _ntStatCardBorder = _elevated;  // 통계 카드 테두리
@@ -1176,7 +1170,7 @@ class _AdminPageState extends State<AdminPage> {
           ),
           Text(title,
               style: const TextStyle(
-                  color: _text, fontSize: 19, fontWeight: FontWeight.w700)),
+                  color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
         ]),
       );
 
@@ -1408,7 +1402,8 @@ class _AdminPageState extends State<AdminPage> {
               style: const TextStyle(
                   color: _rankAmtColor,
                   fontSize: _rankAmtFontSize,
-                  fontWeight: FontWeight.w700)),
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: [FontFeature.tabularFigures()])),
           const TextSpan(
               text: ' 원',
               style: TextStyle(color: _rankAmtUnitColor, fontSize: _rankAmtUnitFontSize)),
@@ -1779,7 +1774,6 @@ class _AdminPageState extends State<AdminPage> {
       );
 
   // === 탭 1: 공지사항 =================================================================================
-
   // ═══════════════ 10-1. 공지사항 (로직) ═══════════════
   Widget _noticeTab() {
     return SingleChildScrollView(
@@ -2023,7 +2017,6 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   // === 탭 3: 공제설정 =================================================================================
-
   // ═══════════════ 9. 공제설정 (로직) ═══════════════
   Widget _settingsTab() => SingleChildScrollView(
     padding: const EdgeInsets.fromLTRB(_stPadL, _stPadT, _stPadR, _stPadB),

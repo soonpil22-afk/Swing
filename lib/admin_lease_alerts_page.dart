@@ -17,7 +17,6 @@ const _amber    = kAmber;
 const List<BoxShadow> _cardShadow = kCardShadow;
 
 // ═══════════════ 리스비 납기 현황 카드 상수(_la*) ═══════════════
-// ── [8-2] 리스비탭 — 납기 현황 카드 ──
 const double _laListPadL = 15;  // 목록 바깥 여백 왼
 const double _laListPadT = 4;  // 위
 const double _laListPadR = 15;  // 오른

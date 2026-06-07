@@ -20,7 +20,7 @@ const List<BoxShadow> _cardShadow = kCardShadow;
 const double _wrTabToCardGap = 2; // 출금신청 탭 ↔ 카드 갭
 
 // ═══════════════ 출금신청 카드 상수(_wr*) ═══════════════
-// ── [7-1] 출금신청 카드 ──
+// ── 출금신청 카드 ──
 const _wrCardBg     = _surface;
 const _wrCardBorder = _teal; // 출금신청(요청대기) 카드 강조 테두리
 const double _wrCardRadius = 14;   // 카드 모서리

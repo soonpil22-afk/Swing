@@ -22,7 +22,7 @@ const List<BoxShadow> _cardShadow = kCardShadow;
 const double _rmTabToCardGap = 2; // 라이더 탭 ↔ 이름목록 카드 갭
 
 // ═══════════════ 라이더 관리 카드 상수(_rm*) ═══════════════
-// ── [8-1] 라이더탭 — 목록 카드 + 행 헤더 ──
+// ── 라이더탭 — 목록 카드 + 행 헤더 ──
 const _rmCardBg     = _surface;    // 목록 카드 배경색
 const _rmCardBorder = _elevated;     // 목록 카드 테두리 색
 const double _rmCardBorderWidth = 1; // 목록 카드 테두리 두께

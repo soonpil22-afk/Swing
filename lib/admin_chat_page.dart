@@ -14,7 +14,7 @@ const _text     = kText;
 const _text2    = kText2;
 const _pink     = kPink;
 
-// ── [10-2] 1:1 상담 — 목록 카드 ──
+// ── 상담 — 목록 카드 ──
 const double _csListPadH = 14; // 목록 좌우 여백
 const double _csListPadV = 12; // 목록 상하 여백
 const _csCardBg = _surface;    // 상담 카드 배경
@@ -41,7 +41,7 @@ const double _csChevronSize    = 16; // 화살표 크기
 const double _csRowGap         = kGapCard;  // 카드 사이 갭
 const double _csTabToCardGap   = 2; // 1:1상담 탭 ↔ 첫 카드 갭
 
-// ═══════════════════════ 10-2. 1:1 상담 목록 (로직) ═══════════════════════
+// ═══════════════════════ 상담 목록 (로직) ═══════════════════════
 class ChatListPage extends StatelessWidget {
   final bool embedded;
   const ChatListPage({super.key, this.embedded = false});
