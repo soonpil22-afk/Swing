@@ -1408,7 +1408,8 @@ class _AdminPageState extends State<AdminPage> {
               style: const TextStyle(
                   color: _rankAmtColor,
                   fontSize: _rankAmtFontSize,
-                  fontWeight: FontWeight.w700)),
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: [FontFeature.tabularFigures()])),
           const TextSpan(
               text: ' 원',
               style: TextStyle(color: _rankAmtUnitColor, fontSize: _rankAmtUnitFontSize)),
