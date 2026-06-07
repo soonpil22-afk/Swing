@@ -72,7 +72,7 @@ class FullRankingPage extends StatelessWidget {
                     Text(title,
                         style: const TextStyle(
                             color: _text,
-                            fontSize: 15,
+                            fontSize: 19,
                             fontWeight: FontWeight.w700)),
                   ]),
                 ),

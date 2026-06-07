@@ -58,7 +58,7 @@ Widget pageHeader(BuildContext context, String title) => Padding(
           onPressed: () => Navigator.pop(context),
         ),
         Text(title,
-            style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
+            style: const TextStyle(color: _text, fontSize: 19, fontWeight: FontWeight.w700)),
       ]),
     );
 
