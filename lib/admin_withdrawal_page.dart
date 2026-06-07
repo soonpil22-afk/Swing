@@ -506,26 +506,18 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                     } catch (e) { debugPrint('unpaid_balance 삭제 실패: $e'); }
                   }
 
-                  // 매일 타입 리스비: 이번 출금한 일수(누적 회수)만큼 앞 회차부터 자동 완납
+                  // 매일 타입 리스비: 이번 출금에서 실제 공제된 리스비 금액 ÷ 1일치 = 완납할 일수
                   if (fixedUid != null) {
                     try {
-                      final settlementDates = (fixedData['dates'] as List?)
-                              ?.map((d) => d.toString())
-                              .where((d) => d.isNotEmpty)
-                              .toList() ??
-                          [if ((fixedData['date'] ?? '').toString().isNotEmpty)
-                              fixedData['date'].toString()];
-                      // 리스비 시작일 이전·종료일 이후 출금일은 일일 리스비 회차에서 제외
                       final uLease = await FirebaseFirestore.instance
                           .collection('users').doc(fixedUid).get();
-                      final lStart = uLease.data()?['leaseStartDate'] as String?;
-                      final lLast = uLease.data()?['leaseLastDate'] as String?;
-                      final validDates = settlementDates.where((d) {
-                        if (lStart != null && d.compareTo(lStart) < 0) return false;
-                        if (lLast != null && d.compareTo(lLast) > 0) return false;
-                        return true;
-                      }).toList();
-                      final int payDays = validDates.length; // 리스비 기간 내 출금 일수
+                      final bool isDailyLease =
+                          (uLease.data()?['leaseType'] as String?) == 'daily';
+                      final double dailyAmt =
+                          (uLease.data()?['leaseAmount'] as num?)?.toDouble() ?? 0;
+                      final int payDays = (isDailyLease && dailyAmt > 0)
+                          ? (leaseDeduction / dailyAmt).round()
+                          : 0;
                       if (payDays > 0) {
                         final leaseSnap = await FirebaseFirestore.instance
                             .collection('lease_payments')
