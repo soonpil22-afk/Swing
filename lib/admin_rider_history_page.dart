@@ -54,7 +54,7 @@ const _rhSubtotalColor   = _teal;      // 소계·총출금 색
 const double _rhSubtotalLabelFontSize = 12; // 소계 라벨 크기
 const double _rhSubtotalValueFontSize = 13; // 소계 값 크기
 // 날짜별 상세 카드
-const double _rhItemGap  = 6;          // 날짜 카드 사이 갭
+const double _rhItemGap  = kGapCard;          // 날짜 카드 사이 갭
 const _rhItemChipColor   = _teal;      // 날짜칩 글씨 색
 const double _rhItemChipFontSize = 11; // 날짜칩 글씨 크기
 // 누적정산 시작일·마지막일 날짜 버튼
@@ -76,7 +76,7 @@ const double _rhSettleOuterL = 15; // 목록 바깥 여백 왼
 const double _rhSettleOuterT = 2; // 위 (탭 ↔ 카드)
 const double _rhSettleOuterR = 15; // 오른
 const double _rhSettleOuterB = 15; // 아래
-const double _rhLogCardGap   = 8;  // 정산내역 카드 사이 갭
+const double _rhLogCardGap   = kGapCard;  // 정산내역 카드 사이 갭
 // 정산내역 카드 안쪽 여백
 const double _rhLogHeadPadH = 16; // 헤더 좌우 여백
 const double _rhLogHeadPadV = 13; // 헤더 위아래 여백

@@ -38,7 +38,7 @@ const double _csAvatarSize     = 38; // 아바타 크기
 const double _csAvatarIconSize = 20; // 아바타 아이콘 크기
 const double _csNewFontSize    = 8;  // NEW 뱃지 글씨 크기
 const double _csChevronSize    = 16; // 화살표 크기
-const double _csRowGap         = 8;  // 카드 사이 갭
+const double _csRowGap         = kGapCard;  // 카드 사이 갭
 const double _csTabToCardGap   = 2; // 1:1상담 탭 ↔ 첫 카드 갭
 
 // ═══════════════════════ 10-2. 1:1 상담 목록 (로직) ═══════════════════════

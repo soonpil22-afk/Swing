@@ -24,7 +24,7 @@ const double _wrTabToCardGap = 2; // 출금신청 탭 ↔ 카드 갭
 const _wrCardBg     = _surface;
 const _wrCardBorder = _teal; // 출금신청(요청대기) 카드 강조 테두리
 const double _wrCardRadius = 14;   // 카드 모서리
-const double _wrCardGap    = 10;   // 카드 사이 간격
+const double _wrCardGap    = kGapCard;   // 카드 사이 간격
 const double _wrHeadPadH   = 16;   // 헤더 좌우 여백
 const double _wrHeadPadV   = 13;   // 헤더 위아래 여백
 const _wrNameColor  = _teal;     // 이름 글씨 색
@@ -62,7 +62,7 @@ const _wrChevronColor          = _text2; // 펼침 아이콘 색
 const double _wrGapAcctFinal   = 8;    // 계좌행 ↔ 최종금액 갭
 const double _wrGapFinalItems  = 10;   // 최종금액 ↔ 날짜상세 갭
 // 날짜별 상세 내역 행
-const double _wrItemGap        = 6;    // 날짜 카드 사이 갭
+const double _wrItemGap        = kGapCard;    // 날짜 카드 사이 갭
 const _wrItemChipColor         = _teal; // 날짜칩 글씨 색
 const double _wrItemChipFontSize = 11; // 날짜칩 글씨 크기
 const double _wrItemChevronSize  = 15; // 날짜 펼침 아이콘 크기
