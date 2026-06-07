@@ -261,7 +261,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                         ) else if (isDueToday) Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _teal)),
-                          child: const Text("오늘 납기", style: TextStyle(color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
+                          child: const Text("오늘 납부", style: TextStyle(color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
                         ) else if (hasDue) Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _pink)),

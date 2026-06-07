@@ -239,8 +239,8 @@ const double _whBtnPadH   = 6;    // 버튼 좌우 여백
 const double _whBtnRadius = 7;     // 버튼 모서리
 const _whBtnFilledBg    = _teal; // 채운 버튼(조회) 배경
 const _whBtnFilledText  = _panel;  // 채운 버튼 글씨
-const _whBtnLineBorder  = _elevated; // 외곽선 버튼(초기화) 테두리
-const _whBtnLineText    = _teal; // 외곽선 버튼 글씨
+const _whBtnLineBorder  = _pink; // 외곽선 버튼(초기화) 테두리
+const _whBtnLineText    = _pink; // 외곽선 버튼 글씨
 const double _whBtnFontSize = 12;  // 버튼 글씨 크기
 // 출금내역 외곽 카드 + 배달수수료 행
 const _whCardBg     = _surface;    // 카드 배경

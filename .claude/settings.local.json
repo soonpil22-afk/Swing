@@ -45,7 +45,12 @@
       "Bash(sed -i '776s/height: 10/height: kGapCard/; 779s/height: 10/height: kGapCard/' driver_page.dart)",
       "Bash(sed -n '776p;779p' driver_page.dart)",
       "Bash(sed -i -E 's/\\(_wrPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_rmPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_stPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_ntPageGapHeaderDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_wrPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_rmPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_stPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/; s/\\(_ntPageGapDivCard *= *\\)[0-9.]+/\\\\1kGapSection/' admin_page.dart)",
-      "Bash(sed -i -E 's/\\(_subGapHeaderToDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_subGapDivToBody *= *\\)[0-9.]+/\\\\1kGapSection/' admin_ranking_page.dart)"
+      "Bash(sed -i -E 's/\\(_subGapHeaderToDiv *= *\\)[0-9.]+/\\\\1kGapInner/; s/\\(_subGapDivToBody *= *\\)[0-9.]+/\\\\1kGapSection/' admin_ranking_page.dart)",
+      "Bash(sed -n '188,196p' admin_lease_alerts_page.dart)",
+      "Bash(sed -n '344,356p' admin_lease_alerts_page.dart)",
+      "Bash(sed -i -E 's/\\(_whBtnLineBorder *= *\\)_elevated/\\\\1_pink/; s/\\(_whBtnLineText *= *\\)_teal/\\\\1_pink/' admin_page.dart)",
+      "Bash(sed -i -E 's/\\(_htBtnLineBorder *= *\\)_elevated/\\\\1_pink/; s/\\(_htBtnLineText *= *\\)_text;/\\\\1_pink;/' driver_history_page.dart)",
+      "Bash(sed -i -E 's/\\(_rmLeaseSmallBtnColor *= *\\)_text2/\\\\1_pink/' admin_rider_manage_page.dart)"
     ]
   }
 }

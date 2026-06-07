@@ -143,7 +143,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
           .where('isPaid', isEqualTo: false)
           .get();
       if (snap.docs.isEmpty) {
-        if (mounted) showInfoDialog(context, "오늘 납기 회차를 찾을 수 없습니다.");
+        if (mounted) showInfoDialog(context, "오늘 납부 회차를 찾을 수 없습니다.");
         return;
       }
       await snap.docs.first.reference.update({'riderPaid': true});

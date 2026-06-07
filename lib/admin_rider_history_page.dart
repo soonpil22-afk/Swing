@@ -777,12 +777,12 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           height: 28, padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             color: filled ? _teal : Colors.transparent,
-            border: Border.all(color: filled ? _teal : _elevated, width: 1),
+            border: Border.all(color: filled ? _teal : _pink, width: 1),
             borderRadius: BorderRadius.circular(7),
           ),
           alignment: Alignment.center,
           child: Text(label, style: TextStyle(
-              color: filled ? _surface : _teal,
+              color: filled ? _surface : _pink,
               fontSize: 12, fontWeight: FontWeight.w600)),
         ),
       );

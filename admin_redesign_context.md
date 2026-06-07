@@ -90,8 +90,8 @@
 
 ## 리스비 카드 강조색 단순화 (admin + driver 동일) — 완료
 - 규칙: 강조(주의)는 카드 테두리에만 _pink. 이름·뱃지는 상태 무관 항상 _teal. 주황(_orange) 제거.
-- admin(_LeaseAlertsPage): 테두리 로직 → 완납 teal / hasDue(_pink) / hasRiderPaid teal. 이름칩 항상 teal(bg/border/글씨). 뱃지 입금완료!·오늘 납기!·납기초과 전부 teal. 이름 옆 "리스비" 글자 삭제 + orphan _laTagFontSize 토큰 제거.
-- driver: _lsCardBorderAlert _amber→_pink, _lpDueBoxColor("오늘 납기일" 박스) _orange→_teal.
+- admin(_LeaseAlertsPage): 테두리 로직 → 완납 teal / hasDue(_pink) / hasRiderPaid teal. 이름칩 항상 teal(bg/border/글씨). 뱃지 입금완료!·오늘 납부!·납기초과 전부 teal. 이름 옆 "리스비" 글자 삭제 + orphan _laTagFontSize 토큰 제거.
+- driver: _lsCardBorderAlert _amber→_pink, _lpDueBoxColor("오늘 납부일" 박스) _orange→_teal.
 - admin analyze 0건. driver 11건은 전부 기존 dead code/스타일 lint(편집 위치 444·480행과 무관).
 
 ## 관리자 버튼 글래스 샤인 전환 — 완료
@@ -106,9 +106,9 @@
 - Firestore 보안규칙상 쓰기는 관리자 로그인 상태에서 실행 권장.
 
 ## 헤더 박스 정리 + 강조색 핑크→앰버 (admin + driver) — 완료
-- admin 헤더: 이름 배경 박스 제거·글씨 _text, 매일 박스 _amber, 오늘 납기 박스 _teal(! 제거), 두 박스 글씨 크기=이름 크기.
+- admin 헤더: 이름 배경 박스 제거·글씨 _text, 매일 박스 _amber, 오늘 납부 박스 _teal(! 제거), 두 박스 글씨 크기=이름 크기.
 - 강조색 핑크→앰버(핑크 비호감): admin 카드 테두리(hasDue)·기간 납기초과 칩·일일 납부방식 라벨 → _amber. driver _lsCardBorderAlert·_lsInfoPinkColor·_lsPayMethodLabelColor → _amber.
-- 이름 크기 _laRiderNameFontSize 13→14 (매일·오늘 납기 박스도 연동).
+- 이름 크기 _laRiderNameFontSize 13→14 (매일·오늘 납부 박스도 연동).
 
 ## 폰트 Pretendard 전역 적용 — 완료
 - Pretendard는 Google Fonts 미포함 → PretendardVariable.ttf를 assets/fonts에 번들(가변폰트 1개).
