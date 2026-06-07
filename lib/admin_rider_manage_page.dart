@@ -211,11 +211,25 @@ class _RiderManagePageState extends State<RiderManagePage> {
     final nameStr = data['name'] as String? ?? '?';
     final initial = nameStr.isNotEmpty ? nameStr.substring(0, 1) : '?';
 
+    // 공제 적용 여부·주기 (라이더 이름 옆 칩 표시용)
+    final leaseType = data['leaseType'] as String? ?? '';
+    final etcType   = data['etcType']   as String? ?? '';
+    final hasLease  = leaseType.isNotEmpty && ((data['leaseAmount'] as num?) ?? 0) > 0;
+    final hasEtc    = etcType.isNotEmpty   && ((data['etcAmount']   as num?) ?? 0) > 0;
+    String typeKo(String t) => t == 'daily' ? '매일' : (t == 'weekly' ? '주1회' : '매월');
+
     Widget headBtn(String label, Color color, VoidCallback onTap) => GestureDetector(
       onTap: onTap,
       child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(6)),
           child: Text(label, style: TextStyle(color: color, fontSize: _rmHistBtnFontSize, fontWeight: FontWeight.w700))),
+    );
+
+    Widget dedChip(String label, String type, Color color) => Container(
+      margin: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      decoration: BoxDecoration(border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(4)),
+      child: Text("${typeKo(type)} $label", style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.w600)),
     );
 
     return Container(
@@ -231,6 +245,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
             child: Center(child: Text(initial, style: const TextStyle(color: _rmAvatarText, fontSize: _rmAvatarFontSize, fontWeight: FontWeight.w700)))),
         title: Row(children: [
           Flexible(child: Text(nameStr, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _rmNameColor, fontWeight: FontWeight.w700, fontSize: _rmNameFontSize))),
+          if (hasLease) dedChip("리스비", leaseType, _teal),
+          if (hasEtc)   dedChip("기타",   etcType,   _purple),
           const SizedBox(width: 8),
           headBtn("출금내역", _rmHistBtnColor, () => Navigator.push(context, MaterialPageRoute(builder: (_) => RiderHistoryPage(name: nameStr, uid: uid)))),
           const SizedBox(width: 6),
