@@ -182,6 +182,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
     final hasItems        = items.isNotEmpty;
     final totalAmount     = (data['amount'] as num?)?.toDouble() ?? 0;
     final leaseDeduction  = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+    final etcDeduction    = (data['etcDeduction'] as num?)?.toDouble() ?? 0;
     final riderName       = data['riderName'] as String? ?? '';
 
     // 날짜 범위 라벨
@@ -312,8 +313,9 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                   final iITax   = (item['incomeTax']      as num?)?.toDouble() ?? 0;
                   final iIns    = (item['insuranceFee']   as num?)?.toDouble() ?? 0;
                   final iLease  = items.isNotEmpty ? leaseDeduction / items.length : 0.0;
+                  final iEtc    = items.isNotEmpty ? etcDeduction / items.length : 0.0;
                   final iFee    = iWd + iComm;
-                  final iDedu   = iIns + iLease;
+                  final iDedu   = iIns + iLease + iEtc;
                   final iExp    = _dateItemExp[docId]?[iDate] ?? false;
 
                   bool tog(String k) => _dateItemExp[docId]?[k] ?? false;
@@ -408,6 +410,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             if (tog('${iDate}_dedu')) subGroup([
                               subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
                               subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
+                              subRow("기타",       "${_fmtC(iEtc)} 원",   vc: _text2),
                             ]),
                             Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
                             Padding(
@@ -442,8 +445,9 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                   final insuranceFee = _rx(msg, '시간제보험').abs();
                   final withdrawFee  = _rx(msg, '출금수수료').abs();
                   final leaseDailyAmt = _rx(msg, '리스비\\(일\\)').abs();
+                  final etcDailyAmt   = _rx(msg, '기타\\(일\\)').abs();
                   final commAmt      = _rxComm(msg);
-                  final deductTotal  = insuranceFee + withdrawFee + leaseDailyAmt;
+                  final deductTotal  = insuranceFee + withdrawFee + leaseDailyAmt + etcDailyAmt;
                   final finalWd      = _rx(msg, '최종출금금액').abs();
                   final oldTaxExp    = _dateItemExp[docId]?['_tax']   ?? false;
                   final oldPromoExp  = _dateItemExp[docId]?['_promo'] ?? false;
@@ -472,6 +476,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                       _sub("시간제보험", "${_fmtC(insuranceFee)} 원"),
                       _sub("출금수수료", "${_fmtC(withdrawFee)} 원"),
                       _sub("리스비(일)", "${_fmtC(leaseDailyAmt)} 원"),
+                      _sub("기타(일)",   "${_fmtC(etcDailyAmt)} 원"),
                     ]),
                     Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 8)),
                     _row("최종출금금액", "${_fmtC(finalWd)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),
@@ -550,6 +555,47 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                         }
                       }
                     } catch (e) { debugPrint('매일 리스비 완납 처리 실패: $e'); }
+                  }
+
+                  // 매일 타입 기타: 이번 출금에서 실제 공제된 기타 금액 ÷ 1일치 = 완납할 일수
+                  if (fixedUid != null) {
+                    try {
+                      final uEtc = await FirebaseFirestore.instance
+                          .collection('users').doc(fixedUid).get();
+                      final bool isDailyEtc =
+                          (uEtc.data()?['etcType'] as String?) == 'daily';
+                      final double dailyEtc =
+                          (uEtc.data()?['etcAmount'] as num?)?.toDouble() ?? 0;
+                      final int payDaysEtc = (isDailyEtc && dailyEtc > 0)
+                          ? (etcDeduction / dailyEtc).round()
+                          : 0;
+                      if (payDaysEtc > 0) {
+                        final etcSnap = await FirebaseFirestore.instance
+                            .collection('etc_payments')
+                            .where('uid',     isEqualTo: fixedUid)
+                            .where('etcType', isEqualTo: 'daily')
+                            .where('isPaid',  isEqualTo: false)
+                            .get();
+                        if (etcSnap.docs.isNotEmpty) {
+                          final docs = etcSnap.docs.toList()
+                            ..sort((a, b) =>
+                                ((a.data()['cycle'] as num?) ?? 0)
+                                    .compareTo((b.data()['cycle'] as num?) ?? 0));
+                          final eBatch = FirebaseFirestore.instance.batch();
+                          for (final ed in docs.take(payDaysEtc)) {
+                            eBatch.update(ed.reference, {
+                              'isPaid': true,
+                              'paidAt': FieldValue.serverTimestamp(),
+                              'seenByRider': false,
+                            });
+                          }
+                          await eBatch.commit();
+                          await FirebaseFirestore.instance
+                              .collection('users').doc(fixedUid)
+                              .update({'etcNewAlert': true});
+                        }
+                      }
+                    } catch (e) { debugPrint('매일 기타 완납 처리 실패: $e'); }
                   }
 
                   if (mounted) _showDone("입금 처리 완료");
