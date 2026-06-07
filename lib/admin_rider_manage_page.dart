@@ -311,7 +311,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
   }
 }
 
-// ═══════════════ 라이더 공제 설정 페이지 (리스비 + 선급금) ═══════════════
+// ═══════════════ 라이더 공제 설정 페이지 (리스비 + 기타) ═══════════════
 class RiderDeductionPage extends StatefulWidget {
   final String uid;
   final String name;
@@ -320,33 +320,59 @@ class RiderDeductionPage extends StatefulWidget {
   State<RiderDeductionPage> createState() => _RiderDeductionPageState();
 }
 
+// 공제 종류 설정값 (리스비 / 기타)
+class _DeductKind {
+  final String title;       // "리스비" / "기타"
+  final String prefix;      // users 필드 prefix: lease / etc
+  final String collection;  // 회차 컬렉션: lease_payments / etc_payments
+  const _DeductKind(this.title, this.prefix, this.collection);
+}
+
+const _kLease = _DeductKind('리스비', 'lease', 'lease_payments');
+const _kEtc   = _DeductKind('기타',  'etc',   'etc_payments');
+
+// 한 종류의 입력 상태
+class _DeductState {
+  final cycleCtrl  = TextEditingController();
+  final amountCtrl = TextEditingController();
+  String type = 'weekly';
+  DateTime? start;
+  bool editing = false;
+}
+
 class _RiderDeductionPageState extends State<RiderDeductionPage> {
-  final _cycleCtrl  = TextEditingController();
-  final _amountCtrl = TextEditingController();
-  String _leaseType = 'weekly';
-  DateTime? _start;
-  bool _editing = false;
-  bool _loaded  = false;
+  final _lease = _DeductState();
+  final _etc   = _DeductState();
+  bool _loaded = false;
 
   @override
   void initState() { super.initState(); _load(); }
 
   @override
-  void dispose() { _cycleCtrl.dispose(); _amountCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _lease.cycleCtrl.dispose(); _lease.amountCtrl.dispose();
+    _etc.cycleCtrl.dispose();   _etc.amountCtrl.dispose();
+    super.dispose();
+  }
+
+  void _applyLoad(Map<String, dynamic> d, _DeductKind k, _DeductState s) {
+    final t = d['${k.prefix}Type'] as String? ?? 'weekly';
+    s.type = t == 'monthly' ? 'monthly_fixed' : t;
+    s.cycleCtrl.text = d['${k.prefix}Cycle']?.toString() ?? '';
+    final amt = d['${k.prefix}Amount'];
+    if (amt != null) {
+      final n = (amt is num) ? amt.toInt() : int.tryParse(amt.toString()) ?? 0;
+      s.amountCtrl.text = n > 0 ? NumberFormat('#,###').format(n) : '';
+    }
+    final st = d['${k.prefix}StartDate'] as String?;
+    s.start = st != null ? DateTime.tryParse(st) : null;
+  }
 
   Future<void> _load() async {
     try {
       final d = (await FirebaseFirestore.instance.collection('users').doc(widget.uid).get()).data() ?? {};
-      final t = d['leaseType'] as String? ?? 'weekly';
-      _leaseType = t == 'monthly' ? 'monthly_fixed' : t;
-      _cycleCtrl.text = d['leaseCycle']?.toString() ?? '';
-      final amt = d['leaseAmount'];
-      if (amt != null) {
-        final n = (amt is num) ? amt.toInt() : int.tryParse(amt.toString()) ?? 0;
-        _amountCtrl.text = n > 0 ? NumberFormat('#,###').format(n) : '';
-      }
-      final s = d['leaseStartDate'] as String?;
-      _start = s != null ? DateTime.tryParse(s) : null;
+      _applyLoad(d, _kLease, _lease);
+      _applyLoad(d, _kEtc, _etc);
     } catch (_) {}
     if (mounted) setState(() => _loaded = true);
   }
@@ -375,11 +401,11 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
     ));
   }
 
-  Future<void> _save() async {
-    final type   = _leaseType;
-    final cycle  = int.tryParse(_cycleCtrl.text.replaceAll(',', '')) ?? 0;
-    final amount = double.tryParse(_amountCtrl.text.replaceAll(',', ''))?.truncateToDouble() ?? 0;
-    final startDate = _start;
+  Future<void> _save(_DeductKind k, _DeductState s) async {
+    final type   = s.type;
+    final cycle  = int.tryParse(s.cycleCtrl.text.replaceAll(',', '')) ?? 0;
+    final amount = double.tryParse(s.amountCtrl.text.replaceAll(',', ''))?.truncateToDouble() ?? 0;
+    final startDate = s.start;
     final leaseDay  = startDate?.day ?? 1;
     if (startDate == null || amount <= 0) { _info("시작일과 금액을 입력해주세요."); return; }
     if (cycle <= 0) { _info(type == 'daily' ? "총 일수를 입력해주세요." : "회차를 입력해주세요."); return; }
@@ -390,14 +416,14 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
     else { lastDate = _calcMonthlyDate(startDate, cycle - 1, leaseDay); }
 
     await FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
-      'leaseType': type, 'leaseCycle': cycle,
-      'leaseStartDate': DateFormat('yyyy-MM-dd').format(startDate),
-      'leaseLastDate':  DateFormat('yyyy-MM-dd').format(lastDate),
-      'leaseAmount': amount.toInt(), 'leaseNewAlert': false,
+      '${k.prefix}Type': type, '${k.prefix}Cycle': cycle,
+      '${k.prefix}StartDate': DateFormat('yyyy-MM-dd').format(startDate),
+      '${k.prefix}LastDate':  DateFormat('yyyy-MM-dd').format(lastDate),
+      '${k.prefix}Amount': amount.toInt(), '${k.prefix}NewAlert': false,
     });
 
-    String riderName = widget.name;
-    final oldSnap = await FirebaseFirestore.instance.collection('lease_payments').where('uid', isEqualTo: widget.uid).get();
+    final coll = FirebaseFirestore.instance.collection(k.collection);
+    final oldSnap = await coll.where('uid', isEqualTo: widget.uid).get();
     final delBatch = FirebaseFirestore.instance.batch();
     for (final doc in oldSnap.docs) { delBatch.delete(doc.reference); }
     await delBatch.commit();
@@ -408,20 +434,20 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
       if (type == 'daily') { dueDate = startDate.add(Duration(days: n)); }
       else if (type == 'weekly') { dueDate = startDate.add(Duration(days: 7 * n)); }
       else { dueDate = _calcMonthlyDate(startDate, n, leaseDay); }
-      createBatch.set(FirebaseFirestore.instance.collection('lease_payments').doc(), {
-        'uid': widget.uid, 'riderName': riderName, 'cycle': n + 1, 'totalCycle': cycle,
+      createBatch.set(coll.doc(), {
+        'uid': widget.uid, 'riderName': widget.name, 'cycle': n + 1, 'totalCycle': cycle,
         'dueDate': DateFormat('yyyy-MM-dd').format(dueDate),
-        'amount': amount.toInt(), 'isPaid': false, 'paidAt': null, 'leaseType': type,
+        'amount': amount.toInt(), 'isPaid': false, 'paidAt': null, '${k.prefix}Type': type,
       });
     }
     await createBatch.commit();
 
-    _amountCtrl.text = NumberFormat('#,###').format(amount.toInt());
-    if (mounted) setState(() => _editing = false);
-    _info("리스비 저장완료!!\n총 $cycle회차 납기일이 생성되었습니다.");
+    s.amountCtrl.text = NumberFormat('#,###').format(amount.toInt());
+    if (mounted) setState(() => s.editing = false);
+    _info("${k.title} 저장완료!!\n총 $cycle회차 납기일이 생성되었습니다.");
   }
 
-  Future<void> _reset() async {
+  Future<void> _reset(_DeductKind k, _DeductState s) async {
     final confirm = await showDialog<bool>(context: context, builder: (ctx) => Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -431,7 +457,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text("초기화 확인", style: TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
           const SizedBox(height: 12),
-          const Text("리스비 설정을 초기화하면\n모든 납기일이 삭제됩니다.", style: TextStyle(color: _text2, fontSize: 13, height: 1.6), textAlign: TextAlign.center),
+          Text("${k.title} 설정을 초기화하면\n모든 납기일이 삭제됩니다.", style: const TextStyle(color: _text2, fontSize: 13, height: 1.6), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           Row(children: [
             Expanded(child: GlassShineButton(label: "취소", onPressed: () => Navigator.pop(ctx, false), accent: _text2, textColor: _text2, pill: true, height: 46, fontSize: 14)),
@@ -444,25 +470,25 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
     if (confirm != true) return;
     try {
       await FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
-        'leaseType': FieldValue.delete(), 'leaseCycle': FieldValue.delete(),
-        'leaseStartDate': FieldValue.delete(), 'leaseLastDate': FieldValue.delete(),
-        'leaseAmount': FieldValue.delete(), 'leaseNewAlert': FieldValue.delete(),
+        '${k.prefix}Type': FieldValue.delete(), '${k.prefix}Cycle': FieldValue.delete(),
+        '${k.prefix}StartDate': FieldValue.delete(), '${k.prefix}LastDate': FieldValue.delete(),
+        '${k.prefix}Amount': FieldValue.delete(), '${k.prefix}NewAlert': FieldValue.delete(),
       });
-      final snap = await FirebaseFirestore.instance.collection('lease_payments').where('uid', isEqualTo: widget.uid).get();
+      final snap = await FirebaseFirestore.instance.collection(k.collection).where('uid', isEqualTo: widget.uid).get();
       final batch = FirebaseFirestore.instance.batch();
       for (final doc in snap.docs) { batch.delete(doc.reference); }
       await batch.commit();
-      _cycleCtrl.text = ''; _amountCtrl.text = ''; _leaseType = 'weekly'; _start = null;
-      if (mounted) setState(() => _editing = false);
-      _info("리스비 초기화 완료!");
+      s.cycleCtrl.text = ''; s.amountCtrl.text = ''; s.type = 'weekly'; s.start = null;
+      if (mounted) setState(() => s.editing = false);
+      _info("${k.title} 초기화 완료!");
     } catch (_) { _info("초기화 실패. 다시 시도해주세요."); }
   }
 
-  Widget _typeBtn(String type, String label) {
-    final selected = _leaseType == type;
+  Widget _typeBtn(_DeductState s, String type, String label) {
+    final selected = s.type == type;
     final accent = type == 'daily' ? _teal : type == 'weekly' ? _pink : _purple;
     return GestureDetector(
-      onTap: _editing ? () => setState(() => _leaseType = type) : null,
+      onTap: s.editing ? () => setState(() => s.type = type) : null,
       child: AnimatedContainer(duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         decoration: BoxDecoration(color: selected ? accent.withValues(alpha: 0.16) : Colors.transparent, border: Border.all(color: selected ? accent.withValues(alpha: 0.6) : _elevated), borderRadius: BorderRadius.circular(5)),
@@ -476,19 +502,21 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
     final body = !_loaded
         ? const Center(child: CircularProgressIndicator(color: _teal))
         : ListView(padding: const EdgeInsets.fromLTRB(15, kGapSection, 15, 15), children: [
-            _leaseCard(),
+            _card(_kLease, _lease),
+            const SizedBox(height: kGapCard),
+            _card(_kEtc, _etc),
           ]);
     return adminPanelScaffold(context, "${widget.name} 님 공제 설정", body);
   }
 
-  Widget _leaseCard() {
-    final cycle      = int.tryParse(_cycleCtrl.text) ?? 0;
-    final amountRaw  = double.tryParse(_amountCtrl.text.replaceAll(',', '')) ?? 0;
+  Widget _card(_DeductKind k, _DeductState s) {
+    final cycle      = int.tryParse(s.cycleCtrl.text) ?? 0;
+    final amountRaw  = double.tryParse(s.amountCtrl.text.replaceAll(',', '')) ?? 0;
     DateTime? lastDate;
-    if (_start != null && cycle > 0) {
-      if (_leaseType == 'daily') { lastDate = _start!.add(Duration(days: cycle)); }
-      else if (_leaseType == 'weekly') { lastDate = _start!.add(Duration(days: 7 * (cycle - 1))); }
-      else { lastDate = _calcMonthlyDate(_start!, cycle - 1, _start!.day); }
+    if (s.start != null && cycle > 0) {
+      if (s.type == 'daily') { lastDate = s.start!.add(Duration(days: cycle)); }
+      else if (s.type == 'weekly') { lastDate = s.start!.add(Duration(days: 7 * (cycle - 1))); }
+      else { lastDate = _calcMonthlyDate(s.start!, cycle - 1, s.start!.day); }
     }
     final totalAmount = amountRaw * cycle;
     return Container(
@@ -496,18 +524,18 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
       decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: _elevated)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
         Row(children: [
-          const Text("리스비", style: TextStyle(color: _rmLeaseTitleColor, fontSize: _rmLeaseTitleFontSize, fontWeight: FontWeight.w700)),
+          Text(k.title, style: const TextStyle(color: _rmLeaseTitleColor, fontSize: _rmLeaseTitleFontSize, fontWeight: FontWeight.w700)),
           const Spacer(),
           GestureDetector(
-            onTap: () { if (_editing) { _save(); } else { setState(() => _editing = true); } },
+            onTap: () { if (s.editing) { _save(k, s); } else { setState(() => s.editing = true); } },
             child: AnimatedContainer(duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(color: _editing ? _teal : Colors.transparent, border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(6)),
-              child: Text(_editing ? "저장" : "수정", style: TextStyle(color: _editing ? _surface : _teal, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w700)),
+              decoration: BoxDecoration(color: s.editing ? _teal : Colors.transparent, border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(6)),
+              child: Text(s.editing ? "저장" : "수정", style: TextStyle(color: s.editing ? _surface : _teal, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w700)),
             ),
           ),
           const SizedBox(width: 4),
-          GestureDetector(onTap: _reset, child: Container(
+          GestureDetector(onTap: () => _reset(k, s), child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
             decoration: BoxDecoration(border: Border.all(color: _pink), borderRadius: BorderRadius.circular(6)),
             child: const Text("초기화", style: TextStyle(color: _pink, fontSize: _rmLeaseBtnFontSize)),
@@ -515,43 +543,43 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         ]),
         const SizedBox(height: 8),
         Row(children: [
-          _typeBtn('daily', '매일'), const SizedBox(width: 4),
-          _typeBtn('weekly', '주1회'), const SizedBox(width: 4),
-          _typeBtn('monthly_fixed', '매월'),
+          _typeBtn(s, 'daily', '매일'), const SizedBox(width: 4),
+          _typeBtn(s, 'weekly', '주1회'), const SizedBox(width: 4),
+          _typeBtn(s, 'monthly_fixed', '매월'),
           const Spacer(),
           SizedBox(width: 34, height: 26, child: TextField(
-            controller: _cycleCtrl, enabled: _editing, keyboardType: TextInputType.number, textAlign: TextAlign.center,
+            controller: s.cycleCtrl, enabled: s.editing, keyboardType: TextInputType.number, textAlign: TextAlign.center,
             style: const TextStyle(color: _text, fontSize: _rmLeaseInputFontSize), cursorColor: _teal, onChanged: (_) => setState(() {}),
             decoration: InputDecoration(isDense: true, hintText: "0", hintStyle: const TextStyle(color: _text2, fontSize: _rmLeaseHintFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(vertical: 4),
-              enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: _teal)),
+              enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _teal)),
               disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _elevated)),
               focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: const BorderSide(color: _teal))),
           )),
-          Text(_leaseType == 'daily' ? "  일" : "  회차", style: const TextStyle(color: _rmLeaseUnitColor, fontSize: _rmLeaseUnitFontSize)),
+          Text(s.type == 'daily' ? "  일" : "  회차", style: const TextStyle(color: _rmLeaseUnitColor, fontSize: _rmLeaseUnitFontSize)),
         ]),
         const SizedBox(height: 8),
         Row(children: [
           Expanded(child: GestureDetector(
-            onTap: _editing ? () async {
-              final p = await showDatePicker(context: context, initialDate: _start ?? DateTime.now(), firstDate: DateTime(2026), lastDate: DateTime(2030), builder: (ctx, child) => Theme(data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: _teal)), child: child!));
-              if (p != null) setState(() => _start = p);
+            onTap: s.editing ? () async {
+              final p = await showDatePicker(context: context, initialDate: s.start ?? DateTime.now(), firstDate: DateTime(2026), lastDate: DateTime(2030), builder: (ctx, child) => Theme(data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: _teal)), child: child!));
+              if (p != null) setState(() => s.start = p);
             } : null,
-            child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: _editing ? _teal : _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: s.editing ? _teal : _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(children: [
-                Icon(Icons.calendar_today_rounded, color: _editing ? _teal : _text2, size: 12), const SizedBox(width: 4),
-                Expanded(child: Text(_start != null ? DateFormat('yyyy-MM-dd').format(_start!) : "시작일", textAlign: TextAlign.right, style: TextStyle(color: _start != null ? _text : _text2, fontSize: _rmLeaseInputFontSize))),
+                Icon(Icons.calendar_today_rounded, color: s.editing ? _teal : _text2, size: 12), const SizedBox(width: 4),
+                Expanded(child: Text(s.start != null ? DateFormat('yyyy-MM-dd').format(s.start!) : "시작일", textAlign: TextAlign.right, style: TextStyle(color: s.start != null ? _text : _text2, fontSize: _rmLeaseInputFontSize))),
               ]),
             ),
           )),
           const SizedBox(width: 8),
           Expanded(child: Row(children: [
             Expanded(child: Container(height: 32,
-              decoration: BoxDecoration(color: _surface, border: Border.all(color: _editing ? _teal : _elevated), borderRadius: BorderRadius.circular(7)),
+              decoration: BoxDecoration(color: _surface, border: Border.all(color: s.editing ? _teal : _elevated), borderRadius: BorderRadius.circular(7)),
               padding: const EdgeInsets.symmetric(horizontal: 8), alignment: Alignment.centerRight,
               child: TextField(
-                controller: _amountCtrl, enabled: _editing, keyboardType: TextInputType.number, textAlign: TextAlign.right,
+                controller: s.amountCtrl, enabled: s.editing, keyboardType: TextInputType.number, textAlign: TextAlign.right,
                 style: const TextStyle(color: _text, fontSize: _rmLeaseInputFontSize), cursorColor: _teal,
-                onChanged: (v) { final raw = v.replaceAll(',', ''); final n = int.tryParse(raw); if (n != null) { final f = NumberFormat('#,###').format(n); if (f != v) _amountCtrl.value = TextEditingValue(text: f, selection: TextSelection.collapsed(offset: f.length)); } setState(() {}); },
+                onChanged: (v) { final raw = v.replaceAll(',', ''); final n = int.tryParse(raw); if (n != null) { final f = NumberFormat('#,###').format(n); if (f != v) s.amountCtrl.value = TextEditingValue(text: f, selection: TextSelection.collapsed(offset: f.length)); } setState(() {}); },
                 decoration: const InputDecoration(isCollapsed: true, border: InputBorder.none, hintText: "1회차금액", hintStyle: TextStyle(color: _text2, fontSize: _rmLeaseHintFontSize)),
               ),
             )),
