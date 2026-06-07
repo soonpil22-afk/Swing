@@ -16,10 +16,10 @@ const kPink       = Color(0xFFE672BA); // 핑크
 const kAmber      = Color(0xFFE6C97F); // 노랑
 const kRed        = Color(0xFFE05252);
 
-// ═══ 갭(여백) 3단계 — 안쪽 8 / 카드사이 12 / 큰구역 16 ═══
+// ═══ 갭(여백) — 안쪽 8 / 카드사이 8 / 큰구역 10 ═══
 const double kGapInner   = 8;  // 카드 속 헤더↔경계선, 경계선↔내용
-const double kGapCard    = 12; // 카드 ↔ 카드 사이
-const double kGapSection = 16; // 헤더↔카드/경계선, 경계선↔탭/카드
+const double kGapCard    = 8;  // 카드 ↔ 카드 사이
+const double kGapSection = 10; // 헤더↔카드/경계선, 경계선↔탭/카드
 
 // ═══ 그림자 ═══
 const List<BoxShadow> kCardShadow = [
