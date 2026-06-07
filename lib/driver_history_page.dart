@@ -132,7 +132,7 @@ const double _htDateRadius      = 7;   // 날짜 버튼 모서리
 const Color  _htTildeColor      = _text;  // "~" 글씨 색
 const double _htTildeFontSize   = 12;     // "~" 글씨 크기
 const Color  _htBtnFilledBg     = _teal;     // 조회(채움) 배경색
-const Color  _htBtnFilledText   = _appBg;    // 조회(채움) 글씨 색
+const Color  _htBtnFilledText   = _teal;    // 조회(채움) 글씨 색
 const Color  _htBtnLineBorder   = _pink; // 초기화(선) 테두리
 const Color  _htBtnLineText     = _pink;     // 초기화(선) 글씨 색
 const double _htBtnFontSize     = 12;  // 버튼 글씨 크기
@@ -986,7 +986,7 @@ class _HistoryPageState extends State<HistoryPage>
         height: _htBtnHeight,
         padding: const EdgeInsets.symmetric(horizontal: _htBtnPadH),
         decoration: BoxDecoration(
-          color: filled ? _htBtnFilledBg : Colors.transparent,
+          color: Colors.transparent,
           border: Border.all(color: filled ? _htBtnFilledBg : _htBtnLineBorder),
           borderRadius: BorderRadius.circular(_htBtnRadius),
         ),

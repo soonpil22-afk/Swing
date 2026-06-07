@@ -238,7 +238,7 @@ const double _whBtnHeight = 30;    // 조회/초기화 버튼 높이
 const double _whBtnPadH   = 6;    // 버튼 좌우 여백
 const double _whBtnRadius = 7;     // 버튼 모서리
 const _whBtnFilledBg    = _teal; // 채운 버튼(조회) 배경
-const _whBtnFilledText  = _panel;  // 채운 버튼 글씨
+const _whBtnFilledText  = _teal;  // 채운 버튼 글씨
 const _whBtnLineBorder  = _pink; // 외곽선 버튼(초기화) 테두리
 const _whBtnLineText    = _pink; // 외곽선 버튼 글씨
 const double _whBtnFontSize = 12;  // 버튼 글씨 크기
@@ -2247,7 +2247,7 @@ class _AdminPageState extends State<AdminPage> {
   Widget _smallBtn(String label, VoidCallback onTap, {bool filled = false}) => GestureDetector(
     onTap: onTap,
     child: Container(height: _whBtnHeight, padding: const EdgeInsets.symmetric(horizontal: _whBtnPadH),
-      decoration: BoxDecoration(color: filled ? _whBtnFilledBg : Colors.transparent, border: Border.all(color: filled ? _whBtnFilledBg : _whBtnLineBorder), borderRadius: BorderRadius.circular(_whBtnRadius)),
+      decoration: BoxDecoration(color: Colors.transparent, border: Border.all(color: filled ? _whBtnFilledBg : _whBtnLineBorder), borderRadius: BorderRadius.circular(_whBtnRadius)),
       alignment: Alignment.center,
       child: Text(label, style: TextStyle(color: filled ? _whBtnFilledText : _whBtnLineText, fontSize: _whBtnFontSize, fontWeight: FontWeight.w600)),
     ),
