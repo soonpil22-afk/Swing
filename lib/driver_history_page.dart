@@ -662,9 +662,9 @@ class _HistoryPageState extends State<HistoryPage>
                   style: const TextStyle(
                       color: _stDayCountColor, fontSize: _stDayCountFontSize)),
               const Spacer(),
-              _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, bold: true),
-              const SizedBox(width: 8),
               statusBadge(status, stColor),
+              const SizedBox(width: 8),
+              _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, bold: true),
             ]),
           ),
         ),
