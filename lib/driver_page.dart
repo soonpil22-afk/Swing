@@ -773,10 +773,10 @@ class _DriverPageState extends State<DriverPage> {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (_) => HistoryPage(uid: uid)));
                     }, padV: _menuStPadV),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: kGapCard),
                     // ── 7. 리스비 카드 ───────────────────────────────
                     _leaseMenuCard(uid),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: kGapCard),
                     // ── 8. 설정 카드 ─────────────────────────────────
                     _menuCard('설정', Icons.settings, _purple, () {
                       Navigator.push(context,

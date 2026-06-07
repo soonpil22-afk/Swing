@@ -18,8 +18,8 @@ const double _panelOuterPad = 10;
 const double _panelRadius   = 24;
 const Color  _subDivColor   = _elevated;
 const double _subDivMarginH = 15;
-const double _subGapHeaderToDiv = 6;
-const double _subGapDivToBody   = 0;
+const double _subGapHeaderToDiv = kGapInner;
+const double _subGapDivToBody   = kGapSection;
 
 // 랭킹 행 상수(_rank*)
 const _rankNameColor    = _text;

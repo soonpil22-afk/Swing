@@ -51,10 +51,10 @@ const double _panelRadius      = 24;
 const Color  _subDivColor       = _elevated; // 경계선 색
 const double _subDivMarginH     = 15;        // 경계선 좌우 여백(끝까지 안 붙음)
 // 페이지별 헤더↔경계선 / 경계선↔카드 갭 (각자 따로 조정)
-const double _wrPageGapHeaderDiv = 0; const double _wrPageGapDivCard = 4; // 출금신청
-const double _rmPageGapHeaderDiv = 0; const double _rmPageGapDivCard = 4; // 라이더관리
-const double _stPageGapHeaderDiv = 0; const double _stPageGapDivCard = 0; // 공제설정
-const double _ntPageGapHeaderDiv = 0; const double _ntPageGapDivCard = 4; // 공지사항
+const double _wrPageGapHeaderDiv = kGapInner; const double _wrPageGapDivCard = kGapSection; // 출금신청
+const double _rmPageGapHeaderDiv = kGapInner; const double _rmPageGapDivCard = kGapSection; // 라이더관리
+const double _stPageGapHeaderDiv = kGapInner; const double _stPageGapDivCard = kGapSection; // 공제설정
+const double _ntPageGapHeaderDiv = kGapInner; const double _ntPageGapDivCard = kGapSection; // 공지사항
 // 탭 ↔ 첫 카드 갭 (페이지별)
 const double _ntTabToStatGap    = 2; // 공지사항 탭 ↔ 누적방문 카드 갭
 const double _ntStatToNoticeGap = 8; // 누적방문 카드 ↔ 공지사항 갭
