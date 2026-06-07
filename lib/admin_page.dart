@@ -2236,7 +2236,12 @@ class _AdminPageState extends State<AdminPage> {
               const SizedBox(width: 4),
               Icon(expanded ? Icons.expand_less : Icons.expand_more, color: _whTogIconColor, size: _whTogIconSize),
               const Spacer(),
-              Text(value, style: TextStyle(color: vc, fontSize: _whTogFontSize)),
+              Text.rich(TextSpan(children: [
+                TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,
+                    style: TextStyle(color: vc, fontSize: _whTogFontSize)),
+                if (value.endsWith(' 원'))
+                  const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: _whTogFontSize)),
+              ])),
             ]))),
         if (expanded)
           Container(margin: const EdgeInsets.only(bottom: 4), padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

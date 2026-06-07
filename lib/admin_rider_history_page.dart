@@ -485,7 +485,10 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               const SizedBox(width: 4),
               Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: _rhTogLabelColor, size: _rhTogIconSize),
               const Spacer(),
-              Text("${_fmtC(v)} 원", style: TextStyle(color: vc, fontSize: _rhTogFontSize)),
+              Text.rich(TextSpan(children: [
+                TextSpan(text: _fmtC(v), style: TextStyle(color: vc, fontSize: _rhTogFontSize)),
+                const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: _rhTogFontSize)),
+              ])),
             ]),
           ),
         );
@@ -737,7 +740,12 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               Icon(expanded ? Icons.expand_less : Icons.expand_more,
                   color: _rhTogLabelColor, size: _rhTogIconSize),
               const Spacer(),
-              Text(value, style: TextStyle(color: vc, fontSize: _rhTogFontSize)),
+              Text.rich(TextSpan(children: [
+                TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,
+                    style: TextStyle(color: vc, fontSize: _rhTogFontSize)),
+                if (value.endsWith(' 원'))
+                  const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: _rhTogFontSize)),
+              ])),
             ]))),
         if (expanded)
           Container(

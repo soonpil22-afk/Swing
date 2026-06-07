@@ -345,7 +345,10 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             const SizedBox(width: 4),
                             Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: _wrDtTogLabelColor, size: _wrDtTogIconSize),
                             const Spacer(),
-                            Text("${_fmtC(v)} 원", style: TextStyle(color: vc, fontSize: _wrDtTogFontSize)),
+                            Text.rich(TextSpan(children: [
+                              TextSpan(text: _fmtC(v), style: TextStyle(color: vc, fontSize: _wrDtTogFontSize)),
+                              const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: _wrDtTogFontSize)),
+                            ])),
                           ]),
                         ),
                       );
@@ -593,7 +596,12 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
               const SizedBox(width: 4),
               Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: 16),
               const Spacer(),
-              Text(value, style: TextStyle(color: vc, fontSize: 12, fontWeight: FontWeight.w600)),
+              Text.rich(TextSpan(children: [
+                TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,
+                    style: TextStyle(color: vc, fontSize: 12, fontWeight: FontWeight.w600)),
+                if (value.endsWith(' 원'))
+                  const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w600)),
+              ])),
             ]))),
         if (expanded)
           Container(margin: const EdgeInsets.only(bottom: 4), padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
