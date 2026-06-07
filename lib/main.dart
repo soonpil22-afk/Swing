@@ -115,7 +115,7 @@ void main() async {
   }
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(fontFamily: 'Pretendard'),
+    theme: ThemeData(fontFamily: 'DoHyeon'),
     home: const LoginPage(),
   ));
 }
