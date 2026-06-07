@@ -15,6 +15,7 @@ const _text     = kText;
 const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
+const _purple   = kPurple;
 const _amber    = kAmber;
 const List<BoxShadow> _cardShadow = kCardShadow;
 
@@ -484,7 +485,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
                     onTap: isEditingLease ? () => setState(() => _leaseTypeCache[uid] = 'monthly_fixed') : null,
                     child: AnimatedContainer(duration: const Duration(milliseconds: 150),
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(color: leaseType == 'monthly_fixed' ? _teal : Colors.transparent, border: Border.all(color: leaseType == 'monthly_fixed' ? _teal : _elevated), borderRadius: BorderRadius.circular(5)),
+                      decoration: BoxDecoration(color: leaseType == 'monthly_fixed' ? _purple : Colors.transparent, border: Border.all(color: leaseType == 'monthly_fixed' ? _purple : _elevated), borderRadius: BorderRadius.circular(5)),
                       child: Text("매월", style: TextStyle(color: leaseType == 'monthly_fixed' ? _surface : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
                     ),
                   ),
@@ -571,11 +572,12 @@ class _RiderManagePageState extends State<RiderManagePage> {
 
   Widget _leaseTypeBtn(String uid, String type, String label, bool isEditing) {
     final selected = (_leaseTypeCache[uid] ?? 'weekly') == type;
+    final accent = type == 'daily' ? _teal : type == 'weekly' ? _pink : _purple;
     return GestureDetector(
       onTap: isEditing ? () => setState(() => _leaseTypeCache[uid] = type) : null,
       child: AnimatedContainer(duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        decoration: BoxDecoration(color: selected ? _teal : Colors.transparent, border: Border.all(color: selected ? _teal : _elevated), borderRadius: BorderRadius.circular(5)),
+        decoration: BoxDecoration(color: selected ? accent : Colors.transparent, border: Border.all(color: selected ? accent : _elevated), borderRadius: BorderRadius.circular(5)),
         child: Text(label, style: TextStyle(color: selected ? _surface : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
       ),
     );
