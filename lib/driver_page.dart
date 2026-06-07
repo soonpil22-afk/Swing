@@ -810,8 +810,8 @@ class _DriverPageState extends State<DriverPage> {
           ),
           const SizedBox(width: _greetIconGap),
           Expanded(
-            child: RichText(
-              text: TextSpan(children: [
+            child: Text.rich(
+              TextSpan(children: [
                 const TextSpan(
                     text: _greetHelloText,
                     style: TextStyle(
