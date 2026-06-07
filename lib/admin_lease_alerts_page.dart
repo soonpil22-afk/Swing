@@ -65,6 +65,12 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
 
   final Map<String, bool> _expanded = {};
 
+  // 스트림은 한 번만 생성 (매 빌드마다 재구독 방지 → 무한로딩 차단)
+  final Stream<QuerySnapshot> _leaseStream =
+      FirebaseFirestore.instance.collection('lease_payments').snapshots();
+  final Stream<QuerySnapshot> _etcStream =
+      FirebaseFirestore.instance.collection('etc_payments').snapshots();
+
   Future<void> _confirm(_Kind k, String docId, String uid, String riderName, int cycle, int amount) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -193,12 +199,16 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
   Widget build(BuildContext context) {
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final body = StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('lease_payments').snapshots(),
+      stream: _leaseStream,
       builder: (ctx, leaseSnap) {
         return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('etc_payments').snapshots(),
+          stream: _etcStream,
           builder: (ctx2, etcSnap) {
-            if (!leaseSnap.hasData || !etcSnap.hasData) {
+            if (leaseSnap.hasError || etcSnap.hasError) {
+              return const Center(child: Text("불러오기 오류. 다시 시도해주세요.", style: TextStyle(color: _text2, fontSize: 14)));
+            }
+            // 한쪽이라도 준비되면 렌더 (둘 다 대기 중일 때만 로딩)
+            if (!leaseSnap.hasData && !etcSnap.hasData) {
               return const Center(child: CircularProgressIndicator(color: _teal));
             }
 
@@ -206,8 +216,8 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             final Map<String, List<Map<String, dynamic>>> leaseByUid = {};
             final Map<String, List<Map<String, dynamic>>> etcByUid = {};
             final Map<String, String> nameByUid = {};
-            void collect(QuerySnapshot snap, Map<String, List<Map<String, dynamic>>> into) {
-              for (final doc in snap.docs) {
+            void collect(List<QueryDocumentSnapshot> docs, Map<String, List<Map<String, dynamic>>> into) {
+              for (final doc in docs) {
                 final d = doc.data() as Map<String, dynamic>;
                 final uid = d['uid'] as String? ?? '';
                 if (uid.isEmpty) continue;
@@ -216,8 +226,8 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                 nameByUid.putIfAbsent(uid, () => d['riderName'] as String? ?? '');
               }
             }
-            collect(leaseSnap.data!, leaseByUid);
-            collect(etcSnap.data!, etcByUid);
+            collect(leaseSnap.data?.docs ?? [], leaseByUid);
+            collect(etcSnap.data?.docs ?? [], etcByUid);
 
             if (nameByUid.isEmpty) {
               return const Center(child: Text("공제 납기 내역이 없습니다.", style: TextStyle(color: _text2, fontSize: 14)));
