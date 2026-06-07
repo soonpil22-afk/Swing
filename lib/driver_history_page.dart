@@ -44,8 +44,8 @@ const double _hpTabMarginB = 8;  // 탭 바깥 여백 아래
 const String _hpTab1Text         = '정산 내역';  // 첫 번째 탭 이름
 const String _hpTab2Text         = '출금 내역';  // 두 번째 탭 이름
 // ── 헤더 아래 경계선 갭 ──
-const double _hpGapHeaderToDiv = 0;  // 뒤로가기 ↔ 경계선 갭
-const double _hpGapDivToTab    = 12;  // 경계선 ↔ 정산내역 탭 갭
+const double _hpGapHeaderToDiv = kGapSection;  // 뒤로가기 ↔ 경계선 갭
+const double _hpGapDivToTab    = kGapSection;  // 경계선 ↔ 정산내역 탭 갭
 const double _hpDivMarginH     = 15; // 경계선 좌우 여백(끝까지 안 붙음)
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -66,7 +66,7 @@ const Color  _stCardBg          = _surface;    // 카드 배경색
 const Color  _stCardBorderOpen  = _elevated; // 펼친 상태 테두리
 const Color  _stCardBorderClose = _elevated;  // 접힌 상태 테두리
 const double _stCardRadius      = 12;  // 카드 모서리
-const double _stCardGap         = 6;   // 카드 사이 간격
+const double _stCardGap         = kGapCard;   // 카드 사이 간격
 const double _stCardHeadPadH    = 4;   // 카드 머리 좌우 여백
 const double _stCardHeadPadV    = 12;  // 카드 머리 위아래 여백
 const Color  _stDateChipBg      = _chip;   // 날짜 칩 배경
