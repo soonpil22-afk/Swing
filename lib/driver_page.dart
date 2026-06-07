@@ -73,7 +73,6 @@ const double _greetNameFontSize   = 18;  // 이름 크기
 const double _greetSuffixFontSize = 18;  // " 님" 크기
 // ── 숫자 (아이콘·버튼 크기/여백) ──
 const double _gapGreetToChart     = 4;  // 안녕하세요 ↔ 차트카드 간격
-const double _greetVPad           = 1;   // 인사줄 위아래 여백
 const double _greetIconOuterSize  = 22;  // 바깥 원 지름
 const double _greetIconInnerSize  = 12;  // 안쪽 원 지름
 const double _greetIconGap        = 12;  // 원과 글씨 사이 간격
@@ -794,9 +793,7 @@ class _DriverPageState extends State<DriverPage> {
   }
 
   // ── 3. 인사 ─────────────────────────────────────────────────────────
-  Widget _greeting() => Padding(
-        padding: const EdgeInsets.symmetric(vertical: _greetVPad),
-        child: Row(children: [
+  Widget _greeting() => Row(children: [
           Container(
             width: _greetIconOuterSize,
             height: _greetIconOuterSize,
@@ -846,8 +843,7 @@ class _DriverPageState extends State<DriverPage> {
             radius: _greetLogoutRadius,
             fontSize: _greetLogoutIconSize - 3,
           ),
-        ]),
-      );
+        ]);
 
 
   // 미출금 항목 하루치 소계 (정산내역 카드 맨 아래 "소계"와 동일한 계산식)
