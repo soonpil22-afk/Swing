@@ -444,7 +444,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
 
     s.amountCtrl.text = NumberFormat('#,###').format(amount.toInt());
     if (mounted) setState(() => s.editing = false);
-    _info("${k.title} 저장완료!!\n총 $cycle회차 납기일이 생성되었습니다.");
+    _info("${k.title} 저장완료!!\n총 $cycle회차 납부일이 생성되었습니다.");
   }
 
   Future<void> _reset(_DeductKind k, _DeductState s) async {
@@ -457,7 +457,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text("초기화 확인", style: TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
           const SizedBox(height: 12),
-          Text("${k.title} 설정을 초기화하면\n모든 납기일이 삭제됩니다.", style: const TextStyle(color: _text2, fontSize: 13, height: 1.6), textAlign: TextAlign.center),
+          Text("${k.title} 설정을 초기화하면\n모든 납부일이 삭제됩니다.", style: const TextStyle(color: _text2, fontSize: 13, height: 1.6), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           Row(children: [
             Expanded(child: GlassShineButton(label: "취소", onPressed: () => Navigator.pop(ctx, false), accent: _text2, textColor: _text2, pill: true, height: 46, fontSize: 14)),

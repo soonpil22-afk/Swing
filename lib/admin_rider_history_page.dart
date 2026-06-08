@@ -35,9 +35,9 @@ const double _tabTrackPad        = 3;  // 트랙 안쪽 여백
 // ── [8-3] 라이더 출금내역 (정산내역·누적정산 카드) ──
 const double _rhCardBorderWidth = 1;   // 카드 테두리 두께
 const _rhDateChipColor   = _teal;      // 날짜칩 글씨 색
-const double _rhDateChipFontSize = 12; // 날짜칩 글씨 크기
+const double _rhDateChipFontSize = 13; // 날짜칩 글씨 크기
 const _rhDaysColor       = _amber;     // "N일" 색
-const double _rhDaysFontSize = 11;     // "N일" 크기
+const double _rhDaysFontSize = 13;     // "N일" 크기
 const _rhHeadAmtColor    = _text;      // 헤더 금액 색
 const double _rhHeadAmtFontSize = 13;  // 헤더 금액 크기
 const _rhPaidBadgeColor  = _teal;      // "입금완료" 박스 색

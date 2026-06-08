@@ -1,4 +1,4 @@
-// 기사 리스비 페이지 — 납기 알림/납부 버튼 + 리스비 전체현황 카드
+// 기사 리스비 페이지 — 납부 알림/납부 버튼 + 리스비 전체현황 카드
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -32,6 +32,7 @@ const double _lpPanelRadius      = 24;  // 패널 모서리
 const double _lpGapHeaderToDiv = kGapInner;  // 뒤로가기 ↔ 경계선 갭
 const double _lpGapDivToCard   = kGapSection;  // 경계선 ↔ 리스비 전체현황 카드 갭
 const double _lpDivMarginH     = 15; // 경계선 좌우 여백(끝까지 안 붙음)
+const Color  _lpDueAmtColor     = _text;  // 금액 안내 글씨 색
 const Color  _lpEmptyIconColor  = _text2;  // 아이콘 색
 const double _lpEmptyIconSize   = 48;      // 아이콘 크기
 const Color  _lpEmptyTitleColor = _text2;  // 제목 색
@@ -44,7 +45,6 @@ const double _lpDueBoxRadius    = 12;      // 박스 모서리
 const double _lpDueBoxBorderWidth = 1;   // 테두리 두께
 const double _lpDueIconSize     = 22;      // 아이콘 크기
 const double _lpDueTitleFontSize = 13;     // 제목 글씨 크기
-const Color  _lpDueAmtColor     = _text2;  // 금액 안내 글씨 색
 const double _lpDueAmtFontSize  = 12;      // 금액 안내 글씨 크기
 const double _lpPayBtnHeight    = 46;      // 버튼 높이
 const double _lpPayBtnRadius    = 22;      // 버튼 모서리
@@ -272,7 +272,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                       const SizedBox(width: 10),
                       Expanded(
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text("납기 초과 ${overdue.length}건이 있습니다!",
+                        Text("납부 초과 ${overdue.length}건이 있습니다!",
                             style: const TextStyle(
                                 color: _lpOverBoxColor,
                                 fontSize: _lpOverTitleFontSize,
@@ -409,7 +409,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                     color: _lsRemainColor, fontSize: _lsRemainFontSize)),
           ]),
         ],
-        // 주1회/매월 납기일: 안내 + 입금완료 버튼 / 관리자 확인 대기중 (카드 안에 표시)
+        // 주1회/매월 납부일: 안내 + 입금완료 버튼 / 관리자 확인 대기중 (카드 안에 표시)
         if (!isDaily && hasTodayDue) ...[
           const SizedBox(height: 14),
           if (!riderAlreadyPaid) ...[
@@ -423,13 +423,13 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                       width: _lpDueBoxBorderWidth)),
               child: Row(children: [
                 const Icon(Icons.notifications_active_rounded,
-                    color: _lpDueBoxColor, size: _lpDueIconSize),
+                    color: _pink, size: _lpDueIconSize),
                 const SizedBox(width: 10),
                 Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text("오늘 ${widget.title} 납기일입니다!",
+                  Text("오늘 ${widget.title} 납부일입니다!",
                       style: const TextStyle(
-                          color: _lpDueBoxColor,
+                          color: _text,
                           fontSize: _lpDueTitleFontSize,
                           fontWeight: FontWeight.w700)),
                   Text(

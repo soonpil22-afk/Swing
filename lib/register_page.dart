@@ -46,7 +46,7 @@ const Color  _hdrTitleColor    = _text;    // 제목 색
 const double _hdrTitleFontSize = 16;       // 제목 글씨 크기
 const double _hdrTitleLetterSp = 0.2;      // 제목 자간
 const double _hdrTitleSubGap   = 3;        // 제목 ↔ 부제 갭
-const Color  _hdrSubColor      = _text2;   // 부제 색
+const Color  _hdrSubColor      = _amber;   // 부제 색
 const double _hdrSubFontSize   = 11;       // 부제 글씨 크기
 const double _gapHeaderToFields = 16;      // 헤더 ↔ 입력칸 갭
 

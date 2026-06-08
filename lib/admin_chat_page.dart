@@ -270,10 +270,10 @@ class _AdminChatPageState extends State<_AdminChatPage> {
                   filled: true, fillColor: _surface,
                   isDense: true, contentPadding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                   enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: _amber),
+                      borderSide: const BorderSide(color: _elevated),
                       borderRadius: BorderRadius.circular(12)),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: _amber),
+                      borderSide: const BorderSide(color: _teal),
                       borderRadius: BorderRadius.circular(12)),
                 ),
               ),

@@ -711,15 +711,15 @@ class _DriverPageState extends State<DriverPage> {
                     border: Border.all(color: _elevated, width: 1)),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Row(children: [
-                    const Icon(Icons.moped, color: _teal, size: 20),
+                    const Icon(Icons.moped, color: _pink, size: 20),
                     const SizedBox(width: 8),
-                    Text("$title 납기일 안내",
-                        style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
+                    Text("$title 납부일 안내",
+                        style: const TextStyle(color: _pink, fontSize: 15, fontWeight: FontWeight.w700)),
                   ]),
                   const SizedBox(height: 4),
                   const Divider(color: _elevated, height: 16),
                   Text(
-                      "오늘은 $cyc회차 납기일입니다\n${NumberFormat('#,###').format(amt)}원 납부 부탁드립니다.",
+                      "오늘은 $cyc회차 납부일입니다\n${NumberFormat('#,###').format(amt)}원 납부 부탁드립니다.",
                       style: const TextStyle(color: _text, fontSize: 13, height: 1.7),
                       textAlign: TextAlign.center),
                   const SizedBox(height: 20),

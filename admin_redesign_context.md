@@ -85,12 +85,12 @@
 - 토큰값 변경(_la*): _laInfoLabelColor _text2→_text, _laInfoFontSize 11→12, _laCardBorder _elevated→0x4D303854(_cardBorder값), _laCardTitleColor _text2→_text, _laCardTitleFontSize 12→13, _laRowFontSize 11→12, _laRowValueFontSize 12→16.
 - _infoRow 헬퍼에 labelColor/labelFs 파라미터 추가(driver _infoRow2와 동일 시그니처).
 - 인라인: 헤더 아이콘 moped/_text2/15 → directions_bike_outlined/_teal/16, 칩 bg/border/글씨 0xFF18203A·0x4D303854·11·pad(8,3)·radius6, 구분선 _teal→_elevated@0.6 margin v10, 진행/납부 라벨·값 _amber, 잔여 _teal, 진행 total 17, 진행바 track 0xFF18203A, 행 간격 driver값(5/10/6/8/3).
-- 유지(로직): 데이터 계산, 기간 칩 납기초과 분홍/민트 색, 입금확인/취소 버튼.
+- 유지(로직): 데이터 계산, 기간 칩 납부초과 분홍/민트 색, 입금확인/취소 버튼.
 - flutter analyze: No issues found.
 
 ## 리스비 카드 강조색 단순화 (admin + driver 동일) — 완료
 - 규칙: 강조(주의)는 카드 테두리에만 _pink. 이름·뱃지는 상태 무관 항상 _teal. 주황(_orange) 제거.
-- admin(_LeaseAlertsPage): 테두리 로직 → 완납 teal / hasDue(_pink) / hasRiderPaid teal. 이름칩 항상 teal(bg/border/글씨). 뱃지 입금완료!·오늘 납부!·납기초과 전부 teal. 이름 옆 "리스비" 글자 삭제 + orphan _laTagFontSize 토큰 제거.
+- admin(_LeaseAlertsPage): 테두리 로직 → 완납 teal / hasDue(_pink) / hasRiderPaid teal. 이름칩 항상 teal(bg/border/글씨). 뱃지 입금완료!·오늘 납부!·납부초과 전부 teal. 이름 옆 "리스비" 글자 삭제 + orphan _laTagFontSize 토큰 제거.
 - driver: _lsCardBorderAlert _amber→_pink, _lpDueBoxColor("오늘 납부일" 박스) _orange→_teal.
 - admin analyze 0건. driver 11건은 전부 기존 dead code/스타일 lint(편집 위치 444·480행과 무관).
 
@@ -101,13 +101,13 @@
 
 ## 테스트 시드/삭제 — 완료
 - lib/dev_seed.dart: seedTestData()/deleteTestData(). 모든 시드 문서에 isTestData:true 마커.
-- 가짜 기사 10명(users, role=driver/isApproved) + lease_payments(매일20/주1회8/매월3 회차, paidCount·납기상태(오늘/초과/정상)·riderPaid 다양화) + admin_settlement_logs(기사당 3건, approvedAt 최근7일/주/월 → 차트·랭킹·총배달건수). 문서ID 고정(test_rider_n, _c$c, _log$k)이라 재실행 시 덮어씀.
+- 가짜 기사 10명(users, role=driver/isApproved) + lease_payments(매일20/주1회8/매월3 회차, paidCount·납부상태(오늘/초과/정상)·riderPaid 다양화) + admin_settlement_logs(기사당 3건, approvedAt 최근7일/주/월 → 차트·랭킹·총배달건수). 문서ID 고정(test_rider_n, _c$c, _log$k)이라 재실행 시 덮어씀.
 - 관리자 대시보드 최상단에 임시 _devSeedPanel(🧪 시드 생성/삭제 글래스 버튼) 추가. 배포 전 제거 대상: dev_seed.dart import, _devBusy 필드, _devSeedPanel()/_runDev(), _dashboard()의 _devSeedPanel() 호출.
 - Firestore 보안규칙상 쓰기는 관리자 로그인 상태에서 실행 권장.
 
 ## 헤더 박스 정리 + 강조색 핑크→앰버 (admin + driver) — 완료
 - admin 헤더: 이름 배경 박스 제거·글씨 _text, 매일 박스 _amber, 오늘 납부 박스 _teal(! 제거), 두 박스 글씨 크기=이름 크기.
-- 강조색 핑크→앰버(핑크 비호감): admin 카드 테두리(hasDue)·기간 납기초과 칩·일일 납부방식 라벨 → _amber. driver _lsCardBorderAlert·_lsInfoPinkColor·_lsPayMethodLabelColor → _amber.
+- 강조색 핑크→앰버(핑크 비호감): admin 카드 테두리(hasDue)·기간 납부초과 칩·일일 납부방식 라벨 → _amber. driver _lsCardBorderAlert·_lsInfoPinkColor·_lsPayMethodLabelColor → _amber.
 - 이름 크기 _laRiderNameFontSize 13→14 (매일·오늘 납부 박스도 연동).
 
 ## 폰트 Pretendard 전역 적용 — 완료

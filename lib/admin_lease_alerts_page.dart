@@ -1,4 +1,4 @@
-// 관리자 공제 납기 현황 — 라이더별 리스비/기타 진행·납기 알림 카드 목록
+// 관리자 공제 납부 현황 — 라이더별 리스비/기타 진행·납부 알림 카드 목록
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -17,7 +17,7 @@ const _amber    = kAmber;
 const _purple   = kPurple;
 const List<BoxShadow> _cardShadow = kCardShadow;
 
-// ═══════════════ 리스비 납기 현황 카드 상수(_la*) ═══════════════
+// ═══════════════ 리스비 납부 현황 카드 상수(_la*) ═══════════════
 const double _laListPadL = 15;  // 목록 바깥 여백 왼
 const double _laListPadT = 4;  // 위
 const double _laListPadR = 15;  // 오른
@@ -53,7 +53,7 @@ class _Kind {
 const _kLease = _Kind('리스비', 'lease_payments', 'leaseType', 'leaseNewAlert', Icons.moped, _teal);
 const _kEtc   = _Kind('기타',  'etc_payments',  'etcType',   'etcNewAlert',  Icons.account_balance_wallet, _purple);
 
-// ═══════════════ 공제 납기 현황 페이지 (로직) ═══════════════
+// ═══════════════ 공제 납부 현황 페이지 (로직) ═══════════════
 class LeaseAlertsPage extends StatefulWidget {
   final bool embedded;
   const LeaseAlertsPage({super.key, this.embedded = false});
@@ -187,7 +187,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         Text(value, style: TextStyle(color: vc, fontSize: _laInfoFontSize, fontWeight: FontWeight.w600)),
       ]);
 
-  // 납기 도래(오늘 이하 미납) 여부
+  // 납부 도래(오늘 이하 미납) 여부
   bool _hasDue(List<Map<String, dynamic>> ps, String today) => ps.any((p) =>
       (p['dueDate'] as String? ?? '').compareTo(today) <= 0 && p['isPaid'] != true);
   bool _isDueToday(List<Map<String, dynamic>> ps, String today) => ps.any((p) =>
@@ -230,7 +230,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             collect(etcSnap.data?.docs ?? [], etcByUid);
 
             if (nameByUid.isEmpty) {
-              return const Center(child: Text("공제 납기 내역이 없습니다.", style: TextStyle(color: _text2, fontSize: 14)));
+              return const Center(child: Text("공제 납부 내역이 없습니다.", style: TextStyle(color: _text2, fontSize: 14)));
             }
 
             final uids = nameByUid.keys.toList()
@@ -284,7 +284,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                           ) else if (hasDue) Container(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                             decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _pink)),
-                            child: const Text("납기초과", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+                            child: const Text("납부초과", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
                           ),
                           const SizedBox(width: 6),
                           Icon(isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: _laChevronSize),
@@ -314,7 +314,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     );
     return widget.embedded
         ? body
-        : adminPanelScaffold(context, "공제 납기 현황", body);
+        : adminPanelScaffold(context, "공제 납부 현황", body);
   }
 
   // ── 전체현황 카드 (리스비/기타 공용) — 버튼을 카드 안에 포함 ──
