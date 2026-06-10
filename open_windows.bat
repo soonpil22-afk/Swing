@@ -1,5 +1,5 @@
 @echo off
-rem 폰 크기 크롬 창 2개 열기 (왼쪽=관리자 / 오른쪽=기사). run_web.bat 먼저 실행 후 사용
+rem Open two phone-sized Chrome windows (left = admin, right = driver). Run run_web.bat first.
 set CHROME="C:\Program Files\Google\Chrome\Application\chrome.exe"
 if not exist %CHROME% set CHROME="C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 
