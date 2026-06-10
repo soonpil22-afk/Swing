@@ -108,7 +108,6 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
   // 정산내역 탭
   List<Map<String, dynamic>> _logs       = [];
   bool                        _logsLoaded = false;
-  final Map<String, bool>    _logExp     = {};  // 정산 배치 펼치기
   final Map<String, bool>    _dateExp    = {};  // 날짜별 펼치기
 
   // 누적정산 탭
@@ -365,7 +364,6 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
         ?.map((e) => Map<String, dynamic>.from(e as Map)).toList() ?? [];
     final approvedAt = (data['approvedAt'] as Timestamp?)?.toDate();
     final dateStr    = approvedAt != null ? DateFormat('yyyy-MM-dd').format(approvedAt) : '';
-    final logExp     = _logExp[docId] ?? false;
 
     // 날짜 범위 라벨
     String dateLabel;
@@ -387,52 +385,47 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
       ),
       child: Column(children: [
 
-        // 카드 헤더
-        GestureDetector(
-          onTap: () => setState(() => _logExp[docId] = !logExp),
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: _rhLogHeadPadH, vertical: _rhLogHeadPadV),
-            child: Row(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _surface, borderRadius: BorderRadius.circular(7),
-                  border: Border.all(color: _elevated),
-                ),
-                child: Text(dateLabel,
-                    style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w700)),
+        // 카드 헤더 (항상 펼침 — 토글 없음, 펼침 표시 아이콘만)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _rhLogHeadPadH, vertical: _rhLogHeadPadV),
+          child: Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: _surface, borderRadius: BorderRadius.circular(7),
+                border: Border.all(color: _elevated),
               ),
-              const SizedBox(width: 8),
-              if (items.isNotEmpty)
-                Text("  ${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
-              const Spacer(),
-              Text("${_fmtC(amount)} 원",
-                  style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w700)),
-            ]),
-          ),
+              child: Text(dateLabel,
+                  style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w700)),
+            ),
+            const SizedBox(width: 8),
+            if (items.isNotEmpty)
+              Text("  ${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
+            const Spacer(),
+            Text("${_fmtC(amount)} 원",
+                style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w700)),
+            const SizedBox(width: 6),
+            const Icon(Icons.keyboard_arrow_down_rounded, color: _text2, size: 18),
+          ]),
         ),
 
-        // 펼침 내용
-        if (logExp) ...[
-          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(_rhLogBodyPadL, _rhLogBodyPadT, _rhLogBodyPadR, _rhLogBodyPadB),
-            child: Column(children: [
-              if (items.isNotEmpty) ...[
-                // 리스비를 날짜카드 안쪽(출금수수료 밑)으로 이동
-                for (int i = 0; i < items.length; i++)
-                  _dateItemCard(items[i], docId,
-                      leasePerDay: (() {
-                        final ld = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
-                        return items.isNotEmpty ? ld / items.length : 0.0;
-                      })()),
-              ] else
-                _oldMsgView(data),
-
-            ]),
-          ),
-        ],
+        // 항상 펼침 내용
+        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(_rhLogBodyPadL, _rhLogBodyPadT, _rhLogBodyPadR, _rhLogBodyPadB),
+          child: Column(children: [
+            if (items.isNotEmpty) ...[
+              // 리스비를 날짜카드 안쪽(출금수수료 밑)으로 이동
+              for (int i = 0; i < items.length; i++)
+                _dateItemCard(items[i], docId,
+                    leasePerDay: (() {
+                      final ld = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+                      return items.isNotEmpty ? ld / items.length : 0.0;
+                    })()),
+            ] else
+              _oldMsgView(data),
+          ]),
+        ),
       ]),
     );
   }
