@@ -1,4 +1,4 @@
-# jeju_rider
+# SwingTiger
 
 A new Flutter project.
 
