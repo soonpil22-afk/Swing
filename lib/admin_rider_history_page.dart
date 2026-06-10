@@ -108,7 +108,8 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
   // 정산내역 탭
   List<Map<String, dynamic>> _logs       = [];
   bool                        _logsLoaded = false;
-  final Map<String, bool>    _dateExp    = {};  // 날짜별 펼치기
+  final Map<String, bool>    _logExp     = {};  // 정산 배치(바깥 카드) 펼치기
+  final Map<String, bool>    _dateExp    = {};  // 날짜별 하위 토글
 
   // 누적정산 탭
   DateTime? _start, _end, _startApplied, _endApplied;
@@ -364,6 +365,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
         ?.map((e) => Map<String, dynamic>.from(e as Map)).toList() ?? [];
     final approvedAt = (data['approvedAt'] as Timestamp?)?.toDate();
     final dateStr    = approvedAt != null ? DateFormat('yyyy-MM-dd').format(approvedAt) : '';
+    final logExp     = _logExp[docId] ?? false;
 
     // 날짜 범위 라벨
     String dateLabel;
@@ -385,47 +387,54 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
       ),
       child: Column(children: [
 
-        // 카드 헤더 (항상 펼침 — 토글 없음, 펼침 표시 아이콘만)
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: _rhLogHeadPadH, vertical: _rhLogHeadPadV),
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: _surface, borderRadius: BorderRadius.circular(7),
-                border: Border.all(color: _elevated),
+        // 카드 헤더 (탭하여 펼침/접기 — 토글 유지)
+        GestureDetector(
+          onTap: () => setState(() => _logExp[docId] = !logExp),
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: _rhLogHeadPadH, vertical: _rhLogHeadPadV),
+            child: Row(children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _surface, borderRadius: BorderRadius.circular(7),
+                  border: Border.all(color: _elevated),
+                ),
+                child: Text(dateLabel,
+                    style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w700)),
               ),
-              child: Text(dateLabel,
-                  style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w700)),
-            ),
-            const SizedBox(width: 8),
-            if (items.isNotEmpty)
-              Text("  ${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
-            const Spacer(),
-            Text("${_fmtC(amount)} 원",
-                style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w700)),
-            const SizedBox(width: 6),
-            const Icon(Icons.keyboard_arrow_down_rounded, color: _text2, size: 18),
-          ]),
+              const SizedBox(width: 8),
+              if (items.isNotEmpty)
+                Text("  ${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
+              const Spacer(),
+              Text("${_fmtC(amount)} 원",
+                  style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 6),
+              Icon(logExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                  color: _text2, size: 18),
+            ]),
+          ),
         ),
 
-        // 항상 펼침 내용
-        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(_rhLogBodyPadL, _rhLogBodyPadT, _rhLogBodyPadR, _rhLogBodyPadB),
-          child: Column(children: [
-            if (items.isNotEmpty) ...[
-              // 리스비를 날짜카드 안쪽(출금수수료 밑)으로 이동
-              for (int i = 0; i < items.length; i++)
-                _dateItemCard(items[i], docId,
-                    leasePerDay: (() {
-                      final ld = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
-                      return items.isNotEmpty ? ld / items.length : 0.0;
-                    })()),
-            ] else
-              _oldMsgView(data),
-          ]),
-        ),
+        // 펼침 내용 (열면 안쪽 날짜 카드는 이미 펼쳐진 상태로 표시)
+        if (logExp) ...[
+          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(_rhLogBodyPadL, _rhLogBodyPadT, _rhLogBodyPadR, _rhLogBodyPadB),
+            child: Column(children: [
+              if (items.isNotEmpty) ...[
+                // 리스비를 날짜카드 안쪽(출금수수료 밑)으로 이동
+                for (int i = 0; i < items.length; i++)
+                  _dateItemCard(items[i], docId,
+                      leasePerDay: (() {
+                        final ld = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+                        return items.isNotEmpty ? ld / items.length : 0.0;
+                      })()),
+              ] else
+                _oldMsgView(data),
+            ]),
+          ),
+        ],
       ]),
     );
   }
@@ -434,7 +443,6 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     final iDate   = item['date']            as String? ?? '';
     final iFinal  = (item['finalAmount']    as num?)?.toDouble() ?? 0;
     final key     = '${docId}_$iDate';
-    final iExp    = _dateExp[key] ?? false;
     final iShort  = iDate.length >= 10 ? iDate.substring(5) : iDate;
     final actualFinal = iFinal - leasePerDay;
 
@@ -490,79 +498,74 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
       margin: const EdgeInsets.only(bottom: _rhItemGap),
       decoration: BoxDecoration(
         color: _surface, borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: iExp ? _teal : _elevated),
+        border: Border.all(color: _elevated),
       ),
       child: Column(children: [
-        GestureDetector(
-          onTap: () => setState(() => _dateExp[key] = !iExp),
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: _rhItemHeadPadH, vertical: _rhItemHeadPadV),
-            child: Row(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(5), border: Border.all(color: _elevated)),
-                child: Text(iShort, style: const TextStyle(color: _rhItemChipColor, fontSize: _rhItemChipFontSize, fontWeight: FontWeight.w700)),
+        // 날짜 헤더 (토글 없음 — 항상 펼침)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _rhItemHeadPadH, vertical: _rhItemHeadPadV),
+          child: Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(5), border: Border.all(color: _elevated)),
+              child: Text(iShort, style: const TextStyle(color: _rhItemChipColor, fontSize: _rhItemChipFontSize, fontWeight: FontWeight.w700)),
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              decoration: BoxDecoration(
+                color: _rhPaidBadgeColor.withAlpha(20),
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: _rhPaidBadgeColor),
               ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                decoration: BoxDecoration(
-                  color: _rhPaidBadgeColor.withAlpha(20),
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: _rhPaidBadgeColor),
-                ),
-                child: const Text("입금완료",
-                    style: TextStyle(color: _rhPaidBadgeColor, fontSize: _rhPaidFontSize, fontWeight: FontWeight.w700)),
-              ),
-            ]),
-          ),
+              child: const Text("입금완료",
+                  style: TextStyle(color: _rhPaidBadgeColor, fontSize: _rhPaidFontSize, fontWeight: FontWeight.w700)),
+            ),
+          ]),
         ),
-        if (iExp) ...[
-          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(_rhItemBodyPadL, _rhItemBodyPadT, _rhItemBodyPadR, _rhItemBodyPadB),
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w500)),
-                  Text("${_fmtC(iDel)} 원", style: const TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize)),
-                ]),
-              ),
-              togRow("지원금합계", iPromo, _text, '${key}_promo'),
-              if (tog('${key}_promo')) subGroup([
-                subRow("건당프로모션", "${_fmtC(iPOrd)} 원"),
-                subRow("구간프로모션", "${_fmtC(iRng)} 원"),
+        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(_rhItemBodyPadL, _rhItemBodyPadT, _rhItemBodyPadR, _rhItemBodyPadB),
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w500)),
+                Text("${_fmtC(iDel)} 원", style: const TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize)),
               ]),
-              togRow("세금합계", iTax, _pink, '${key}_tax'),
-              if (tog('${key}_tax')) subGroup([
-                subRow("고용보험", "${_fmtC(iETax)} 원", vc: _text2),
-                subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
-                subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
-              ]),
-              togRow("수수료합계", iFee, _pink, '${key}_comm'),
-              if (tog('${key}_comm')) subGroup([
-                subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
-                subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
-              ]),
-              togRow("공제합계", iDedu, _pink, '${key}_dedu'),
-              if (tog('${key}_dedu')) subGroup([
-                subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
-                subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
-              ]),
-              Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Text("소계", style: TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
-                  Text("${_fmtC(leasePerDay > 0 ? actualFinal : iFinal)} 원",
-                      style: const TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalValueFontSize, fontWeight: FontWeight.w700)),
-                ]),
-              ),
+            ),
+            togRow("지원금합계", iPromo, _text, '${key}_promo'),
+            if (tog('${key}_promo')) subGroup([
+              subRow("건당프로모션", "${_fmtC(iPOrd)} 원"),
+              subRow("구간프로모션", "${_fmtC(iRng)} 원"),
             ]),
-          ),
-        ],
+            togRow("세금합계", iTax, _pink, '${key}_tax'),
+            if (tog('${key}_tax')) subGroup([
+              subRow("고용보험", "${_fmtC(iETax)} 원", vc: _text2),
+              subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
+              subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
+            ]),
+            togRow("수수료합계", iFee, _pink, '${key}_comm'),
+            if (tog('${key}_comm')) subGroup([
+              subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
+              subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
+            ]),
+            togRow("공제합계", iDedu, _pink, '${key}_dedu'),
+            if (tog('${key}_dedu')) subGroup([
+              subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
+              subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
+            ]),
+            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                const Text("소계", style: TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
+                Text("${_fmtC(leasePerDay > 0 ? actualFinal : iFinal)} 원",
+                    style: const TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalValueFontSize, fontWeight: FontWeight.w700)),
+              ]),
+            ),
+          ]),
+        ),
       ]),
     );
   }
