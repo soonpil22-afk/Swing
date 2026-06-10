@@ -9,7 +9,6 @@ import 'admin_common.dart';
 const _surface  = kSurface;
 const _elevated = kElevated;
 const _teal     = kTeal;
-const _amber    = kAmber;
 const _text     = kText;
 const _text2    = kText2;
 const _pink     = kPink;

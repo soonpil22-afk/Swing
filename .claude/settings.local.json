@@ -75,7 +75,8 @@
       "PowerShell(flutter analyze lib/admin_rider_manage_page.dart 2>&1)",
       "PowerShell($p=\"C:\\\\JejuProject\\\\swing_tiger\\\\lib\\\\admin_rider_manage_page.dart\"; $lines=Get-Content $p -Encoding UTF8; [System.IO.File]::WriteAllLines\\($p, $lines[0..311], \\(New-Object System.Text.UTF8Encoding $false\\)\\); Write-Output \\(\"kept \" + 312 + \" lines\"\\))",
       "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='dart.exe' OR Name='flutter.exe'\" | Select-Object ProcessId, @{n='Cmd';e={$_.CommandLine.Substring\\(0,[Math]::Min\\(120,$_.CommandLine.Length\\)\\)}} | Format-Table -AutoSize)",
-      "PowerShell($c = Test-NetConnection -ComputerName 127.0.0.1 -Port 5001 -WarningAction SilentlyContinue; Write-Output \\(\"5001 open: \" + $c.TcpTestSucceeded\\))"
+      "PowerShell($c = Test-NetConnection -ComputerName 127.0.0.1 -Port 5001 -WarningAction SilentlyContinue; Write-Output \\(\"5001 open: \" + $c.TcpTestSucceeded\\))",
+      "PowerShell($ok=$false; for\\($i=0;$i -lt 30;$i++\\){ $c=Test-NetConnection -ComputerName 127.0.0.1 -Port 5001 -WarningAction SilentlyContinue; if\\($c.TcpTestSucceeded\\){$ok=$true;break}; Start-Sleep -Seconds 4 }; \"5001 open: \" + $ok)"
     ]
   }
 }
