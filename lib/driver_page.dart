@@ -804,21 +804,8 @@ class _DriverPageState extends State<DriverPage> {
                           MaterialPageRoute(builder: (_) => HistoryPage(uid: uid)));
                     }, padV: _menuStPadV),
                     const SizedBox(height: kGapCard),
-                    // ── 7. 리스비 카드 ───────────────────────────────
-                    _deductMenuCard(uid,
-                        collection: 'lease_payments',
-                        label: '리스비',
-                        prefix: 'lease',
-                        icon: Icons.moped,
-                        iconColor: _pink),
-                    const SizedBox(height: kGapCard),
-                    // ── 7-1. 기타 카드 ───────────────────────────────
-                    _deductMenuCard(uid,
-                        collection: 'etc_payments',
-                        label: '기타',
-                        prefix: 'etc',
-                        icon: Icons.account_balance_wallet,
-                        iconColor: _purple),
+                    // ── 7. 리스비 카드 (리스비+기타 현황 모두 표시) ──
+                    _deductMenuCard(uid),
                     const SizedBox(height: kGapCard),
                     // ── 8. 설정 카드 ─────────────────────────────────
                     _menuCard('설정', Icons.settings, _purple, () {
@@ -1416,71 +1403,69 @@ class _DriverPageState extends State<DriverPage> {
         ),
       );
 
-  // ── 공제 메뉴 카드 (리스비 / 기타 공용) ────────────────────────────
-  Widget _deductMenuCard(String uid,
-          {required String collection,
-          required String label,
-          required String prefix,
-          required IconData icon,
-          required Color iconColor}) =>
-      StreamBuilder<QuerySnapshot>(
+  // ── 리스비 메뉴 카드 (리스비+기타 현황 페이지로 이동, 배지는 둘 다 반영) ──
+  bool _anyDue(QuerySnapshot? snap, String today) =>
+      snap?.docs.any((dDoc) {
+        final dd = (dDoc.data() as Map)['dueDate'] as String? ?? '';
+        return dd.isNotEmpty && dd.compareTo(today) <= 0;
+      }) ??
+      false;
+
+  Widget _deductMenuCard(String uid) => StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection(collection)
+            .collection('lease_payments')
             .where('uid', isEqualTo: uid)
             .where('isPaid', isEqualTo: false)
             .snapshots(),
-        builder: (_, snap) {
-          final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-          final hasDue = snap.data?.docs.any((dDoc) {
-                final dd = (dDoc.data() as Map)['dueDate'] as String? ?? '';
-                return dd.isNotEmpty && dd.compareTo(today) <= 0;
-              }) ??
-              false;
-          return GestureDetector(
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => DriverLeasePage(
-                        uid: uid,
-                        prefix: prefix,
-                        collection: collection,
-                        title: label))),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: _menuLsPadV),
-              decoration: BoxDecoration(
-                color: _surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: _elevated, width: 1),
-                boxShadow: _cardShadow,
-              ),
-              child: Row(children: [
-                Icon(icon, color: iconColor, size: 24),
-                const SizedBox(width: 14),
-                Stack(clipBehavior: Clip.none, children: [
-                  Text(label,
-                      style: const TextStyle(
-                          color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
-                  if (hasDue)
-                    Positioned(
-                      right: -12,
-                      top: -5,
-                      child: Container(
-                        width: 16,
-                        height: 16,
-                        decoration: const BoxDecoration(color: _red, shape: BoxShape.circle),
-                        child: const Center(
-                            child: Text("N",
-                                style: TextStyle(
-                                    color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
+        builder: (_, leaseSnap) => StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('etc_payments')
+              .where('uid', isEqualTo: uid)
+              .where('isPaid', isEqualTo: false)
+              .snapshots(),
+          builder: (_, etcSnap) {
+            final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+            final hasDue = _anyDue(leaseSnap.data, today) || _anyDue(etcSnap.data, today);
+            return GestureDetector(
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => DriverLeasePage(uid: uid))),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: _menuLsPadV),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: _elevated, width: 1),
+                  boxShadow: _cardShadow,
+                ),
+                child: Row(children: [
+                  const Icon(Icons.moped, color: _pink, size: 24),
+                  const SizedBox(width: 14),
+                  Stack(clipBehavior: Clip.none, children: [
+                    const Text('리스비',
+                        style: TextStyle(
+                            color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
+                    if (hasDue)
+                      Positioned(
+                        right: -12,
+                        top: -5,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: const BoxDecoration(color: _red, shape: BoxShape.circle),
+                          child: const Center(
+                              child: Text("N",
+                                  style: TextStyle(
+                                      color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
+                        ),
                       ),
-                    ),
+                  ]),
+                  const Spacer(),
+                  const Icon(Icons.chevron_right, color: _text2, size: 22),
                 ]),
-                const Spacer(),
-                const Icon(Icons.chevron_right, color: _text2, size: 22),
-              ]),
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       );
 
   // ── FAB & 1:1 상담 풍선창 ──────────────────────────────────────────

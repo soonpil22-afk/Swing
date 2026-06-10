@@ -1,4 +1,4 @@
-// 기사 리스비 페이지 — 납부 알림/납부 버튼 + 리스비 전체현황 카드
+// 기사 공제 현황 페이지 — 리스비/기타 전체현황 카드 + 주1회/매월 입금완료 버튼
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -17,6 +17,7 @@ const _text2     = kText2;
 const _teal      = kTeal;
 const _amber     = kAmber;
 const _pink      = kPink;
+const _purple    = kPurple;
 const _red       = kRed;
 const Color _bgScaffold = _appBg;
 const List<BoxShadow> _cardShadow  = kCardShadow;
@@ -71,13 +72,11 @@ const double _lsCardPadL = 16;  // 안쪽 여백 왼
 const double _lsCardPadT = 14;  // 안쪽 여백 위
 const double _lsCardPadR = 16;  // 안쪽 여백 오른
 const double _lsCardPadB = 16;  // 안쪽 여백 아래
-const Color  _lsHeadIconColor   = _teal;   // 자전거 아이콘 색
 const double _lsHeadIconSize    = 16;      // 아이콘 크기
 const Color  _lsHeadTitleColor  = _text;   // "리스비 전체 현황" 글씨 색
 const double _lsHeadTitleFontSize = 13;    // 제목 글씨 크기
 const Color  _lsTypeChipBg      = _chip;   // 타입 칩 배경
 const Color  _lsTypeChipBorder  = _elevated; // 타입 칩 테두리
-const Color  _lsTypeChipText    = _teal;   // 타입 칩 글씨 색
 const double _lsTypeChipFontSize = 11;     // 타입 칩 글씨 크기
 const Color  _lsInfoLabelColor  = _text;   // 정보 라벨 색
 const Color  _lsInfoValueColor  = _text;   // 정보 값 색
@@ -98,55 +97,74 @@ const double _lsPaidFontSize    = 12;      // "납부 완료" 글씨 크기
 const Color  _lsRemainColor     = _teal;   // "잔여 금액" 라벨·금액 색
 const double _lsRemainFontSize  = 12;      // "잔여 금액" 글씨 크기
 
-// ═══════════════ 리스비/기타 공제 현황 페이지 (로직) ═══════════════
+// 공제 종류 (리스비 / 기타)
+class _DKind {
+  final String prefix;      // users 필드 prefix: lease / etc
+  final String collection;  // 회차 컬렉션
+  final String title;       // '리스비' / '기타'
+  final IconData icon;
+  final Color accent;       // 제목 아이콘·칩 강조색
+  const _DKind(this.prefix, this.collection, this.title, this.icon, this.accent);
+}
+
+const _kLease = _DKind('lease', 'lease_payments', '리스비', Icons.moped, _teal);
+const _kEtc   = _DKind('etc', 'etc_payments', '기타', Icons.account_balance_wallet, _purple);
+
+// ═══════════════ 공제 현황 페이지 (로직) ═══════════════
 class DriverLeasePage extends StatefulWidget {
   final String uid;
-  final String prefix;     // users 필드 prefix: 'lease' / 'etc'
-  final String collection; // 회차 컬렉션: 'lease_payments' / 'etc_payments'
-  final String title;      // '리스비' / '기타'
-  const DriverLeasePage({
-    super.key,
-    required this.uid,
-    this.prefix = 'lease',
-    this.collection = 'lease_payments',
-    this.title = '리스비',
-  });
+  const DriverLeasePage({super.key, required this.uid});
   @override
   State<DriverLeasePage> createState() => _DriverLeasePageState();
 }
 
 class _DriverLeasePageState extends State<DriverLeasePage> {
-  bool _submitting = false;
+  // 입금완료 처리 중 상태 (컬렉션별)
+  final Map<String, bool> _submitting = {};
+
+  // 스트림은 한 번만 생성 (재구독 방지)
+  late final Stream<DocumentSnapshot> _userStream;
+  late final Stream<QuerySnapshot> _leaseStream;
+  late final Stream<QuerySnapshot> _etcStream;
 
   @override
   void initState() {
     super.initState();
+    _userStream = FirebaseFirestore.instance.collection('users').doc(widget.uid).snapshots();
+    // orderBy 미사용 (복합 인덱스 불필요) → dueDate는 화면에서 정렬
+    _leaseStream = FirebaseFirestore.instance
+        .collection(_kLease.collection).where('uid', isEqualTo: widget.uid).snapshots();
+    _etcStream = FirebaseFirestore.instance
+        .collection(_kEtc.collection).where('uid', isEqualTo: widget.uid).snapshots();
     _markAsSeen();
   }
 
   Future<void> _markAsSeen() async {
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection(widget.collection)
-          .where('uid', isEqualTo: widget.uid)
-          .where('isPaid', isEqualTo: true)
-          .where('seenByRider', isEqualTo: false)
-          .get();
-      final batch = FirebaseFirestore.instance.batch();
-      for (final doc in snap.docs) {
-        batch.update(doc.reference, {'seenByRider': true});
-      }
-      if (snap.docs.isNotEmpty) await batch.commit();
-    } catch (_) {}
+    for (final coll in [_kLease.collection, _kEtc.collection]) {
+      try {
+        final snap = await FirebaseFirestore.instance
+            .collection(coll)
+            .where('uid', isEqualTo: widget.uid)
+            .where('isPaid', isEqualTo: true)
+            .where('seenByRider', isEqualTo: false)
+            .get();
+        if (snap.docs.isEmpty) continue;
+        final batch = FirebaseFirestore.instance.batch();
+        for (final doc in snap.docs) {
+          batch.update(doc.reference, {'seenByRider': true});
+        }
+        await batch.commit();
+      } catch (_) {}
+    }
   }
 
-  Future<void> _submitPaid() async {
-    if (_submitting) return;
-    setState(() => _submitting = true);
+  Future<void> _submitPaid(String collection) async {
+    if (_submitting[collection] == true) return;
+    setState(() => _submitting[collection] = true);
     try {
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final snap = await FirebaseFirestore.instance
-          .collection(widget.collection)
+          .collection(collection)
           .where('uid', isEqualTo: widget.uid)
           .where('dueDate', isEqualTo: today)
           .where('isPaid', isEqualTo: false)
@@ -160,7 +178,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     } catch (_) {
       if (mounted) showInfoDialog(context, "처리 실패. 다시 시도해주세요.");
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (mounted) setState(() => _submitting[collection] = false);
     }
   }
 
@@ -184,7 +202,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
               borderRadius: BorderRadius.circular(_lpPanelRadius),
               child: Column(children: [
                 const SizedBox(height: 8),
-                pageHeader(context, "${widget.title} 납부 현황"),
+                pageHeader(context, "리스비 납부 현황"),
                 const SizedBox(height: _lpGapHeaderToDiv),
                 Container(
                   height: 1,
@@ -203,87 +221,48 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
 
   Widget _buildBody() {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(widget.uid).snapshots(),
+      stream: _userStream,
       builder: (_, userSnap) {
         final userData = userSnap.data?.data() as Map<String, dynamic>?;
         return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection(widget.collection)
-              .where('uid', isEqualTo: widget.uid)
-              .orderBy('dueDate')
-              .snapshots(),
-          builder: (ctx, snap) {
-            if (!snap.hasData) {
-              return const Center(child: CircularProgressIndicator(color: _teal));
-            }
-            final docs = snap.data!.docs;
-            if (docs.isEmpty) {
-              return Center(
-                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const Icon(Icons.moped,
-                    color: _lpEmptyIconColor, size: _lpEmptyIconSize),
-                const SizedBox(height: 12),
-                Text("${widget.title} 납부 내역이 없습니다.",
-                    style: const TextStyle(
-                        color: _lpEmptyTitleColor,
-                        fontSize: _lpEmptyTitleFontSize,
-                        fontWeight: FontWeight.w600)),
-                const SizedBox(height: 6),
-                const Text("관리자에게 문의해 주세요.",
-                    style: TextStyle(color: _lpEmptySubColor, fontSize: _lpEmptySubFontSize)),
-              ]));
-            }
-            final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-            final isDaily = (userData?['${widget.prefix}Type'] as String?) == 'daily';
-            final paid = docs.where((d) => (d.data() as Map)['isPaid'] == true).toList();
-            final unpaid = docs.where((d) => (d.data() as Map)['isPaid'] != true).toList();
-            final todayDue =
-                unpaid.where((d) => (d.data() as Map)['dueDate'] == today).toList();
-            final overdue = unpaid.where((d) =>
-                ((d.data() as Map)['dueDate'] as String? ?? '').compareTo(today) < 0).toList();
-            final riderAlreadyPaid =
-                todayDue.any((d) => (d.data() as Map)['riderPaid'] == true);
-            final hasAlert = unpaid.any((d) {
-              final dd = (d.data() as Map)['dueDate'] as String? ?? '';
-              return dd.isNotEmpty && dd.compareTo(today) <= 0;
-            });
+          stream: _leaseStream,
+          builder: (_, leaseSnap) {
+            return StreamBuilder<QuerySnapshot>(
+              stream: _etcStream,
+              builder: (ctx, etcSnap) {
+                if (userData == null && !leaseSnap.hasData && !etcSnap.hasData) {
+                  return const Center(child: CircularProgressIndicator(color: _teal));
+                }
+                final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                final leaseDocs = leaseSnap.data?.docs ?? [];
+                final etcDocs = etcSnap.data?.docs ?? [];
 
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-              children: [
-                if (userData != null)
-                  _leaseSummaryCard(userData, paid.length, docs.length,
-                      hasAlert: hasAlert,
-                      hasTodayDue: todayDue.isNotEmpty,
-                      riderAlreadyPaid: riderAlreadyPaid),
-                if (!isDaily && overdue.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                        color: _lpOverBoxColor.withValues(alpha: _lpOverBoxBgAlpha),
-                        borderRadius: BorderRadius.circular(_lpOverBoxRadius),
-                        border: Border.all(
-                            color: _lpOverBoxColor,
-                            width: _lpOverBoxBorderWidth)),
-                    child: Row(children: [
-                      const Icon(Icons.warning_rounded,
-                          color: _lpOverBoxColor, size: _lpOverIconSize),
-                      const SizedBox(width: 10),
-                      Expanded(
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text("납부 초과 ${overdue.length}건이 있습니다!",
-                            style: const TextStyle(
-                                color: _lpOverBoxColor,
-                                fontSize: _lpOverTitleFontSize,
-                                fontWeight: FontWeight.w700)),
-                        const Text("관리자에게 문의해 주세요.",
-                            style: TextStyle(
-                                color: _lpOverSubColor, fontSize: _lpOverSubFontSize)),
-                      ])),
-                    ]),
-                  ),
-              ],
+                final sections = <Widget>[
+                  ..._kindSection(_kLease, leaseDocs, userData, today),
+                  ..._kindSection(_kEtc, etcDocs, userData, today),
+                ];
+
+                if (sections.isEmpty) {
+                  return const Center(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Icon(Icons.moped, color: _lpEmptyIconColor, size: _lpEmptyIconSize),
+                    SizedBox(height: 12),
+                    Text("공제 납부 내역이 없습니다.",
+                        style: TextStyle(
+                            color: _lpEmptyTitleColor,
+                            fontSize: _lpEmptyTitleFontSize,
+                            fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
+                    Text("관리자에게 문의해 주세요.",
+                        style: TextStyle(color: _lpEmptySubColor, fontSize: _lpEmptySubFontSize)),
+                  ]));
+                }
+
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                  children: sections,
+                );
+              },
             );
           },
         );
@@ -291,16 +270,66 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     );
   }
 
-  // ── 리스비 전체현황 카드 ──
-  Widget _leaseSummaryCard(Map<String, dynamic> u, int paidCount, int totalCount,
+  // 한 종류(리스비/기타)의 카드 + 납부초과 박스
+  List<Widget> _kindSection(
+      _DKind k, List<QueryDocumentSnapshot> rawDocs, Map<String, dynamic>? userData, String today) {
+    if (rawDocs.isEmpty || userData == null) return [];
+    final docs = [...rawDocs]
+      ..sort((a, b) => ((a.data() as Map)['dueDate'] as String? ?? '')
+          .compareTo((b.data() as Map)['dueDate'] as String? ?? ''));
+    final isDaily = (userData['${k.prefix}Type'] as String?) == 'daily';
+    final paid = docs.where((d) => (d.data() as Map)['isPaid'] == true).toList();
+    final unpaid = docs.where((d) => (d.data() as Map)['isPaid'] != true).toList();
+    final todayDue = unpaid.where((d) => (d.data() as Map)['dueDate'] == today).toList();
+    final overdue = unpaid.where((d) =>
+        ((d.data() as Map)['dueDate'] as String? ?? '').compareTo(today) < 0).toList();
+    final riderAlreadyPaid = todayDue.any((d) => (d.data() as Map)['riderPaid'] == true);
+    final hasAlert = unpaid.any((d) {
+      final dd = (d.data() as Map)['dueDate'] as String? ?? '';
+      return dd.isNotEmpty && dd.compareTo(today) <= 0;
+    });
+
+    return [
+      _summaryCard(k, userData, paid.length, docs.length,
+          hasAlert: hasAlert,
+          hasTodayDue: todayDue.isNotEmpty,
+          riderAlreadyPaid: riderAlreadyPaid),
+      if (!isDaily && overdue.isNotEmpty)
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+              color: _lpOverBoxColor.withValues(alpha: _lpOverBoxBgAlpha),
+              borderRadius: BorderRadius.circular(_lpOverBoxRadius),
+              border: Border.all(color: _lpOverBoxColor, width: _lpOverBoxBorderWidth)),
+          child: Row(children: [
+            const Icon(Icons.warning_rounded, color: _lpOverBoxColor, size: _lpOverIconSize),
+            const SizedBox(width: 10),
+            Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text("${k.title} 납부 초과 ${overdue.length}건이 있습니다!",
+                  style: const TextStyle(
+                      color: _lpOverBoxColor,
+                      fontSize: _lpOverTitleFontSize,
+                      fontWeight: FontWeight.w700)),
+              const Text("관리자에게 문의해 주세요.",
+                  style: TextStyle(color: _lpOverSubColor, fontSize: _lpOverSubFontSize)),
+            ])),
+          ]),
+        ),
+    ];
+  }
+
+  // ── 전체현황 카드 (리스비/기타 공용) ──
+  Widget _summaryCard(_DKind k, Map<String, dynamic> u, int paidCount, int totalCount,
       {bool hasAlert = false,
       bool hasTodayDue = false,
       bool riderAlreadyPaid = false}) {
-    final leaseType = u['${widget.prefix}Type'] as String? ?? '';
-    final leaseAmt = u['${widget.prefix}Amount'] as int? ?? 0;
-    final leaseCycle = u['${widget.prefix}Cycle'] as int? ?? 0;
-    final startStr = u['${widget.prefix}StartDate'] as String? ?? '';
-    final endStr = u['${widget.prefix}LastDate'] as String? ?? '';
+    final leaseType = u['${k.prefix}Type'] as String? ?? '';
+    final leaseAmt = u['${k.prefix}Amount'] as int? ?? 0;
+    final leaseCycle = u['${k.prefix}Cycle'] as int? ?? 0;
+    final startStr = u['${k.prefix}StartDate'] as String? ?? '';
+    final endStr = u['${k.prefix}LastDate'] as String? ?? '';
     final isDaily = leaseType == 'daily';
     final typeLabel = isDaily ? '매일' : (leaseType == 'weekly' ? '주1회' : '매월');
     final cycleLabel = isDaily ? '일' : '회차';
@@ -323,10 +352,9 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
           boxShadow: _cardShadow),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Icon(Icons.moped,
-              color: _lsHeadIconColor, size: _lsHeadIconSize),
+          Icon(k.icon, color: k.accent, size: _lsHeadIconSize),
           const SizedBox(width: 6),
-          Text("${widget.title} 전체 현황",
+          Text("${k.title} 전체 현황",
               style: const TextStyle(
                   color: _lsHeadTitleColor,
                   fontSize: _lsHeadTitleFontSize,
@@ -339,8 +367,8 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: _lsTypeChipBorder, width: 1)),
             child: Text(typeLabel,
-                style: const TextStyle(
-                    color: _lsTypeChipText,
+                style: TextStyle(
+                    color: k.accent,
                     fontSize: _lsTypeChipFontSize,
                     fontWeight: FontWeight.w600)),
           ),
@@ -353,7 +381,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
         const SizedBox(height: 5),
         _infoRow2("총 $cycleLabel", "$leaseCycle $cycleLabel"),
         const SizedBox(height: 5),
-        _infoRow2("총 ${widget.title}", "${NumberFormat('#,###').format(totalAmt)} 원"),
+        _infoRow2("총 ${k.title}", "${NumberFormat('#,###').format(totalAmt)} 원"),
         const SizedBox(height: 5),
         _infoRow2("기간", "$startShort  ~  $endShort"),
         if (isDaily) ...[
@@ -427,7 +455,7 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 const SizedBox(width: 10),
                 Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text("오늘 ${widget.title} 납부일입니다!",
+                  Text("오늘 ${k.title} 납부일입니다!",
                       style: const TextStyle(
                           color: _text,
                           fontSize: _lpDueTitleFontSize,
@@ -445,8 +473,8 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
               height: _lpPayBtnHeight,
               child: GlassShineButton(
                 label: "입금완료",
-                onPressed: _submitting ? null : _submitPaid,
-                loading: _submitting,
+                onPressed: _submitting[k.collection] == true ? null : () => _submitPaid(k.collection),
+                loading: _submitting[k.collection] == true,
                 accent: _teal,
                 height: _lpPayBtnHeight,
                 radius: _lpPayBtnRadius,
@@ -486,4 +514,3 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 color: vc, fontSize: _lsInfoFontSize, fontWeight: FontWeight.w600)),
       ]);
 }
-
