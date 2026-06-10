@@ -25,9 +25,6 @@ const double _laListPadB = 15;  // 아래
 const _laInfoLabelColor = _text;  // 정보 행 라벨 색
 const _laInfoValueColor = _text;  // 정보 행 값 색(기본)
 const double _laInfoFontSize = 12;// 정보 행 글씨 크기
-const double _laBtnHeight = 38;   // 버튼 높이
-const double _laBtnRadius = 22;   // 버튼 모서리
-const double _laBtnFontSize = 12; // 버튼 글씨 크기
 // 리스비 카드 내용 (글씨·테두리)
 const double _laRiderNameFontSize = 14; // 라이더 이름 칩 글씨 크기
 const double _laBadgeFontSize  = 10;    // 상태·타입 뱃지 글씨 크기
@@ -131,29 +128,6 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     if (mounted) _showDone("$riderName 님 ${k.title} $cycle회차\n${NumberFormat('#,###').format(amount)}원\n납부 확인 완료!");
   }
 
-  Future<void> _cancelRiderPaid(_Kind k, String docId) async {
-    try {
-      await FirebaseFirestore.instance.collection(k.collection).doc(docId).update({'riderPaid': false});
-    } catch (_) {}
-  }
-
-  // 주1회/매월: 다음 미납 회차를 완납 처리 (+1회)
-  Future<void> _payNextCycle(
-      _Kind k, List<Map<String, dynamic>> payments, String uid, String riderName) async {
-    final unpaid = payments.where((p) => p['isPaid'] != true).toList()
-      ..sort((a, b) =>
-          ((a['cycle'] as int?) ?? 0).compareTo((b['cycle'] as int?) ?? 0));
-    if (unpaid.isEmpty) return;
-    final p = unpaid.first;
-    await _confirm(
-      k,
-      p['_docId'] as String? ?? '',
-      uid,
-      riderName,
-      p['cycle'] as int? ?? 0,
-      p['amount'] as int? ?? 0,
-    );
-  }
 
   void _showDone(String msg) {
     showDialog(context: context, builder: (ctx) => Dialog(
@@ -341,6 +315,9 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     final riderPaidList = payments.where((p) =>
         p['riderPaid'] == true && p['isPaid'] != true).toList();
     final hasRiderPaid = riderPaidList.isNotEmpty;
+    // 납기 도래(오늘 이하) 미납 회차 존재 여부 — 기사 입금 신고 대기 표시용
+    final hasDue = payments.any((p) =>
+        (p['dueDate'] as String? ?? '').compareTo(today) <= 0 && p['isPaid'] != true);
 
     return Container(
       width: double.infinity,
@@ -435,48 +412,65 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
           ]),
         ],
 
-        // riderPaid == true 일 때: 입금확인 + 취소 버튼 (카드 안)
-        if (hasRiderPaid) ...[
-          const SizedBox(height: 12),
-          Builder(builder: (_) {
-            final p      = riderPaidList.first;
-            final docId  = p['_docId'] as String? ?? '';
-            final cycle  = p['cycle']  as int?    ?? 0;
-            final amount = p['amount'] as int?    ?? 0;
-            return Row(children: [
-              Expanded(child: GlassShineButton(
-                label: "취소",
-                onPressed: () => _cancelRiderPaid(k, docId),
-                accent: _text2,
-                textColor: _text2,
-                height: _laBtnHeight,
-                radius: _laBtnRadius,
-                fontSize: _laBtnFontSize,
-              )),
-              const SizedBox(width: 8),
-              Expanded(child: GlassShineButton(
-                label: "입금확인",
-                onPressed: () => _confirm(k, docId, uid, riderName, cycle, amount),
-                accent: _teal,
-                height: _laBtnHeight,
-                radius: _laBtnRadius,
-                fontSize: _laBtnFontSize,
-              )),
-            ]);
-          }),
-        ],
-
-        // 주1회/매월: 관리자 수동 입금완료 (누르면 다음 미납 회차 +1) (카드 안)
-        if (!isDaily && !hasRiderPaid && paidCount < totalCount) ...[
-          const SizedBox(height: 12),
-          GlassShineButton(
-            label: "입금완료",
-            onPressed: () => _payNextCycle(k, payments, uid, riderName),
-            accent: _teal,
-            height: _laBtnHeight,
-            radius: _laBtnRadius,
-            fontSize: _laBtnFontSize,
-          ),
+        // 주1회/매월 — 기사 신청 → 관리자 확인 흐름 (매일은 출금 자동공제라 버튼 없음)
+        if (!isDaily) ...[
+          if (hasRiderPaid) ...[
+            const SizedBox(height: 12),
+            Builder(builder: (_) {
+              final p      = riderPaidList.first;
+              final docId  = p['_docId'] as String? ?? '';
+              final cycle  = p['cycle']  as int?    ?? 0;
+              final amount = p['amount'] as int?    ?? 0;
+              return Column(children: [
+                // 메시지 박스 — 기사 입금완료 신고 알림
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: _amber.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _amber),
+                  ),
+                  child: Row(children: [
+                    const Icon(Icons.notifications_active_rounded, color: _amber, size: 22),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: Text("$riderName 님이 입금완료하였습니다!\n확인하시고 완료해주세요.",
+                            style: const TextStyle(
+                                color: _text, fontSize: 13, height: 1.5, fontWeight: FontWeight.w600))),
+                  ]),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: GlassShineButton(
+                    label: "입금완료",
+                    onPressed: () => _confirm(k, docId, uid, riderName, cycle, amount),
+                    accent: _teal,
+                    height: 46,
+                    radius: 22,
+                    fontSize: 14,
+                  ),
+                ),
+              ]);
+            }),
+          ] else if (hasDue) ...[
+            // 기사 입금 신고 대기 — 비활성
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              height: 46,
+              decoration: BoxDecoration(
+                color: _surface,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: _elevated),
+              ),
+              alignment: Alignment.center,
+              child: const Text("기사 입금 대기중",
+                  style: TextStyle(color: _text2, fontSize: 14, fontWeight: FontWeight.w600)),
+            ),
+          ],
         ],
       ]),
     );
