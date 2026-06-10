@@ -895,6 +895,8 @@ class _DriverPageState extends State<DriverPage> {
 
     // ── 출금 프레임: 업로드됐고 + 아직 신청 안 했을 때 (일간·주간·월간 모두 표시) ──
     final showWithdrawRow = _adminUploaded && !_withdrawRequested;
+    // 23시 이후에는 출금신청 버튼 비활성 (누적금액은 계속 표시)
+    final canWithdraw = DateTime.now().hour < 23;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -965,7 +967,7 @@ class _DriverPageState extends State<DriverPage> {
           const SizedBox(height: 14),
           Container(height: 1, color: _elevated),
           const SizedBox(height: 12),
-          _WithdrawFrame(amount: withdrawable.round(), onWithdraw: _onWithdrawTap),
+          _WithdrawFrame(amount: withdrawable.round(), onWithdraw: _onWithdrawTap, enabled: canWithdraw),
         ],
       ]),
     );
@@ -1822,7 +1824,8 @@ class _DriverPageState extends State<DriverPage> {
 class _WithdrawFrame extends StatefulWidget {
   final int amount;
   final VoidCallback onWithdraw;
-  const _WithdrawFrame({required this.amount, required this.onWithdraw});
+  final bool enabled; // 23시 이후 false → 버튼 비활성(금액은 계속 표시)
+  const _WithdrawFrame({required this.amount, required this.onWithdraw, this.enabled = true});
   @override
   State<_WithdrawFrame> createState() => _WithdrawFrameState();
 }
@@ -1842,61 +1845,73 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
 
   @override
   Widget build(BuildContext context) {
-    final amtStr = NumberFormat('#,###').format(widget.amount);
+    // 비활성(23시 이후): 발광 애니메이션 없이 정적 프레임
+    if (!widget.enabled) return _frame(0, false);
     return AnimatedBuilder(
       animation: _flow,
-      builder: (context, _) => Container(
+      builder: (context, _) => _frame(_flow.value, true),
+    );
+  }
+
+  Widget _frame(double rotation, bool enabled) {
+    final amtStr = NumberFormat('#,###').format(widget.amount);
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(_wfRadius),
+        // 활성: 빛이 흐르는 골드→핑크→퍼플 테두리 / 비활성: 정적 회색 테두리
+        gradient: enabled
+            ? SweepGradient(
+                transform: GradientRotation(rotation * 2 * math.pi),
+                colors: const [_wfGold, _wfPink, _wfPurple, _wfGold],
+              )
+            : null,
+        color: enabled ? null : _elevated,
+        boxShadow: enabled
+            ? const [
+                BoxShadow(
+                    color: Color(0x55FF5FC4),
+                    blurRadius: 16,
+                    spreadRadius: -6,
+                    offset: Offset(0, 8)),
+              ]
+            : null,
+      ),
+      padding: const EdgeInsets.all(_wfBorderWidth),
+      child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(_wfRadius),
-          // 빛이 흐르는 테두리: 골드→핑크→퍼플 sweep을 천천히 회전
-          gradient: SweepGradient(
-            transform: GradientRotation(_flow.value * 2 * math.pi),
-            colors: const [_wfGold, _wfPink, _wfPurple, _wfGold],
+          borderRadius: BorderRadius.circular(_wfRadius - _wfBorderWidth),
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_wfInnerTop, _wfInnerBottom],
           ),
-          boxShadow: const [
-            BoxShadow(
-                color: Color(0x55FF5FC4),
-                blurRadius: 16,
-                spreadRadius: -6,
-                offset: Offset(0, 8)),
-          ],
         ),
-        padding: const EdgeInsets.all(_wfBorderWidth),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(_wfRadius - _wfBorderWidth),
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [_wfInnerTop, _wfInnerBottom],
+        padding: const EdgeInsets.fromLTRB(16, 13, 13, 13),
+        child: Row(children: [
+          const SizedBox(width: _wfAmtLeftGap),
+          // 금액 (골드 그라데이션 글씨) — 비활성이어도 누적금액은 계속 표시
+          ShaderMask(
+            shaderCallback: (r) =>
+                const LinearGradient(colors: [_wfGold, _wfGoldText2]).createShader(r),
+            child: Text.rich(
+              TextSpan(children: [
+                TextSpan(
+                    text: amtStr,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: _wfAmtFontSize,
+                        fontWeight: FontWeight.w700)),
+                const TextSpan(
+                    text: ' 원',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _wfAmtUnitFontSize,
+                        fontWeight: FontWeight.w600)),
+              ]),
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(16, 13, 13, 13),
-          child: Row(children: [
-            const SizedBox(width: _wfAmtLeftGap),
-            // 금액 (골드 그라데이션 글씨)
-            ShaderMask(
-              shaderCallback: (r) => const LinearGradient(
-                      colors: [_wfGold, _wfGoldText2])
-                  .createShader(r),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                      text: amtStr,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: _wfAmtFontSize,
-                          fontWeight: FontWeight.w700)),
-                  const TextSpan(
-                      text: ' 원',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: _wfAmtUnitFontSize,
-                          fontWeight: FontWeight.w600)),
-                ]),
-              ),
-            ),
-            const Spacer(),
+          const Spacer(),
+          if (enabled)
             // 출금신청 버튼 (골드→핑크 그라데이션)
             GestureDetector(
               onTapDown: (_) => setState(() => _pressed = true),
@@ -1931,9 +1946,24 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
                           fontWeight: FontWeight.w800)),
                 ),
               ),
+            )
+          else
+            // 비활성: 23시 마감 (회색, 누를 수 없음)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: _wfBtnPadH, vertical: _wfBtnPadV),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(_wfBtnRadius),
+                color: _chip,
+                border: Border.all(color: _elevated),
+              ),
+              child: const Text('23시 마감',
+                  style: TextStyle(
+                      color: _text2,
+                      fontSize: _wfBtnFontSize,
+                      fontWeight: FontWeight.w700)),
             ),
-          ]),
-        ),
+        ]),
       ),
     );
   }
