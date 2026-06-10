@@ -388,6 +388,7 @@ class _DriverPageState extends State<DriverPage> {
   double _leaseDailyAmt  = 0;
   bool   _hasDailyEtc    = false;
   double _etcDailyAmt    = 0;
+  DateTime? _unpaidUpdatedAt; // 미출금(unpaid_balance) 마지막 업로드 시각
 
   // ── 실시간 구독 (관리자 입금완료/미출금 업로드 → 차트·금액 즉시 반영) ──
   StreamSubscription<QuerySnapshot>?    _settlementSub;
@@ -549,6 +550,7 @@ class _DriverPageState extends State<DriverPage> {
 
       List<Map<String, dynamic>> items = [];
       double total = 0;
+      DateTime? updatedAt;
       if (!requested) {
         final doc = await FirebaseFirestore.instance
             .collection('unpaid_balance').doc(user.uid).get();
@@ -556,6 +558,7 @@ class _DriverPageState extends State<DriverPage> {
           final raw = doc.data()?['items'] as List<dynamic>? ?? [];
           items = raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
           total = (doc.data()?['totalAmount'] as num?)?.toDouble() ?? 0;
+          updatedAt = (doc.data()?['updatedAt'] as Timestamp?)?.toDate();
         }
       }
 
@@ -565,6 +568,7 @@ class _DriverPageState extends State<DriverPage> {
           _unpaidItems       = items;
           _unpaidTotal       = total;
           _adminUploaded     = items.isNotEmpty;
+          _unpaidUpdatedAt   = updatedAt;
         });
       }
       _loadChartData();
@@ -895,8 +899,12 @@ class _DriverPageState extends State<DriverPage> {
 
     // ── 출금 프레임: 업로드됐고 + 아직 신청 안 했을 때 (일간·주간·월간 모두 표시) ──
     final showWithdrawRow = _adminUploaded && !_withdrawRequested;
-    // 23시 이후에는 출금신청 버튼 비활성 (누적금액은 계속 표시)
-    final canWithdraw = DateTime.now().hour < 23;
+    // 출금신청 마감: 업로드된 날의 23:00이 지나면 비활성 (밤새·새벽 포함, 누적금액은 계속 표시)
+    // 다음 리포트가 올라오면 updatedAt이 새 날짜로 바뀌어 그날 23:00까지 다시 활성
+    final upAt = _unpaidUpdatedAt;
+    final canWithdraw = upAt == null
+        ? DateTime.now().hour < 23
+        : DateTime.now().isBefore(DateTime(upAt.year, upAt.month, upAt.day, 23));
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
