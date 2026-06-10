@@ -49,12 +49,12 @@ const double _rmEditBtnFontSize = 12; // 수정/저장 버튼 글씨 크기
 const double _rmGapRow      = 8;    // 폼 행 사이 갭(기본)
 const double _rmGapRowSmall = 6;    // 폼 행 사이 갭(좁게)
 const _rmLeaseTitleColor    = _teal; // "리스비" 라벨 색
-const double _rmLeaseTitleFontSize = 11; // "리스비" 라벨 크기
-const double _rmLeaseBtnFontSize = 10;  // 리스비 작은 버튼·칩 글씨 크기
-const double _rmLeaseInputFontSize = 11;// 리스비 입력칸 글씨 크기
-const double _rmLeaseHintFontSize  = 10;// 리스비 입력 힌트 크기
+const double _rmLeaseTitleFontSize = 13; // "리스비" 라벨 크기 (+2)
+const double _rmLeaseBtnFontSize = 12;  // 리스비 작은 버튼·칩 글씨 크기 (+2)
+const double _rmLeaseInputFontSize = 13;// 리스비 입력칸 글씨 크기 (+2)
+const double _rmLeaseHintFontSize  = 12;// 리스비 입력 힌트 크기 (+2)
 const _rmLeaseUnitColor     = _text2; // 단위(일/회차/원) 색
-const double _rmLeaseUnitFontSize = 10; // 단위 글씨 크기
+const double _rmLeaseUnitFontSize = 12; // 단위 글씨 크기 (+2)
 
 // ═══════════════ 라이더 관리 페이지 (로직) ═══════════════
 class RiderManagePage extends StatefulWidget {
@@ -506,7 +506,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
             const SizedBox(height: kGapCard),
             _card(_kEtc, _etc),
           ]);
-    return adminPanelScaffold(context, "${widget.name} 님 공제 설정", body);
+    return adminPanelScaffold(context, "${widget.name} 님 공제 설정", body, dividerInset: 15);
   }
 
   Widget _card(_DeductKind k, _DeductState s) {
@@ -566,7 +566,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
             } : null,
             child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: s.editing ? _teal : _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(children: [
-                Icon(Icons.calendar_today_rounded, color: s.editing ? _teal : _text2, size: 12), const SizedBox(width: 4),
+                Icon(Icons.calendar_today_rounded, color: s.editing ? _teal : _text2, size: 14), const SizedBox(width: 4),
                 Expanded(child: Text(s.start != null ? DateFormat('yyyy-MM-dd').format(s.start!) : "시작일", textAlign: TextAlign.right, style: TextStyle(color: s.start != null ? _text : _text2, fontSize: _rmLeaseInputFontSize))),
               ]),
             ),
@@ -589,7 +589,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         const SizedBox(height: 6),
         Row(children: [
           Expanded(child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(children: [const Icon(Icons.event_rounded, color: _text2, size: 12), const SizedBox(width: 4), Expanded(child: Text(lastDate != null ? DateFormat('yyyy-MM-dd').format(lastDate) : "마지막일", textAlign: TextAlign.right, style: const TextStyle(color: _text2, fontSize: _rmLeaseInputFontSize)))]),
+            child: Row(children: [const Icon(Icons.event_rounded, color: _text2, size: 14), const SizedBox(width: 4), Expanded(child: Text(lastDate != null ? DateFormat('yyyy-MM-dd').format(lastDate) : "마지막일", textAlign: TextAlign.right, style: const TextStyle(color: _text2, fontSize: _rmLeaseInputFontSize)))]),
           )),
           const SizedBox(width: 8),
           Expanded(child: Row(children: [
