@@ -81,7 +81,15 @@
       "Bash(grep -rEn \"applicationId|namespace|jeju\" android/app/build.gradle*)",
       "Bash(grep -rEn \"label=|package=|jeju\" android/app/src/main/AndroidManifest.xml)",
       "Bash(ls -d */)",
-      "Bash(git grep *)"
+      "Bash(git grep *)",
+      "Bash(cd \"C:/Users/Owner/Downloads/Swing_Tiger\")",
+      "Bash(ls -la *.xlsx)",
+      "Bash(python -c \"import openpyxl; print\\('openpyxl OK'\\)\")",
+      "Bash(py -c \"import openpyxl; print\\('openpyxl OK \\(py\\)'\\)\")",
+      "Bash(python -m pip install openpyxl --quiet)",
+      "Bash(python -c \"import openpyxl; print\\('openpyxl', openpyxl.__version__\\)\")",
+      "Read(//c/Users/Owner/Downloads/Swing_Tiger/**)",
+      "Bash(python -)"
     ]
   }
 }
