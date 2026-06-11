@@ -871,23 +871,28 @@ class _AdminPageState extends State<AdminPage> {
     required double commRate,
     required List<Map<String, dynamic>> perOrderRatesList,
     required List<Map<String, dynamic>> incentiveRatesList,
+    // 프로모(건당·구간) 건수·적용 — 평일은 건수만(금액 0), 주 마지막(화)에 주간 누적건수로 적용
+    required int  promoCount,   // 티어 판정·곱셈에 쓸 건수 (평일=당일, 화=주간누적)
+    required bool applyPromo,   // false면 금액 0 (건수만 저장)
   }) {
     double perOrderAmount = 0;
-    for (final rule in perOrderRatesList) {
-      final min    = rule['min']    as int;
-      final max    = rule['max']    as int;
-      final amount = rule['amount'] as double;
-      if (deliveryCount >= min && (max == 0 || deliveryCount <= max)) {
-        perOrderAmount = deliveryCount * amount; break;
+    double rangeAmount    = 0;
+    if (applyPromo) {
+      for (final rule in perOrderRatesList) {
+        final min    = rule['min']    as int;
+        final max    = rule['max']    as int;
+        final amount = rule['amount'] as double;
+        if (promoCount >= min && (max == 0 || promoCount <= max)) {
+          perOrderAmount = promoCount * amount; break;
+        }
       }
-    }
-    double rangeAmount = 0;
-    for (final rule in incentiveRatesList) {
-      final min    = rule['min']    as int;
-      final max    = rule['max']    as int;
-      final amount = rule['amount'] as double;
-      if (deliveryCount >= min && (max == 0 || deliveryCount <= max)) {
-        rangeAmount = amount; break;
+      for (final rule in incentiveRatesList) {
+        final min    = rule['min']    as int;
+        final max    = rule['max']    as int;
+        final amount = rule['amount'] as double;
+        if (promoCount >= min && (max == 0 || promoCount <= max)) {
+          rangeAmount = amount; break;
+        }
       }
     }
     const missionFee = 0.0;
@@ -928,6 +933,8 @@ class _AdminPageState extends State<AdminPage> {
       'missionFee':     missionFee,
       'perOrderAmount': perOrderAmount,
       'rangeAmount':    rangeAmount,
+      'promoApplied':   applyPromo, // 화요일(주 마지막) 업로드에서 true
+      'promoCount':     promoCount, // 적용 건수 (평일=당일, 화=주간 누적 총건수)
       'promoTotal':     promoTotal,
       'employmentTax':  eTax,
       'accidentTax':    aTax,
@@ -986,6 +993,24 @@ class _AdminPageState extends State<AdminPage> {
         }
       }
 
+      // 프로모(건당·구간): 운행일이 화요일이면 그 주(수~화) 누적 건수로 적용
+      final isWeekEnd = DateTime.tryParse(reportDate)?.weekday == DateTime.tuesday;
+      final Map<String, int> priorWeekCount = {}; // reportId → 수~월 누적 건수
+      if (isWeekEnd) {
+        final tue = DateTime.parse(reportDate);
+        for (int i = 1; i <= 6; i++) {
+          final dStr = DateFormat('yyyy-MM-dd').format(tue.subtract(Duration(days: i)));
+          try {
+            final snap = await FirebaseFirestore.instance
+                .collection('delivery_reports').doc(dStr).collection('riders').get();
+            for (final doc in snap.docs) {
+              final c = (doc.data()['deliveryCount'] as num?)?.toInt() ?? 0;
+              priorWeekCount[doc.id] = (priorWeekCount[doc.id] ?? 0) + c;
+            }
+          } catch (_) {}
+        }
+      }
+
       // 기사별 수수료 계산 → unpaid_balance 저장
       for (final entry in riderMap.entries) {
         final reportId  = entry.key;
@@ -1000,6 +1025,9 @@ class _AdminPageState extends State<AdminPage> {
         final dCount    = (riderData['deliveryCount'] as num?)?.toInt()    ?? 0;
         if (dFee <= 0) continue;
 
+        // 평일=당일 건수(금액 0) / 화요일=주간 누적 건수(금액 적용)
+        final promoCount = isWeekEnd ? (dCount + (priorWeekCount[reportId] ?? 0)) : dCount;
+
         final payData = _calcRiderPay(
           deliveryFee:        dFee,
           deliveryCount:      dCount,
@@ -1011,6 +1039,8 @@ class _AdminPageState extends State<AdminPage> {
           commRate:           commRate,
           perOrderRatesList:  perOrderRatesList,
           incentiveRatesList: incentiveRatesList,
+          promoCount:         promoCount,
+          applyPromo:         isWeekEnd,
         );
 
         // 기존 미출금 읽기
