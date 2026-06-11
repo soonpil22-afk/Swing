@@ -1950,7 +1950,7 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
             colors: [_wfInnerTop, _wfInnerBottom],
           ),
         ),
-        padding: const EdgeInsets.fromLTRB(16, 12, 13, 12),
+        padding: const EdgeInsets.fromLTRB(16, 11, 13, 11),
         child: Row(children: [
           const SizedBox(width: _wfAmtLeftGap),
           // 금액 (골드 그라데이션 글씨) — 비활성이어도 누적금액은 계속 표시
