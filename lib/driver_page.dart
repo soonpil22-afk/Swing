@@ -186,7 +186,7 @@ const double _wfAmtUnitFontSize = 13; // " 원" 크기
 // 출금신청 버튼
 const double _wfBtnFontSize = 14; // 버튼 글씨 크기
 const double _wfBtnPadH     = 20;   // 버튼 좌우 여백
-const double _wfBtnPadV     = 4;   // 버튼 위아래 여백
+const double _wfBtnPadV     = 6;   // 버튼 위아래 여백
 const double _wfBtnRadius   = 12;   // 버튼 모서리
 // ── 출금신청 확인 다이얼로그 (출금신청 버튼 누르면 뜨는 확인창) ──
 const Color  _wdlgBg            = _surface;   // 배경색
@@ -1950,7 +1950,7 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
             colors: [_wfInnerTop, _wfInnerBottom],
           ),
         ),
-        padding: const EdgeInsets.fromLTRB(16, 13, 13, 13),
+        padding: const EdgeInsets.fromLTRB(16, 12, 13, 12),
         child: Row(children: [
           const SizedBox(width: _wfAmtLeftGap),
           // 금액 (골드 그라데이션 글씨) — 비활성이어도 누적금액은 계속 표시
