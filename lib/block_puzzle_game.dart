@@ -16,7 +16,6 @@ const _surface  = kSurface;
 const _elevated = kElevated;
 const _chip     = kChip;
 const _text     = kText;
-const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
 const _amber    = kAmber;
