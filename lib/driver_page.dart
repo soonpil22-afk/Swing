@@ -52,11 +52,11 @@ const Color  _panelColor       = _panel;     // 패널 배경색
 const Color  _panelBorderColor = _elevated;  // 테두리 색
 const double _panelBorderAlpha = 1.0;        // 테두리 투명도(0~1, 1.0=솔리드)
 // ── 숫자 (크기·여백) ──
-const double _panelOuterPad    = 6;   // 패널 바깥 여백
+const double _panelOuterPad    = 10;   // 패널 바깥 여백
 const double _panelRadius      = 24;  // 패널 모서리 둥글기
 const double _panelBorderWidth = 1;   // 테두리 두께
 const double _panelPadL = 11;  // 안쪽 여백 왼쪽
-const double _panelPadT = 8;  // 안쪽 여백 위
+const double _panelPadT = 12;  // 안쪽 여백 위 (관리자 페이지와 통일)
 const double _panelPadR = 11;  // 안쪽 여백 오른쪽
 const double _panelPadB = 8;  // 안쪽 여백 아래
 // ── 그림자 ──
@@ -75,7 +75,7 @@ const double _greetHelloFontSize  = 18;  // "안녕하세요," 크기
 const double _greetNameFontSize   = 18;  // 이름 크기
 const double _greetSuffixFontSize = 18;  // " 님" 크기
 // ── 숫자 (아이콘·버튼 크기/여백) ──
-const double _gapGreetToChart     = 4;  // 안녕하세요 ↔ 차트카드 간격
+const double _gapGreetToChart     = 6;  // 안녕하세요 ↔ 차트카드 간격 (관리자 페이지와 통일)
 const double _greetIconOuterSize  = 22;  // 바깥 원 지름
 const double _greetIconInnerSize  = 12;  // 안쪽 원 지름
 const double _greetIconGap        = 12;  // 원과 글씨 사이 간격
