@@ -380,30 +380,30 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
             style: const TextStyle(
                 color: _text, fontSize: 16, fontWeight: FontWeight.w700)),
         const SizedBox(height: 18),
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          GlassShineButton(
-            label: "다시하기",
-            onPressed: _start,
-            accent: _teal,
-            textColor: _teal,
-            width: 120,
-            height: 46,
-            fontSize: 14,
-          ),
-          const SizedBox(width: kGapCard),
-          GlassShineButton(
-            label: "랭킹",
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => GameRankingPage(uid: widget.uid))),
-            accent: _text2,
-            textColor: _text2,
-            width: 100,
-            height: 46,
-            fontSize: 14,
-          ),
-        ]),
+        GlassShineButton(
+          label: "다시하기",
+          icon: Icons.refresh_rounded,
+          onPressed: _start,
+          accent: _teal,
+          textColor: _teal,
+          width: 160,
+          height: 46,
+          fontSize: 14,
+        ),
+        const SizedBox(height: kGapCard),
+        GlassShineButton(
+          label: "랭킹",
+          icon: Icons.leaderboard_rounded,
+          onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => GameRankingPage(uid: widget.uid))),
+          accent: _text2,
+          textColor: _text2,
+          width: 160,
+          height: 46,
+          fontSize: 14,
+        ),
       ]);
 
   Widget _overlayBox(List<Widget> children) => Center(
@@ -425,9 +425,9 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
         child: Row(children: [
           _btn(Icons.chevron_left_rounded, () => _move(-1)),
           const SizedBox(width: 8),
-          _btn(Icons.rotate_right_rounded, _rotate),
-          const SizedBox(width: 8),
           _btn(Icons.chevron_right_rounded, () => _move(1)),
+          const SizedBox(width: 8),
+          _btn(Icons.rotate_right_rounded, _rotate),
           const SizedBox(width: 8),
           _btn(Icons.keyboard_double_arrow_down_rounded, _hardDrop),
         ]),
