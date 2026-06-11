@@ -9,6 +9,7 @@ import 'glass_shine_button.dart';
 import 'tokens.dart';
 import 'driver_common.dart';
 import 'driver_settings_page.dart';
+import 'driver_soon_page.dart';
 import 'driver_lease_page.dart';
 import 'driver_history_page.dart';
 // ═══════════════════════════════════════════════════════════════════════
@@ -265,7 +266,6 @@ const double _menuLsPadV = 12;  // [7] 리스비 카드 내부 위아래 여백
 // ═══════════════════════════════════════════════════════════════════════
 // 8-1. 설정 페이지 - 메인배경 + 내 정보 헤더 (조정값)
 // ═══════════════════════════════════════════════════════════════════════
-const double _menuSpPadV = 12;  // [8] 설정 카드 내부 위아래 여백
 
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -811,11 +811,8 @@ class _DriverPageState extends State<DriverPage> {
                     // ── 7. 리스비 카드 (리스비+기타 현황 모두 표시) ──
                     _deductMenuCard(uid),
                     const SizedBox(height: kGapCard),
-                    // ── 8. 설정 카드 ─────────────────────────────────
-                    _menuCard('설정', Icons.settings, _purple, () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => SettingsPage(uid: uid)));
-                    }, padV: _menuSpPadV),
+                    // ── 8. 하단 4버튼 카드 (관리자 페이지와 동일 스타일) ──
+                    _bottomMenuCard(uid),
                   ],
                 ),
               ),
@@ -1411,6 +1408,55 @@ class _DriverPageState extends State<DriverPage> {
             const Icon(Icons.chevron_right, color: _text2, size: 22),
           ]),
         ),
+      );
+
+  // ── 하단 4버튼 카드 (관리자 페이지 하단 메뉴와 동일 스타일) ──
+  //  설정 | 미니게임 | 타임라인 | 준비중
+  Widget _bottomMenuCard(String uid) {
+    Widget divider() => Container(width: 1, height: 36, color: _elevated);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _elevated, width: 1),
+        boxShadow: _cardShadow,
+      ),
+      child: Row(children: [
+        Expanded(
+            child: _bottomMenuItem(Icons.settings, _purple, "설정",
+                () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => SettingsPage(uid: uid))))),
+        divider(),
+        Expanded(
+            child: _bottomMenuItem(Icons.sports_esports_rounded, _teal, "미니게임",
+                () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const DriverSoonPage(title: "미니게임"))))),
+        divider(),
+        Expanded(
+            child: _bottomMenuItem(Icons.timeline_rounded, _amber, "타임라인",
+                () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const DriverSoonPage(title: "타임라인"))))),
+        divider(),
+        Expanded(
+            child: _bottomMenuItem(Icons.more_horiz_rounded, _pink, "준비중",
+                () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const DriverSoonPage(title: "준비중"))))),
+      ]),
+    );
+  }
+
+  Widget _bottomMenuItem(IconData icon, Color color, String label, VoidCallback onTap) =>
+      GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 6),
+          Text(label,
+              style: const TextStyle(
+                  color: _text, fontSize: 11, fontWeight: FontWeight.w600)),
+        ]),
       );
 
   // ── 리스비 메뉴 카드 (리스비+기타 현황 페이지로 이동, 배지는 둘 다 반영) ──
