@@ -20,6 +20,7 @@ import 'admin_ranking_page.dart';
 // 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
 // ═══════════════════════════════════════════════════════════════════════
 const _surface  = kSurface;  // 카드
+const _chip     = kChip;     // 칩 · 선택탭 배경
 const _elevated = kElevated; // 트랙 · 테두리
 const _text  = kText;
 const _text2 = kText2;
@@ -217,7 +218,7 @@ const _menuDividerColor             = _elevated; // 경계선 색
 // ═══════════════════════════════════════════════════════════════════════
 // ── 공통 허브 탭 (출금신청·라이더관리·공지사항 탭 공용) ──
 const _tabTrackColor      = _surface;  // 탭 전체 배경(트랙)
-const _tabIndicatorColor  = _surface; // 선택된 탭 배경(=chip)
+const _tabIndicatorColor  = _chip; // 선택된 탭 배경 (기사 페이지와 통일)
 const _tabSelColor        = _teal;   // 선택 탭 글씨(민트)
 const _tabUnselColor      = _text2;    // 미선택 탭 글씨
 const double _tabFontSize        = 14; // 탭 글씨 크기

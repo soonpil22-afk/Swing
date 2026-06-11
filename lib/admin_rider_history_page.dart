@@ -6,6 +6,7 @@ import 'tokens.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _surface  = kSurface;
+const _chip     = kChip;
 const _elevated = kElevated;
 const _text     = kText;
 const _text2    = kText2;
@@ -22,7 +23,7 @@ const double _panelRadius   = 24;
 const Color  _subDivColor   = _elevated; // 헤더 경계선 색
 const double _subDivMarginH = 15;        // 경계선 좌우 여백
 const _tabTrackColor      = _surface;  // 탭 트랙 배경
-const _tabIndicatorColor  = _surface;  // 선택탭 배경
+const _tabIndicatorColor  = _chip;  // 선택탭 배경 (기사 페이지와 통일)
 const _tabIndicatorBorder = _elevated; // 선택탭 테두리
 const _tabSelColor        = _teal;     // 선택탭 글씨
 const _tabUnselColor      = _text2;    // 미선택탭 글씨
