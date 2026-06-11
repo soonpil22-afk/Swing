@@ -684,6 +684,7 @@ class _HistoryPageState extends State<HistoryPage>
                 final pmDaily = (item['deliveryCount'] as num?)?.toInt() ?? 0;
                 final pmWeekly = (item['promoCount'] as num?)?.toInt() ?? pmDaily;
                 final pmCnt = pmApplied ? "당일$pmDaily·주간$pmWeekly건" : "$pmDaily건";
+                final mission = (item['missionFee'] as num?)?.toDouble() ?? 0;
                 final tax = (item['tax'] as num?)?.toDouble() ?? 0;
                 final emp = (item['employmentTax'] as num?)?.toDouble() ?? 0;
                 final acc = (item['accidentTax'] as num?)?.toDouble() ?? 0;
@@ -729,6 +730,7 @@ class _HistoryPageState extends State<HistoryPage>
                     _stToggleRow(promoK, "지원금합계", prm, _stRowLabelColor),
                     if (_itemToggles[promoK] == true)
                       _stSubGroup([
+                        _stSubRow("미션금액", mission, _stSubRowColor),
                         _stSubRow("건당프로모션 ($pmCnt)", pOrd, _stSubRowColor),
                         _stSubRow("구간프로모션 ($pmCnt)", rng, _stSubRowColor),
                       ]),

@@ -312,6 +312,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                   final iPmDaily   = (item['deliveryCount'] as num?)?.toInt() ?? 0;
                   final iPmWeekly  = (item['promoCount']    as num?)?.toInt() ?? iPmDaily;
                   final iPmCnt = iPmApplied ? "당일$iPmDaily·주간$iPmWeekly건" : "$iPmDaily건";
+                  final iMission = (item['missionFee'] as num?)?.toDouble() ?? 0;
                   final iETax   = (item['employmentTax']  as num?)?.toDouble() ?? 0;
                   final iATax   = (item['accidentTax']    as num?)?.toDouble() ?? 0;
                   final iITax   = (item['incomeTax']      as num?)?.toDouble() ?? 0;
@@ -396,6 +397,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             ),
                             togRow("지원금합계", iPromo, _text, '${iDate}_promo'),
                             if (tog('${iDate}_promo')) subGroup([
+                              subRow("미션금액", "${_fmtC(iMission)} 원"),
                               subRow("건당프로모션 ($iPmCnt)", "${_fmtC(iPOrder)} 원"),
                               subRow("구간프로모션 ($iPmCnt)", "${_fmtC(iRange)} 원"),
                             ]),
