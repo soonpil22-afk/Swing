@@ -1,9 +1,10 @@
-// 기사 타임라인 — 동선 기록 시작/종료 + 오늘 경로를 지도에 표시하고 차례대로 재생
+// 기사 타임라인 — 동선 기록 시작/종료 + 오늘 경로를 지도(flutter_map)에 표시하고 차례대로 재생
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'driver_common.dart';
@@ -19,6 +20,7 @@ const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
 const _amber    = kAmber;
+const _purple   = kPurple;
 const List<BoxShadow> _panelShadow = kPanelShadow;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 
@@ -37,7 +39,7 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
           .doc(trackDocId(widget.uid, DateTime.now()))
           .snapshots();
 
-  GoogleMapController? _map;
+  final MapController _map = MapController();
   List<LatLng> _route = [];
   bool _active = false; // Firestore상 기록중 여부
 
@@ -51,7 +53,6 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
   @override
   void dispose() {
     _playTimer?.cancel();
-    _map?.dispose();
     super.dispose();
   }
 
@@ -89,8 +90,33 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
         return;
       }
       setState(() => _playIdx++);
-      _map?.animateCamera(CameraUpdate.newLatLng(_route[_playIdx]));
+      _map.move(_route[_playIdx], _map.camera.zoom);
     });
+  }
+
+  // ── 샘플 동선 넣기 (테스트용) — 제주 시내 한 바퀴 가짜 경로를 오늘 문서에 기록 ──
+  Future<void> _injectSample() async {
+    const baseLat = 33.4996, baseLng = 126.5312; // 제주시청 부근
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final pts = List.generate(25, (i) {
+      final t = i / 24.0;
+      return {
+        'lat': baseLat + 0.010 * t + 0.0008 * (i % 5),
+        'lng': baseLng + 0.014 * t - 0.0006 * (i % 3),
+        't': now + i * 60000, // 1분 간격
+      };
+    });
+    await FirebaseFirestore.instance
+        .collection('location_tracks')
+        .doc(trackDocId(widget.uid, DateTime.now()))
+        .set({
+      'uid': widget.uid,
+      'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      'startedAt': Timestamp.now(),
+      'endedAt': Timestamp.now(),
+      'active': false,
+      'points': pts,
+    }, SetOptions(merge: true));
   }
 
   // 문서 → 경로 좌표 리스트 (t 오름차순)
@@ -165,21 +191,18 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
       );
 
   // ── 지도 카드 (경로 폴리라인 + 재생 마커) ──
-  Widget _mapCard() {
-    final box = DecoratedBox(
-      decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _elevated, width: 1),
-        boxShadow: _cardShadow,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: _route.isEmpty ? _emptyMap() : _googleMap(),
-      ),
-    );
-    return box;
-  }
+  Widget _mapCard() => DecoratedBox(
+        decoration: BoxDecoration(
+          color: _surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _elevated, width: 1),
+          boxShadow: _cardShadow,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: _route.isEmpty ? _emptyMap() : _routeMap(),
+        ),
+      );
 
   Widget _emptyMap() => const Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -191,39 +214,35 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
         ]),
       );
 
-  Widget _googleMap() {
+  Widget _routeMap() {
     final playPos = _route[_playIdx.clamp(0, _route.length - 1)];
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(target: _route.last, zoom: 15),
-      myLocationEnabled: !kIsWeb,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      onMapCreated: (c) => _map = c,
-      polylines: {
-        Polyline(
-          polylineId: const PolylineId('route'),
-          points: _route,
-          color: _teal,
-          width: 5,
+    return FlutterMap(
+      mapController: _map,
+      options: MapOptions(initialCenter: _route.last, initialZoom: 14),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.swingtiger.app',
         ),
-      },
-      markers: {
-        Marker(
-          markerId: const MarkerId('start'),
-          position: _route.first,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          infoWindow: const InfoWindow(title: '출발'),
-        ),
-        Marker(
-          markerId: const MarkerId('current'),
-          position: playPos,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        ),
-      },
+        PolylineLayer(polylines: [
+          Polyline(points: _route, color: _teal, strokeWidth: 5),
+        ]),
+        MarkerLayer(markers: [
+          _pin(_route.first, _amber, Icons.flag_rounded),     // 출발
+          _pin(playPos, _purple, Icons.navigation_rounded),   // 현재(재생) 위치
+        ]),
+      ],
     );
   }
 
-  // ── 하단 컨트롤 (상태 + 기록 토글 + 재생) ──
+  Marker _pin(LatLng p, Color c, IconData icon) => Marker(
+        point: p,
+        width: 30,
+        height: 30,
+        child: Icon(icon, color: c, size: 26),
+      );
+
+  // ── 하단 컨트롤 (상태 + 기록 토글 + 재생 + 샘플) ──
   Widget _controls() {
     final recording = _recording || _active;
     return Column(children: [
@@ -266,6 +285,14 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
           ),
         ),
       ]),
+      const SizedBox(height: kGapInner),
+      // 테스트용: 가짜 동선 넣기 (출시 전 제거)
+      TextButton.icon(
+        onPressed: _injectSample,
+        icon: const Icon(Icons.science_outlined, color: _text2, size: 16),
+        label: const Text("샘플 동선 넣기 (테스트)",
+            style: TextStyle(color: _text2, fontSize: 12)),
+      ),
     ]);
   }
 }

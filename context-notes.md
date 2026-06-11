@@ -10,6 +10,14 @@
 - **위치 패키지 = geolocator (무료)**. 이유: google_maps_flutter와 궁합, distanceFilter로 배터리 절약,
   안드 포그라운드 서비스 옵션 내장. 완전 강제종료 생존은 미보장(아래 한계).
 
+## 2026-06-11 지도 변경: google_maps_flutter → flutter_map (OSM)
+- 사용자 요청: Google Maps API 키 발급 부담 → 키 불필요한 flutter_map(OpenStreetMap)으로 교체.
+- 제거: google_maps_flutter 의존성, 안드 매니페스트 Maps 키 meta-data, iOS AppDelegate GMSServices,
+  웹 index.html Maps 스크립트. (위치 권한은 geolocator용으로 유지)
+- 추가: flutter_map, latlong2. 타일은 OSM 공개 타일서버.
+- 테스트용: 타임라인 하단 "샘플 동선 넣기" 버튼 — 제주시청 부근 가짜 경로 25점을 오늘 문서에 기록.
+  출시 전 제거할 것(`_injectSample` + 해당 TextButton).
+
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
   단, OS 강제종료 시 멈출 수 있음. 완전 생존은 유료 flutter_background_geolocation 필요.

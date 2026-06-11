@@ -11,10 +11,6 @@
         android:label="SwingTiger"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <!-- Google Maps API 키 (사용자: 아래 YOUR_ANDROID_MAPS_API_KEY 를 발급받은 키로 교체) -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_ANDROID_MAPS_API_KEY"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
