@@ -411,7 +411,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                   style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w700)),
               const SizedBox(width: 6),
               Icon(logExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                  color: _text2, size: 18),
+                  color: logExp ? _elevated : _teal, size: 18),
             ]),
           ),
         ),
@@ -484,7 +484,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             child: Row(children: [
               Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w500)),
               const SizedBox(width: 4),
-              Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: _rhTogLabelColor, size: _rhTogIconSize),
+              Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: tog(k) ? _elevated : _teal, size: _rhTogIconSize),
               const Spacer(),
               Text.rich(TextSpan(children: [
                 TextSpan(text: _fmtC(v), style: TextStyle(color: vc, fontSize: _rhTogFontSize)),
@@ -734,7 +734,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w500)),
               const SizedBox(width: 4),
               Icon(expanded ? Icons.expand_less : Icons.expand_more,
-                  color: _rhTogLabelColor, size: _rhTogIconSize),
+                  color: expanded ? _elevated : _teal, size: _rhTogIconSize),
               const Spacer(),
               Text.rich(TextSpan(children: [
                 TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,

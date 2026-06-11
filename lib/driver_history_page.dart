@@ -89,7 +89,6 @@ const double _stRowFontSize     = 12;      // 행 라벨 글씨 크기
 const double _stRowAmtFontSize  = 16;      // 행 금액 글씨 크기
 const Color  _stRowLabelColor   = _text;   // 기본 라벨 색
 const Color  _stRowPinkColor    = _pink;   // 세금/수수료/공제 라벨 색
-const Color  _stToggleIconColor = _text2;  // 토글 화살표 색
 const double _stToggleIconSize  = 15;      // 토글 화살표 크기
 const Color  _stSubBoxBg        = _appBg;  // 하위 박스 배경
 const Color  _stSubBoxBorder    = _elevated; // 하위 박스 테두리
@@ -145,7 +144,6 @@ const double _htRowFontSize     = 12;  // 행 라벨 글씨 크기
 const double _htRowAmtFontSize  = 16;  // 행 금액 글씨 크기
 const Color  _htRowLabelColor   = _text;  // 기본 라벨 색
 const Color  _htRowPinkColor    = _pink;  // 세금/수수료/공제 라벨 색
-const Color  _htToggleIconColor = _text2; // 토글 화살표 색
 const double _htToggleIconSize  = 15;     // 토글 화살표 크기
 const Color  _htSubBoxBg        = _appBg;     // 하위 박스 배경
 const Color  _htSubBoxBorder    = _elevated; // 하위 박스 테두리
@@ -497,7 +495,7 @@ class _HistoryPageState extends State<HistoryPage>
                   fontWeight: FontWeight.w500)),
           const SizedBox(width: 4),
           Icon(exp ? Icons.expand_less : Icons.expand_more,
-              color: _stToggleIconColor, size: _stToggleIconSize),
+              color: exp ? _elevated : _teal, size: _stToggleIconSize),
           const Spacer(),
           _stAmt(v, vc, fs: _stRowAmtFontSize),
         ]),
@@ -824,7 +822,7 @@ class _HistoryPageState extends State<HistoryPage>
                   fontWeight: FontWeight.w500)),
           const SizedBox(width: 4),
           Icon(exp ? Icons.expand_less : Icons.expand_more,
-              color: _htToggleIconColor, size: _htToggleIconSize),
+              color: exp ? _elevated : _teal, size: _htToggleIconSize),
           const Spacer(),
           _htAmt(v, vc, fs: _htRowAmtFontSize),
         ]),

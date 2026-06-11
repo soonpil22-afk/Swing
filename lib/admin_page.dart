@@ -229,7 +229,6 @@ const _whSubColor       = _text2;  // 소계 행 라벨/값 색
 const double _whSubFontSize = 11;  // 소계 행 글씨 크기
 const _whTogLabelColor  = _text;  // 토글 라벨 색
 const double _whTogFontSize = 12;  // 토글 글씨 크기
-const _whTogIconColor   = _text2;  // 토글 펼침 아이콘 색
 const double _whTogIconSize = 14;  // 토글 아이콘 크기
 const _whSubBoxBg       = _surface;  // 펼침 박스 배경
 const double _whSubBoxRadius = 8;  // 펼침 박스 모서리
@@ -2227,7 +2226,7 @@ class _AdminPageState extends State<AdminPage> {
             child: Row(children: [
               Text(label, style: const TextStyle(color: _whTogLabelColor, fontSize: _whTogFontSize, fontWeight: FontWeight.w500)),
               const SizedBox(width: 4),
-              Icon(expanded ? Icons.expand_less : Icons.expand_more, color: _whTogIconColor, size: _whTogIconSize),
+              Icon(expanded ? Icons.expand_less : Icons.expand_more, color: expanded ? _elevated : _teal, size: _whTogIconSize),
               const Spacer(),
               Text.rich(TextSpan(children: [
                 TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,

@@ -58,7 +58,6 @@ const double _wrCardBorderWidth = 1;   // 카드 테두리 두께
 const double _wrGapNameDate    = 2;    // 이름줄 ↔ 날짜 갭
 const double _wrGapAmtChevron  = 8;    // 금액 ↔ 펼침아이콘 갭
 const double _wrChevronSize    = 18;   // 펼침 아이콘 크기
-const _wrChevronColor          = _text2; // 펼침 아이콘 색
 const double _wrGapAcctFinal   = 8;    // 계좌행 ↔ 최종금액 갭
 const double _wrGapFinalItems  = 10;   // 최종금액 ↔ 날짜상세 갭
 // 날짜별 상세 내역 행
@@ -236,7 +235,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                   Text("${items.length}일 합산", style: const TextStyle(color: _wrDaysColor, fontSize: _wrDaysFontSize)),
               ]),
               const SizedBox(width: _wrGapAmtChevron),
-              Icon(cardExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _wrChevronColor, size: _wrChevronSize),
+              Icon(cardExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: cardExp ? _elevated : _teal, size: _wrChevronSize),
             ]),
           ),
         ),
@@ -345,7 +344,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                           child: Row(children: [
                             Text(label, style: const TextStyle(color: _wrDtTogLabelColor, fontSize: _wrDtTogFontSize, fontWeight: FontWeight.w500)),
                             const SizedBox(width: 4),
-                            Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: _wrDtTogLabelColor, size: _wrDtTogIconSize),
+                            Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: tog(k) ? _elevated : _teal, size: _wrDtTogIconSize),
                             const Spacer(),
                             Text.rich(TextSpan(children: [
                               TextSpan(text: _fmtC(v), style: TextStyle(color: vc, fontSize: _wrDtTogFontSize)),
@@ -374,7 +373,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               child: Text(iShort, style: const TextStyle(color: _wrItemChipColor, fontSize: _wrItemChipFontSize, fontWeight: FontWeight.w700)),
                             ),
                             const SizedBox(width: 4),
-                            Icon(iExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: _wrItemChevronSize),
+                            Icon(iExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: iExp ? _elevated : _teal, size: _wrItemChevronSize),
                           ]),
                         ),
                       ),
@@ -640,7 +639,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
             child: Row(children: [
               Text(label, style: const TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w500)),
               const SizedBox(width: 4),
-              Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: 16),
+              Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: expanded ? _elevated : _teal, size: 16),
               const Spacer(),
               Text.rich(TextSpan(children: [
                 TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,

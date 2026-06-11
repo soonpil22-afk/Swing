@@ -261,7 +261,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                             child: const Text("납부초과", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
                           ),
                           const SizedBox(width: 6),
-                          Icon(isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: _text2, size: _laChevronSize),
+                          Icon(isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: isExpanded ? _elevated : _teal, size: _laChevronSize),
                         ]),
                       ),
                     ),
