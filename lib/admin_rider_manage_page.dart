@@ -253,7 +253,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         tilePadding: const EdgeInsets.fromLTRB(12, 4, 10, 4), childrenPadding: EdgeInsets.zero, clipBehavior: Clip.hardEdge,
-        iconColor: _elevated, collapsedIconColor: _teal,
+        iconColor: _text2, collapsedIconColor: _teal,
         leading: Container(width: _rmAvatarSize, height: _rmAvatarSize,
             decoration: BoxDecoration(color: _rmAvatarBg, border: Border.all(color: _rmAvatarBorder), borderRadius: BorderRadius.circular(9)),
             child: Center(child: Text(initial, style: const TextStyle(color: _rmAvatarText, fontSize: _rmAvatarFontSize, fontWeight: FontWeight.w700)))),

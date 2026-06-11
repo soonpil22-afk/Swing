@@ -2226,7 +2226,7 @@ class _AdminPageState extends State<AdminPage> {
             child: Row(children: [
               Text(label, style: const TextStyle(color: _whTogLabelColor, fontSize: _whTogFontSize, fontWeight: FontWeight.w500)),
               const SizedBox(width: 4),
-              Icon(expanded ? Icons.expand_less : Icons.expand_more, color: expanded ? _elevated : _teal, size: _whTogIconSize),
+              Icon(expanded ? Icons.expand_less : Icons.expand_more, color: expanded ? _text2 : _teal, size: _whTogIconSize),
               const Spacer(),
               Text.rich(TextSpan(children: [
                 TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,
