@@ -378,7 +378,7 @@ class _AdminPageState extends State<AdminPage> {
   DateTime? lStart, lEnd;
   double lGross = 0, lEmp = 0, lAcc = 0, lTax = 0;
   double lMission = 0, lPerOrder = 0, lRange = 0;
-  double lIns = 0, lWd = 0, lComm = 0, lLease = 0, lTotal = 0;
+  double lIns = 0, lWd = 0, lComm = 0, lLease = 0, lEtc = 0, lTotal = 0;
   bool lLoaded = false, lLoading = false;
   bool lPromo = false, lTaxExp = false, lDedu = false, lCommExp = false;
 
@@ -540,7 +540,7 @@ class _AdminPageState extends State<AdminPage> {
       final snap = await FirebaseFirestore.instance
           .collection('admin_settlement_logs').where('status', isEqualTo: '지급완료').get();
       double gross = 0, emp = 0, acc = 0, tax = 0;
-      double mission = 0, perOrder = 0, range = 0, ins = 0, wd = 0, comm = 0, lease = 0, total = 0;
+      double mission = 0, perOrder = 0, range = 0, ins = 0, wd = 0, comm = 0, lease = 0, etc = 0, total = 0;
 
       final hasFilter = lStart != null || lEnd != null;
       final endDay = lEnd != null
@@ -556,6 +556,7 @@ class _AdminPageState extends State<AdminPage> {
           total += (data['amount'] as num?)?.toDouble() ?? 0;
           if (items.isNotEmpty) {
             lease += (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+            etc   += (data['etcDeduction']   as num?)?.toDouble() ?? 0;
             for (final item in items) {
               gross    += (item['deliveryFee']    as num?)?.toDouble() ?? 0;
               emp      += (item['employmentTax']  as num?)?.toDouble() ?? 0;
@@ -581,6 +582,7 @@ class _AdminPageState extends State<AdminPage> {
             wd       += _regexExtract(msg, '출금수수료').abs();
             comm     += _extractCommission(msg);
             lease    += _regexExtract(msg, '리스비\\(일\\)').abs();
+            etc      += _regexExtract(msg, '기타\\(일\\)').abs();
           }
         } else {
           int matchedCount = 0;
@@ -604,18 +606,20 @@ class _AdminPageState extends State<AdminPage> {
           if (matchedCount > 0 && items.isNotEmpty) {
             final fullLease = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
             lease += fullLease * matchedCount / items.length;
+            final fullEtc = (data['etcDeduction'] as num?)?.toDouble() ?? 0;
+            etc += fullEtc * matchedCount / items.length;
           }
         }
       }
 
       if (hasFilter) {
-        total = gross + (mission + perOrder + range) - (emp + acc + tax) - (wd + comm) - ins - lease;
+        total = gross + (mission + perOrder + range) - (emp + acc + tax) - (wd + comm) - ins - lease - etc;
       }
 
       setState(() {
         lGross = gross; lEmp = emp; lAcc = acc; lTax = tax;
         lMission = mission; lPerOrder = perOrder; lRange = range;
-        lIns = ins; lWd = wd; lComm = comm; lLease = lease; lTotal = total;
+        lIns = ins; lWd = wd; lComm = comm; lLease = lease; lEtc = etc; lTotal = total;
         lLoaded = true; lLoading = false;
       });
     } catch (e) { setState(() { lLoaded = true; lLoading = false; }); }
@@ -1983,7 +1987,7 @@ class _AdminPageState extends State<AdminPage> {
     final totalTaxSum   = lEmp + lAcc + lTax;
     final totalPromoSum = lMission + lPerOrder + lRange;
     final totalFeeSum   = lWd + lComm;
-    final totalDeduSum  = lIns + lLease;
+    final totalDeduSum  = lIns + lLease + lEtc;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(15, _whTabToCardGap, 15, 15),
       child: Container(
@@ -2019,6 +2023,7 @@ class _AdminPageState extends State<AdminPage> {
             ),
             _toggle("지원금합계", "${_fmtC(totalPromoSum)} 원", _text, lPromo,
                 () => setState(() => lPromo = !lPromo), [
+              _subC("미션금액",     "${_fmtC(lMission)} 원"),
               _subC("건당프로모션", "${_fmtC(lPerOrder)} 원"),
               _sub("구간프로모션",  "${_fmtC(lRange)} 원"),
             ]),
@@ -2037,6 +2042,7 @@ class _AdminPageState extends State<AdminPage> {
                 () => setState(() => lDedu = !lDedu), [
               _subC("시간제보험", "${_fmtC(lIns)} 원",   vc: _text2),
               _subC("리스비",     "${_fmtC(lLease)} 원", vc: _text2),
+              _subC("기타",       "${_fmtC(lEtc)} 원",   vc: _text2),
             ]),
             Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
             _row("총 출금금액", "${_fmtC(lTotal)} 원", lc: _teal, vc: _teal, bold: true, fs: 14),

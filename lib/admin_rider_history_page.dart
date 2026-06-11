@@ -119,7 +119,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
   bool   _taxExp = false, _promoExp = false, _deduExp = false, _commExp = false;
   double _gross = 0, _emp = 0, _acc = 0, _tax = 0;
   double _mission = 0, _perOrder = 0, _range = 0;
-  double _ins = 0, _wdFee = 0, _comm = 0, _lease = 0, _total = 0;
+  double _ins = 0, _wdFee = 0, _comm = 0, _lease = 0, _etc = 0, _total = 0;
 
   @override
   void initState() {
@@ -163,7 +163,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           .where('status', isEqualTo: '지급완료')
           .get();
       double gross = 0, emp = 0, acc = 0, tax = 0;
-      double mission = 0, perOrder = 0, range = 0, ins = 0, wdFee = 0, comm = 0, lease = 0, total = 0;
+      double mission = 0, perOrder = 0, range = 0, ins = 0, wdFee = 0, comm = 0, lease = 0, etc = 0, total = 0;
 
       final hasFilter = _startApplied != null || _endApplied != null;
       final endDay = _endApplied != null
@@ -179,6 +179,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           total += (data['amount'] as num?)?.toDouble() ?? 0;
           if (items.isNotEmpty) {
             lease += (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+            etc   += (data['etcDeduction']   as num?)?.toDouble() ?? 0;
             for (final item in items) {
               gross    += (item['deliveryFee']    as num?)?.toDouble() ?? 0;
               emp      += (item['employmentTax']  as num?)?.toDouble() ?? 0;
@@ -204,6 +205,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             wdFee    += _rx(msg, '출금수수료').abs();
             comm     += _rxComm(msg);
             lease    += _rx(msg, '리스비\\(일\\)').abs();
+            etc      += _rx(msg, '기타\\(일\\)').abs();
           }
         } else {
           int matchedCount = 0;
@@ -227,12 +229,14 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           if (matchedCount > 0 && items.isNotEmpty) {
             final fullLease = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
             lease += fullLease * matchedCount / items.length;
+            final fullEtc = (data['etcDeduction'] as num?)?.toDouble() ?? 0;
+            etc += fullEtc * matchedCount / items.length;
           }
         }
       }
 
       if (hasFilter) {
-        total = gross + (mission + perOrder + range) - (emp + acc + tax) - (wdFee + comm) - ins - lease;
+        total = gross + (mission + perOrder + range) - (emp + acc + tax) - (wdFee + comm) - ins - lease - etc;
       }
 
       if (mounted) {
@@ -240,7 +244,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           _gross = gross; _emp = emp; _acc = acc; _tax = tax;
           _mission = mission; _perOrder = perOrder; _range = range;
           _ins = ins; _wdFee = wdFee; _comm = comm; _total = total;
-          _lease = lease;
+          _lease = lease; _etc = etc;
           _cumLoaded = true; _cumLoading = false;
         });
       }
@@ -640,7 +644,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     final totalTax   = _emp + _acc + _tax;
     final totalPromo = _mission + _perOrder + _range;
     final totalFee   = _wdFee + _comm;
-    final totalDedu  = _ins + _lease;
+    final totalDedu  = _ins + _lease + _etc;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(_rhCumOuterL, _rhCumOuterT, _rhCumOuterR, _rhCumOuterB),
       child: Container(
@@ -683,6 +687,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             ),
             _toggle("지원금합계", "${_fmtC(totalPromo)} 원", _text, _promoExp,
                 () => setState(() => _promoExp = !_promoExp), [
+              _subC("미션금액",     "${_fmtC(_mission)} 원"),
               _subC("건당프로모션", "${_fmtC(_perOrder)} 원"),
               _sub("구간프로모션", "${_fmtC(_range)} 원"),
             ]),
@@ -701,6 +706,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                 () => setState(() => _deduExp = !_deduExp), [
               _subC("시간제보험", "${_fmtC(_ins)} 원",   vc: _text2),
               _subC("리스비",     "${_fmtC(_lease)} 원", vc: _text2),
+              _subC("기타",       "${_fmtC(_etc)} 원",   vc: _text2),
             ]),
             Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
             _row("총 출금금액", "${_fmtC(_total)} 원",

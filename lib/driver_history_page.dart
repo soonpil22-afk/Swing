@@ -191,9 +191,9 @@ class _HistoryPageState extends State<HistoryPage>
   DateTime? _start, _end, _startApplied, _endApplied;
   bool _histLoaded = false;
   bool _histLoading = false;
-  double _hGross = 0, _hPromo = 0, _hPOrd = 0, _hRng = 0;
+  double _hGross = 0, _hPromo = 0, _hPOrd = 0, _hRng = 0, _hMission = 0;
   double _hTax = 0, _hEmp = 0, _hAcc = 0, _hInc = 0;
-  double _hWd = 0, _hComm = 0, _hIns = 0, _hLease = 0, _hTotal = 0;
+  double _hWd = 0, _hComm = 0, _hIns = 0, _hLease = 0, _hEtc = 0, _hTotal = 0;
 
   @override
   void initState() {
@@ -302,7 +302,7 @@ class _HistoryPageState extends State<HistoryPage>
 
       double gross = 0, promo = 0, pOrd = 0, rng = 0;
       double tax = 0, emp = 0, acc = 0, inc = 0;
-      double wd = 0, comm = 0, ins = 0, lease = 0, total = 0;
+      double wd = 0, comm = 0, ins = 0, lease = 0, etc = 0, mission = 0, total = 0;
 
       final hasFilter = _startApplied != null || _endApplied != null;
       final endDay = _endApplied != null
@@ -319,9 +319,11 @@ class _HistoryPageState extends State<HistoryPage>
         if (!hasFilter) {
           total += (data['amount'] as num?)?.toDouble() ?? 0;
           lease += (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+          etc   += (data['etcDeduction']   as num?)?.toDouble() ?? 0;
           for (final it in items) {
             gross += (it['deliveryFee'] as num?)?.toDouble() ?? 0;
             promo += (it['promoTotal'] as num?)?.toDouble() ?? 0;
+            mission += (it['missionFee'] as num?)?.toDouble() ?? 0;
             pOrd += (it['perOrderAmount'] as num?)?.toDouble() ?? 0;
             rng += (it['rangeAmount'] as num?)?.toDouble() ?? 0;
             tax += (it['tax'] as num?)?.toDouble() ?? 0;
@@ -342,6 +344,7 @@ class _HistoryPageState extends State<HistoryPage>
             matchedCount++;
             gross += (it['deliveryFee'] as num?)?.toDouble() ?? 0;
             promo += (it['promoTotal'] as num?)?.toDouble() ?? 0;
+            mission += (it['missionFee'] as num?)?.toDouble() ?? 0;
             pOrd += (it['perOrderAmount'] as num?)?.toDouble() ?? 0;
             rng += (it['rangeAmount'] as num?)?.toDouble() ?? 0;
             tax += (it['tax'] as num?)?.toDouble() ?? 0;
@@ -355,18 +358,20 @@ class _HistoryPageState extends State<HistoryPage>
           if (matchedCount > 0 && items.isNotEmpty) {
             final fullLease = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
             lease += fullLease * matchedCount / items.length;
+            final fullEtc = (data['etcDeduction'] as num?)?.toDouble() ?? 0;
+            etc += fullEtc * matchedCount / items.length;
           }
         }
       }
 
       if (hasFilter) {
-        total = gross + promo - tax - (wd + comm) - ins - lease;
+        total = gross + promo - tax - (wd + comm) - ins - lease - etc;
       }
 
       if (mounted) setState(() {
         _hGross = gross; _hPromo = promo; _hPOrd = pOrd; _hRng = rng;
         _hTax = tax; _hEmp = emp; _hAcc = acc; _hInc = inc;
-        _hWd = wd; _hComm = comm; _hIns = ins; _hLease = lease;
+        _hWd = wd; _hComm = comm; _hIns = ins; _hLease = lease; _hEtc = etc; _hMission = mission;
         _hTotal = total; _histLoaded = true; _histLoading = false;
       });
     } catch (e) {
@@ -911,6 +916,7 @@ class _HistoryPageState extends State<HistoryPage>
             _htToggleRow('h_promo', "지원금합계", _hPromo, _htRowLabelColor),
             if (_itemToggles['h_promo'] == true)
               _htSubGroup([
+                _htSubRow("미션금액", _hMission, _htSubRowColor),
                 _htSubRow("건당프로모션", _hPOrd, _htSubRowColor),
                 _htSubRow("구간프로모션", _hRng, _htSubRowColor),
               ]),
@@ -927,11 +933,12 @@ class _HistoryPageState extends State<HistoryPage>
                 _htSubRow("출금수수료", _hWd, _htSubRowColor),
                 _htSubRow("협력사수수료", _hComm, _htSubRowColor),
               ]),
-            _htToggleRow('h_dedu', "공제합계", _hIns + _hLease, _htRowPinkColor),
+            _htToggleRow('h_dedu', "공제합계", _hIns + _hLease + _hEtc, _htRowPinkColor),
             if (_itemToggles['h_dedu'] == true)
               _htSubGroup([
                 _htSubRow("시간제보험", _hIns, _htSubRowColor),
                 _htSubRow("리스비", _hLease, _htSubRowColor),
+                _htSubRow("기타", _hEtc, _htSubRowColor),
               ]),
             Container(
                 height: 1,
