@@ -2,6 +2,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'tokens.dart';
 import 'driver_common.dart';
 import 'glass_shine_button.dart';
@@ -96,6 +98,9 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
   int _score = 0, _lines = 0, _level = 1;
   bool _playing = false, _over = false, _saved = false;
 
+  final AudioPlayer _bgm = AudioPlayer();
+  bool _muted = false;
+
   double _acc = 0;
   Duration _last = Duration.zero;
   double get _dropInterval => max(0.08, 0.8 * pow(0.85, _level - 1));
@@ -104,17 +109,50 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
   void initState() {
     super.initState();
     _board = List.generate(_rows, (_) => List.filled(_cols, 0));
+    _bgm.setReleaseMode(ReleaseMode.loop); // 무한 반복
+    _loadMuted();
     _ctrl.addListener(_tick);
     _ctrl.repeat();
   }
 
   @override
   void dispose() {
+    _bgm.dispose();
     _ctrl.dispose();
     super.dispose();
   }
 
   int _randType() => 1 + _rng.nextInt(7);
+
+  // ── 배경음악 ──
+  Future<void> _loadMuted() async {
+    final p = await SharedPreferences.getInstance();
+    if (mounted) setState(() => _muted = p.getBool('game_muted') ?? false);
+  }
+
+  Future<void> _startBgm() async {
+    if (_muted) return;
+    try {
+      await _bgm.play(AssetSource('Tetris_Bradinsky.mp3'));
+    } catch (_) {}
+  }
+
+  Future<void> _stopBgm() async {
+    try {
+      await _bgm.stop();
+    } catch (_) {}
+  }
+
+  Future<void> _toggleMute() async {
+    setState(() => _muted = !_muted);
+    final p = await SharedPreferences.getInstance();
+    await p.setBool('game_muted', _muted);
+    if (_muted) {
+      _stopBgm();
+    } else if (_playing) {
+      _startBgm();
+    }
+  }
 
   void _start() {
     setState(() {
@@ -130,6 +168,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
       _acc = 0;
       _spawn();
     });
+    _startBgm();
   }
 
   void _spawn() {
@@ -142,6 +181,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
       // 스폰 자리 막힘 → 게임오버
       _playing = false;
       _over = true;
+      _stopBgm();
       _submitScore();
     }
   }
@@ -303,6 +343,14 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
           const SizedBox(width: 18),
           _stat("레벨", "$_level"),
           const Spacer(),
+          GestureDetector(
+            onTap: _toggleMute,
+            child: Icon(
+                _muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                color: _text2,
+                size: 20),
+          ),
+          const SizedBox(width: 14),
           GestureDetector(
             onTap: () => Navigator.push(
                 context,

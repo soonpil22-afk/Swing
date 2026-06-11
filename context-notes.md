@@ -38,6 +38,9 @@
   본인 순위만 따로 표시. 라이더 수 적어 전량 조회 OK.
 - tokens.dart에 kBlue/kGreen 추가(블록 7색용, 규칙 A 준수).
 - ★ Firestore 규칙에 game_scores 추가 필요(콘솔): match /game_scores/{docId} { allow read, write: if request.auth != null; }
+- 배경음악: audioplayers 추가, assets/Tetris_Bradinsky.mp3(로열티프리 코로베이니키) 무한반복.
+  시작 시 재생·게임오버/나갈 때 정지. 우상단 🔊/🔇 음소거 토글(shared_preferences 'game_muted').
+  곡 멜로디는 퍼블릭도메인 민요라 사용 OK, 게임명은 "블록 퍼즐" 유지(테트리스 상표 회피).
 
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
