@@ -1055,7 +1055,7 @@ class _AdminPageState extends State<AdminPage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _elevated, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(title, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          Text(title, style: const TextStyle(color: _pink, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: GlassShineButton(
             label: "확인",
