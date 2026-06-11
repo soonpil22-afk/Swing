@@ -96,7 +96,8 @@ class _DriverTimelineHistoryPageState extends State<DriverTimelineHistoryPage> {
 
   Widget _dayCard(Map<String, dynamic> data) {
     final date = data['date'] as String? ?? '';
-    final count = (data['points'] as List?)?.length ?? 0;
+    final route = parseRoutePoints(data['points'] as List?);
+    final count = route.length;
     return GestureDetector(
       onTap: count < 1
           ? null
@@ -120,13 +121,29 @@ class _DriverTimelineHistoryPageState extends State<DriverTimelineHistoryPage> {
                 style: const TextStyle(
                     color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
           ),
-          Text("$count개 지점",
-              style: const TextStyle(color: _text2, fontSize: 12)),
+          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            Text(_fmtDist(route),
+                style: const TextStyle(
+                    color: _teal, fontSize: 14, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 2),
+            Text("$count개 지점",
+                style: const TextStyle(color: _text2, fontSize: 11)),
+          ]),
           const SizedBox(width: 8),
           const Icon(Icons.chevron_right, color: _text2, size: 20),
         ]),
       ),
     );
+  }
+
+  // 경로 좌표 누적 거리 → "X.X km" (1km 미만은 "Xm")
+  static const Distance _distance = Distance();
+  String _fmtDist(List<LatLng> route) {
+    var m = 0.0;
+    for (var i = 1; i < route.length; i++) {
+      m += _distance.as(LengthUnit.Meter, route[i - 1], route[i]);
+    }
+    return m < 1000 ? '${m.round()}m' : '${(m / 1000).toStringAsFixed(1)}km';
   }
 
   // yyyy-MM-dd → "M월 d일 (요일)"
