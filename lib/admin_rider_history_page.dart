@@ -296,9 +296,9 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                             style: const TextStyle(fontWeight: FontWeight.w700),
                             children: [
                           TextSpan(text: widget.name,
-                              style: const TextStyle(color: _teal, fontSize: 19)),
+                              style: const TextStyle(color: _teal, fontSize: 18)),
                           const TextSpan(text: " 님 출금 내역",
-                              style: TextStyle(color: _text, fontSize: 19)),
+                              style: TextStyle(color: _text, fontSize: 18)),
                         ])),
                   ]),
                 ),

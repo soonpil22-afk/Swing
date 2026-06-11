@@ -1170,7 +1170,7 @@ class _AdminPageState extends State<AdminPage> {
           ),
           Text(title,
               style: const TextStyle(
-                  color: _text, fontSize: 19, fontWeight: FontWeight.w700)),
+                  color: _text, fontSize: 18, fontWeight: FontWeight.w700)),
         ]),
       );
 
