@@ -15,8 +15,8 @@
 - 제거: google_maps_flutter 의존성, 안드 매니페스트 Maps 키 meta-data, iOS AppDelegate GMSServices,
   웹 index.html Maps 스크립트. (위치 권한은 geolocator용으로 유지)
 - 추가: flutter_map, latlong2. 타일은 OSM 공개 타일서버.
-- 테스트용: 타임라인 하단 "샘플 동선 넣기" 버튼 — 제주시청 부근 가짜 경로 25점을 오늘 문서에 기록.
-  출시 전 제거할 것(`_injectSample` + 해당 TextButton).
+- 테스트용 "샘플 동선 넣기" 버튼은 검증 후 제거함. 그 자리에 "기록 시작 전 위치 권한 설정 → 항상 허용"
+  핑크 안내 문구로 교체.
 
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.

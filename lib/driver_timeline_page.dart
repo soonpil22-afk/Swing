@@ -94,31 +94,6 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
     });
   }
 
-  // ── 샘플 동선 넣기 (테스트용) — 제주 시내 한 바퀴 가짜 경로를 오늘 문서에 기록 ──
-  Future<void> _injectSample() async {
-    const baseLat = 33.4996, baseLng = 126.5312; // 제주시청 부근
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final pts = List.generate(25, (i) {
-      final t = i / 24.0;
-      return {
-        'lat': baseLat + 0.010 * t + 0.0008 * (i % 5),
-        'lng': baseLng + 0.014 * t - 0.0006 * (i % 3),
-        't': now + i * 60000, // 1분 간격
-      };
-    });
-    await FirebaseFirestore.instance
-        .collection('location_tracks')
-        .doc(trackDocId(widget.uid, DateTime.now()))
-        .set({
-      'uid': widget.uid,
-      'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      'startedAt': Timestamp.now(),
-      'endedAt': Timestamp.now(),
-      'active': false,
-      'points': pts,
-    }, SetOptions(merge: true));
-  }
-
   // 문서 → 경로 좌표 리스트 (t 오름차순)
   List<LatLng> _parseRoute(Map<String, dynamic>? data) {
     final raw = (data?['points'] as List?) ?? [];
@@ -286,13 +261,11 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
         ),
       ]),
       const SizedBox(height: kGapInner),
-      // 테스트용: 가짜 동선 넣기 (출시 전 제거)
-      TextButton.icon(
-        onPressed: _injectSample,
-        icon: const Icon(Icons.science_outlined, color: _text2, size: 16),
-        label: const Text("샘플 동선 넣기 (테스트)",
-            style: TextStyle(color: _text2, fontSize: 12)),
-      ),
+      // 기록 시작 전 위치 권한 안내
+      const Text("기록 시작 전 위치 권한 설정 → 항상 허용",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: _pink, fontSize: 12, fontWeight: FontWeight.w600)),
     ]);
   }
 }
