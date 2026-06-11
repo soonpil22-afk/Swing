@@ -10,6 +10,7 @@ import 'tokens.dart';
 import 'driver_common.dart';
 import 'driver_settings_page.dart';
 import 'driver_soon_page.dart';
+import 'swing_rush_game.dart';
 import 'driver_timeline_page.dart';
 import 'driver_lease_page.dart';
 import 'driver_history_page.dart';
@@ -1432,7 +1433,7 @@ class _DriverPageState extends State<DriverPage> {
         Expanded(
             child: _bottomMenuItem(Icons.sports_esports_rounded, _teal, "미니게임",
                 () => Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => const DriverSoonPage(title: "미니게임"))))),
+                    builder: (_) => const SwingRushGame())))),
         divider(),
         Expanded(
             child: _bottomMenuItem(Icons.timeline_rounded, _amber, "타임라인",

@@ -27,6 +27,15 @@
 - driver_timeline_history_page.dart: uid 단일 where로 날짜 목록(클라 정렬 desc), 탭 시 그 날 경로 보기.
 - 한글 요일은 로케일 데이터 미초기화라 'ko' DateFormat 대신 수동 매핑(_kWeek).
 
+## 2026-06-11 미니게임 "스윙 러시" (CustomPainter MVP, 패키지 추가 없음)
+- swing_rush_game.dart 단일 파일. AnimationController(repeat) 프레임 루프 + CustomPainter 렌더.
+- 좌우 드래그로 스포너 이동(0~1), 게이트 행이 아래로 스크롤. 트리거 라인 통과 시 현재 레인의
+  게이트 연산(×2/+N/−N)을 군중 정수에 적용. 군중=숫자, 화면 점은 필로택시스 패턴 시각연출(최대 80).
+- 보스 수치 = "행마다 큰 쪽" 경로 결과의 55%(이기되 만만찮게). 군중>=적 이면 성공.
+- 최고점수는 shared_preferences('swing_rush_best')에 로컬 저장.
+- Firestore 랭킹 연동은 (선택)이라 보류 — 추후 점수를 users/랭킹 컬렉션에 올리면 됨.
+- driver_page 미니게임 버튼 → SwingRushGame 연결(준비중 DriverSoonPage는 "준비중" 버튼만 사용).
+
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
   단, OS 강제종료 시 멈출 수 있음. 완전 생존은 유료 flutter_background_geolocation 필요.
