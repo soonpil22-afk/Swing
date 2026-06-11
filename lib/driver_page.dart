@@ -814,9 +814,7 @@ class _DriverPageState extends State<DriverPage> {
                     const SizedBox(height: kGapCard),
                     // ── 7. 리스비 카드 (리스비+기타 현황 모두 표시) ──
                     _deductMenuCard(uid),
-                    const SizedBox(height: kGapCard),
-                    // ── 8. 하단 4버튼 카드 (관리자 페이지와 동일 스타일) ──
-                    _bottomMenuCard(uid),
+                    // (하단 4버튼은 화면 하단에 고정 — Column 아래 _bottomMenuCard)
                   ],
                 ),
               ),
