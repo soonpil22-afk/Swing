@@ -10,6 +10,7 @@ import 'tokens.dart';
 import 'driver_common.dart';
 import 'driver_settings_page.dart';
 import 'driver_soon_page.dart';
+import 'driver_timeline_page.dart';
 import 'driver_lease_page.dart';
 import 'driver_history_page.dart';
 // ═══════════════════════════════════════════════════════════════════════
@@ -1436,7 +1437,7 @@ class _DriverPageState extends State<DriverPage> {
         Expanded(
             child: _bottomMenuItem(Icons.timeline_rounded, _amber, "타임라인",
                 () => Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => const DriverSoonPage(title: "타임라인"))))),
+                    builder: (_) => DriverTimelinePage(uid: uid))))),
         divider(),
         Expanded(
             child: _bottomMenuItem(Icons.more_horiz_rounded, _pink, "준비중",
