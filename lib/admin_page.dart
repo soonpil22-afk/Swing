@@ -10,6 +10,7 @@ import 'package:excel/excel.dart' hide Border, BorderStyle, TextSpan;
 import 'main.dart';
 import 'glass_shine_button.dart';
 import 'tokens.dart';
+import 'app_dialogs.dart';
 import 'admin_chat_page.dart';
 import 'admin_withdrawal_page.dart';
 import 'admin_lease_alerts_page.dart';
@@ -1107,7 +1108,20 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        // 서브 화면이면 대시보드(메인)로, 메인이면 종료 확인
+        if (_homeView != null) {
+          setState(() => _homeView = null);
+          return;
+        }
+        if (await showExitConfirmDialog(context)) {
+          await SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: _appBg,
       body: SafeArea(
@@ -1138,6 +1152,7 @@ class _AdminPageState extends State<AdminPage> {
             child: _bottomMenuCard(),
           ),
         ]),
+      ),
       ),
     );
   }

@@ -49,6 +49,11 @@
   DriverSoonPage는 더 이상 사용 안 해 삭제. driver_partners_page.dart 신설(준비중입니다!! + 6개 업종 목록).
 - 미니게임 시작화면 시작버튼 아래 "배달플랫폼 알림 루틴 설정 필수!!" 핑크 안내 추가.
 
+## 2026-06-12 시스템 뒤로가기 동작 변경
+- app_dialogs.dart: showExitConfirmDialog(취소/종료) 공통 다이얼로그.
+- 관리자: PopScope(canPop:false) — 서브뷰(_homeView!=null)면 대시보드로, 메인이면 종료 확인→SystemNavigator.pop.
+- 기사: PopScope — 상담 말풍선 열려있으면 닫기, 아니면 종료 확인. 서브 페이지는 기본 pop으로 메인 복귀.
+
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
   단, OS 강제종료 시 멈출 수 있음. 완전 생존은 유료 flutter_background_geolocation 필요.

@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'main.dart';
 import 'glass_shine_button.dart';
 import 'tokens.dart';
+import 'app_dialogs.dart';
 import 'driver_common.dart';
 import 'driver_settings_page.dart';
 import 'driver_partners_page.dart';
@@ -772,7 +774,21 @@ class _DriverPageState extends State<DriverPage> {
     final d           = _data[_period]!;
 
     // ── 1. 전체 배경 ──────────────────────────────────────────────────
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        // 상담 말풍선이 열려 있으면 먼저 닫기
+        if (_showBalloon) {
+          setState(() => _showBalloon = false);
+          return;
+        }
+        // 메인 페이지 → 종료 확인 (서브 페이지는 기본 동작으로 메인 복귀)
+        if (await showExitConfirmDialog(context)) {
+          await SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
       backgroundColor: _bgScaffold,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -830,6 +846,7 @@ class _DriverPageState extends State<DriverPage> {
             child: _bottomMenuCard(uid),
           ),
         ]),
+      ),
       ),
     );
   }
