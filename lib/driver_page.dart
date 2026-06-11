@@ -176,17 +176,17 @@ const Color  _wfPink        = Color(0xFFFF5FC4); // 핑크
 const Color  _wfPurple      = Color(0xFF9D7BFF); // 보라
 const Color  _wfInnerTop    = Color(0xFF141A30); // 안쪽 배경 위
 const Color  _wfInnerBottom = Color(0xFF10142A); // 안쪽 배경 아래
-const double _wfRadius      = 18;   // 프레임 모서리
+const double _wfRadius      = 14;   // 프레임 모서리
 const double _wfBorderWidth = 1.5;  // 테두리(빛) 두께
 const int    _wfFlowMs      = 3500; // 빛 한 바퀴 도는 시간(ms, 작을수록 빠름)
 // 금액 글씨
-const double _wfAmtLeftGap      = 22; // 금액 왼쪽 여백(오른쪽으로 밀기)
-const double _wfAmtFontSize     = 30; // 금액 숫자 크기
+const double _wfAmtLeftGap      = 34; // 금액 왼쪽 여백(오른쪽으로 밀기)
+const double _wfAmtFontSize     = 26; // 금액 숫자 크기
 const double _wfAmtUnitFontSize = 13; // " 원" 크기
 // 출금신청 버튼
-const double _wfBtnFontSize = 15; // 버튼 글씨 크기
+const double _wfBtnFontSize = 14; // 버튼 글씨 크기
 const double _wfBtnPadH     = 20;   // 버튼 좌우 여백
-const double _wfBtnPadV     = 8;   // 버튼 위아래 여백
+const double _wfBtnPadV     = 4;   // 버튼 위아래 여백
 const double _wfBtnRadius   = 12;   // 버튼 모서리
 // ── 출금신청 확인 다이얼로그 (출금신청 버튼 누르면 뜨는 확인창) ──
 const Color  _wdlgBg            = _surface;   // 배경색
