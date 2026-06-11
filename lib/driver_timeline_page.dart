@@ -1,15 +1,15 @@
-// 기사 타임라인 — 동선 기록 시작/종료 + 오늘 경로를 지도(flutter_map)에 표시하고 차례대로 재생
-import 'dart:async';
+// 기사 타임라인 — 동선 기록 시작/종료, 끊김 감지·이어서 시작, 오늘 경로 지도 표시, 지난 동선 진입
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'driver_common.dart';
 import 'glass_shine_button.dart';
 import 'location_tracker.dart';
+import 'route_map_view.dart';
+import 'driver_timeline_history_page.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg    = kAppBg;
@@ -19,10 +19,7 @@ const _elevated = kElevated;
 const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
-const _amber    = kAmber;
-const _purple   = kPurple;
 const List<BoxShadow> _panelShadow = kPanelShadow;
-const List<BoxShadow> _cardShadow  = kCardShadow;
 
 class DriverTimelinePage extends StatefulWidget {
   final String uid;
@@ -39,22 +36,11 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
           .doc(trackDocId(widget.uid, DateTime.now()))
           .snapshots();
 
-  final MapController _map = MapController();
   List<LatLng> _route = [];
-  bool _active = false; // Firestore상 기록중 여부
-
-  // 재생 상태
-  Timer? _playTimer;
-  int _playIdx = 0;
-  bool _playing = false;
+  bool _active = false;        // Firestore상 기록중 여부
+  bool _resumeAsked = false;   // 끊김 안내 1회만
 
   bool get _recording => LocationTracker.instance.isRecording;
-
-  @override
-  void dispose() {
-    _playTimer?.cancel();
-    super.dispose();
-  }
 
   // ── 기록 시작/종료 ──
   Future<void> _toggleRecord() async {
@@ -73,41 +59,72 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
     if (mounted) setState(() {});
   }
 
-  // ── 경로 차례대로 재생 ──
-  void _togglePlay() {
-    if (_route.length < 2) return;
-    if (_playing) {
-      _playTimer?.cancel();
-      setState(() => _playing = false);
-      return;
-    }
-    if (_playIdx >= _route.length - 1) _playIdx = 0;
-    setState(() => _playing = true);
-    _playTimer = Timer.periodic(const Duration(milliseconds: 400), (t) {
-      if (_playIdx >= _route.length - 1) {
-        t.cancel();
-        setState(() => _playing = false);
-        return;
-      }
-      setState(() => _playIdx++);
-      _map.move(_route[_playIdx], _map.camera.zoom);
-    });
+  // ── 끊김 감지 안내 (문서는 기록중인데 실제 추적기는 꺼진 경우) ──
+  void _showResumeDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 320),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+          decoration: BoxDecoration(
+            color: _surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: _pink, width: 1),
+          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Text("지난 기록이 중단됐어요.\n이어서 다시 시작할까요?",
+                style: TextStyle(
+                    color: _pink, fontSize: 15, fontWeight: FontWeight.w700),
+                textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            Row(children: [
+              Expanded(
+                child: GlassShineButton(
+                  label: "아니오",
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    await _markStopped();
+                  },
+                  accent: _text2,
+                  textColor: _text2,
+                  height: 46,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: kGapCard),
+              Expanded(
+                child: GlassShineButton(
+                  label: "이어서 시작",
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    final ok = await LocationTracker.instance.resume(widget.uid);
+                    if (!ok && mounted) {
+                      showInfoDialog(context, "위치 권한을 허용해야 동선을 기록할 수 있습니다.");
+                    }
+                    if (mounted) setState(() {});
+                  },
+                  accent: _teal,
+                  textColor: _teal,
+                  height: 46,
+                  fontSize: 14,
+                ),
+              ),
+            ]),
+          ]),
+        ),
+      ),
+    );
   }
 
-  // 문서 → 경로 좌표 리스트 (t 오름차순)
-  List<LatLng> _parseRoute(Map<String, dynamic>? data) {
-    final raw = (data?['points'] as List?) ?? [];
-    final pts = raw
-        .whereType<Map>()
-        .map((m) => {
-              'lat': (m['lat'] as num?)?.toDouble(),
-              'lng': (m['lng'] as num?)?.toDouble(),
-              't': (m['t'] as num?)?.toInt() ?? 0,
-            })
-        .where((m) => m['lat'] != null && m['lng'] != null)
-        .toList()
-      ..sort((a, b) => (a['t'] as int).compareTo(b['t'] as int));
-    return pts.map((m) => LatLng(m['lat'] as double, m['lng'] as double)).toList();
+  // 끊긴 기록을 "종료"로 마감 (이어서 안 함 선택 시)
+  Future<void> _markStopped() async {
+    await FirebaseFirestore.instance
+        .collection('location_tracks')
+        .doc(trackDocId(widget.uid, DateTime.now()))
+        .set({'active': false, 'endedAt': Timestamp.now()},
+            SetOptions(merge: true));
   }
 
   @override
@@ -149,15 +166,19 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
         stream: _trackStream,
         builder: (_, snap) {
           final data = snap.data?.data();
-          _route = _parseRoute(data);
+          _route = parseRoutePoints(data?['points'] as List?);
           _active = (data?['active'] as bool?) ?? false;
-          if (_playIdx > _route.length - 1) {
-            _playIdx = _route.isEmpty ? 0 : _route.length - 1;
+          // 문서는 기록중인데 추적기는 꺼져 있으면 = 비정상 끊김 → 1회 안내
+          if (_active && !_recording && !_resumeAsked) {
+            _resumeAsked = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _showResumeDialog();
+            });
           }
           return Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
             child: Column(children: [
-              Expanded(child: _mapCard()),
+              Expanded(child: RouteMapView(route: _route)),
               const SizedBox(height: kGapCard),
               _controls(),
             ]),
@@ -165,59 +186,7 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
         },
       );
 
-  // ── 지도 카드 (경로 폴리라인 + 재생 마커) ──
-  Widget _mapCard() => DecoratedBox(
-        decoration: BoxDecoration(
-          color: _surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _elevated, width: 1),
-          boxShadow: _cardShadow,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: _route.isEmpty ? _emptyMap() : _routeMap(),
-        ),
-      );
-
-  Widget _emptyMap() => const Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.map_outlined, color: _text2, size: 40),
-          SizedBox(height: 10),
-          Text("아직 기록된 동선이 없습니다.\n기록을 시작하면 오늘 경로가 표시됩니다.",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: _text2, fontSize: 13, height: 1.4)),
-        ]),
-      );
-
-  Widget _routeMap() {
-    final playPos = _route[_playIdx.clamp(0, _route.length - 1)];
-    return FlutterMap(
-      mapController: _map,
-      options: MapOptions(initialCenter: _route.last, initialZoom: 14),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.swingtiger.app',
-        ),
-        PolylineLayer(polylines: [
-          Polyline(points: _route, color: _teal, strokeWidth: 5),
-        ]),
-        MarkerLayer(markers: [
-          _pin(_route.first, _amber, Icons.flag_rounded),     // 출발
-          _pin(playPos, _purple, Icons.navigation_rounded),   // 현재(재생) 위치
-        ]),
-      ],
-    );
-  }
-
-  Marker _pin(LatLng p, Color c, IconData icon) => Marker(
-        point: p,
-        width: 30,
-        height: 30,
-        child: Icon(icon, color: c, size: 26),
-      );
-
-  // ── 하단 컨트롤 (상태 + 기록 토글 + 재생 + 샘플) ──
+  // ── 하단 컨트롤 (상태 + 기록 토글 + 지난 동선 + 안내) ──
   Widget _controls() {
     final recording = _recording || _active;
     return Column(children: [
@@ -250,18 +219,20 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
         const SizedBox(width: kGapCard),
         Expanded(
           child: GlassShineButton(
-            label: _playing ? "일시정지" : "경로 재생",
-            icon: _playing ? Icons.pause_rounded : Icons.smart_display_rounded,
-            onPressed: _route.length < 2 ? null : _togglePlay,
-            accent: _amber,
-            textColor: _amber,
+            label: "지난 동선",
+            icon: Icons.history_rounded,
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => DriverTimelineHistoryPage(uid: widget.uid))),
+            accent: _text2,
+            textColor: _text2,
             height: 48,
             fontSize: 14,
           ),
         ),
       ]),
       const SizedBox(height: kGapInner),
-      // 기록 시작 전 위치 권한 안내
       const Text("기록 시작 전 위치 권한 설정 → 항상 허용",
           textAlign: TextAlign.center,
           style: TextStyle(

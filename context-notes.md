@@ -18,6 +18,15 @@
 - 테스트용 "샘플 동선 넣기" 버튼은 검증 후 제거함. 그 자리에 "기록 시작 전 위치 권한 설정 → 항상 허용"
   핑크 안내 문구로 교체.
 
+## 2026-06-11 추가: 끊김 감지·이어서 시작·지난 동선
+- LocationTracker.resume(uid): startedAt·기존 points 보존하고 active=true로 되살려 재기록.
+- 끊김 감지: 타임라인 진입 시 문서 active=true인데 isRecording=false면 비정상 끊김으로 보고
+  "이어서 시작/아니오" 다이얼로그 1회. 아니오 → active=false로 마감.
+- route_map_view.dart: 지도+폴리라인+재생을 공용 위젯 RouteMapView로 추출(오늘·지난 동선 공용).
+  parseRoutePoints()도 여기로 이동(중복 제거). 재생 버튼은 지도 우하단 오버레이로 이동.
+- driver_timeline_history_page.dart: uid 단일 where로 날짜 목록(클라 정렬 desc), 탭 시 그 날 경로 보기.
+- 한글 요일은 로케일 데이터 미초기화라 'ko' DateFormat 대신 수동 매핑(_kWeek).
+
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
   단, OS 강제종료 시 멈출 수 있음. 완전 생존은 유료 flutter_background_geolocation 필요.

@@ -79,11 +79,32 @@ class LocationTracker {
       'points': FieldValue.arrayUnion([]),
     }, SetOptions(merge: true));
 
+    _listen(now);
+    return true;
+  }
+
+  // 끊긴 오늘 기록 이어서 시작 (startedAt·기존 points 보존). 성공 시 true.
+  Future<bool> resume(String uid) async {
+    if (kIsWeb || isRecording) return false;
+    if (!await _ensurePermission()) return false;
+
+    final now = DateTime.now();
+    _uid = uid;
+    _date = DateFormat('yyyy-MM-dd').format(now);
+
+    await _docRef(uid, now).set({
+      'endedAt': null,
+      'active': true,
+    }, SetOptions(merge: true));
+
+    _listen(now);
+    return true;
+  }
+
+  void _listen(DateTime now) {
     _sub = Geolocator.getPositionStream(locationSettings: _settings())
         .listen(_onPosition);
-
     _scheduleMidnightStop(now);
-    return true;
   }
 
   void _onPosition(Position p) {
