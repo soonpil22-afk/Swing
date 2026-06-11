@@ -454,6 +454,10 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     final iWd     = (item['withdrawalFee']  as num?)?.toDouble() ?? 0;
     final iPOrd   = (item['perOrderAmount'] as num?)?.toDouble() ?? 0;
     final iRng    = (item['rangeAmount']    as num?)?.toDouble() ?? 0;
+    final iPmApplied = item['promoApplied'] == true;
+    final iPmDaily   = (item['deliveryCount'] as num?)?.toInt() ?? 0;
+    final iPmWeekly  = (item['promoCount']    as num?)?.toInt() ?? iPmDaily;
+    final iPmCnt = iPmApplied ? "당일$iPmDaily·주간$iPmWeekly건" : "$iPmDaily건";
     final iETax   = (item['employmentTax']  as num?)?.toDouble() ?? 0;
     final iATax   = (item['accidentTax']    as num?)?.toDouble() ?? 0;
     final iITax   = (item['incomeTax']      as num?)?.toDouble() ?? 0;
@@ -537,8 +541,8 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             ),
             togRow("지원금합계", iPromo, _text, '${key}_promo'),
             if (tog('${key}_promo')) subGroup([
-              subRow("건당프로모션", "${_fmtC(iPOrd)} 원"),
-              subRow("구간프로모션", "${_fmtC(iRng)} 원"),
+              subRow("건당프로모션 ($iPmCnt)", "${_fmtC(iPOrd)} 원"),
+              subRow("구간프로모션 ($iPmCnt)", "${_fmtC(iRng)} 원"),
             ]),
             togRow("세금합계", iTax, _pink, '${key}_tax'),
             if (tog('${key}_tax')) subGroup([
