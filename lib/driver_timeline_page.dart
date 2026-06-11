@@ -16,6 +16,7 @@ const _appBg    = kAppBg;
 const _panel    = kPanel;
 const _surface  = kSurface;
 const _elevated = kElevated;
+const _text     = kText;
 const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
@@ -192,16 +193,16 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
     return Column(children: [
       Row(children: [
         Icon(Icons.fiber_manual_record,
-            color: recording ? _pink : _text2, size: 12),
+            color: recording ? _pink : _text, size: 12),
         const SizedBox(width: 6),
         Text(recording ? "기록 중" : "기록 정지",
             style: TextStyle(
-                color: recording ? _pink : _text2,
+                color: recording ? _pink : _text,
                 fontSize: 13,
                 fontWeight: FontWeight.w700)),
         const Spacer(),
         Text("오늘 ${_route.length}개 지점 · ${DateFormat('M.d').format(DateTime.now())}",
-            style: const TextStyle(color: _text2, fontSize: 12)),
+            style: const TextStyle(color: _text, fontSize: 12)),
       ]),
       const SizedBox(height: kGapInner),
       Row(children: [
@@ -226,7 +227,7 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
                 MaterialPageRoute(
                     builder: (_) => DriverTimelineHistoryPage(uid: widget.uid))),
             accent: _text2,
-            textColor: _text2,
+            textColor: _text,
             height: 48,
             fontSize: 14,
           ),

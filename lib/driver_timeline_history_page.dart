@@ -15,6 +15,7 @@ const _elevated = kElevated;
 const _text     = kText;
 const _text2    = kText2;
 const _teal     = kTeal;
+const _amber    = kAmber;
 const List<BoxShadow> _panelShadow = kPanelShadow;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 
@@ -127,7 +128,7 @@ class _DriverTimelineHistoryPageState extends State<DriverTimelineHistoryPage> {
                     color: _teal, fontSize: 14, fontWeight: FontWeight.w800)),
             const SizedBox(height: 2),
             Text("$count개 지점",
-                style: const TextStyle(color: _text2, fontSize: 11)),
+                style: const TextStyle(color: _amber, fontSize: 11)),
           ]),
           const SizedBox(width: 8),
           const Icon(Icons.chevron_right, color: _text2, size: 20),

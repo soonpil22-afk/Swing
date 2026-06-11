@@ -211,7 +211,7 @@ const double _wdlgOkFontSize     = 14;     // 확인 버튼 글씨 크기
 // 5. 공지사항 (조정값)
 // ═══════════════════════════════════════════════════════════════════════
 // ── 헤더 (제목 줄) ──
-const double _gapNoticeToMenu  = 4;  // 공지사항 ↔ 정산내역 간격
+const double _gapNoticeToMenu  = 1;  // 공지사항 ↔ 정산내역 간격
 const Color  _ntcIconColor     = _purple;  // 확성기 아이콘 색
 const double _ntcIconSize      = 22;       // 확성기 아이콘 크기
 const double _ntcTitleFontSize = 14;       // "공지사항" 글씨 크기
@@ -222,8 +222,8 @@ const double _ntcMoreFontSize  = 12;       // "더보기" 글씨 크기
 const Color  _ntcMoreColor     = _text2;   // "더보기" 글씨 색
 const double _ntcMoreIconSize  = 18;       // 더보기 화살표 크기
 // ── 공지 내용 (목록) ──
-const double _ntcHeaderBottomGap = 12;     // 헤더-내용 사이 간격
-const double _ntcItemGap       = 8;        // 공지 항목 사이 간격
+const double _ntcHeaderBottomGap = 6;     // 헤더-내용 사이 간격
+const double _ntcItemGap       = 6;        // 공지 항목 사이 간격
 const double _ntcItemFontSize  = 12;       // 공지 글씨 크기
 const Color  _ntcItemColor     = _text;    // 공지 글씨 색
 const double _ntcDotSize       = 7;        // 마름모 점 크기
