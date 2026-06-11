@@ -9,6 +9,7 @@ import 'driver_common.dart';
 import 'glass_shine_button.dart';
 import 'location_tracker.dart';
 import 'route_map_view.dart';
+import 'app_dialogs.dart';
 import 'driver_timeline_history_page.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
@@ -42,6 +43,13 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
   bool _resumeAsked = false;   // 끊김 안내 1회만
 
   bool get _recording => LocationTracker.instance.isRecording;
+
+  @override
+  void initState() {
+    super.initState();
+    // Android 13+ 알림 권한 요청 → 기록 중 포그라운드 알림이 보이도록
+    requestNotificationPermission();
+  }
 
   // ── 기록 시작/종료 ──
   Future<void> _toggleRecord() async {

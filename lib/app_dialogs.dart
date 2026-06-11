@@ -14,6 +14,14 @@ Future<void> minimizeApp() async {
   } catch (_) {}
 }
 
+// Android 13+ 알림 권한 요청 (동선 기록 포그라운드 알림 표시에 필요)
+Future<void> requestNotificationPermission() async {
+  if (kIsWeb) return;
+  try {
+    await _appChannel.invokeMethod('requestNotifications');
+  } catch (_) {}
+}
+
 // "어플을 종료하시겠습니까?" 취소/종료 다이얼로그. 종료 선택 시 true.
 Future<bool> showExitConfirmDialog(BuildContext context) async {
   final r = await showDialog<bool>(
