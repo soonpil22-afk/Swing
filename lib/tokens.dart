@@ -15,6 +15,8 @@ const kPurple     = Color(0xFF9F66E6); // 보라
 const kPink       = Color(0xFFE672BA); // 핑크
 const kAmber      = Color(0xFFE6C97F); // 노랑
 const kRed        = Color(0xFFE05252);
+const kBlue       = Color(0xFF5B8DEF); // 미니게임 블록용
+const kGreen      = Color(0xFF5BD08B); // 미니게임 블록용
 
 // ═══ 갭(여백) — 안쪽 8 / 카드사이 8 / 큰구역 10 ═══
 const double kGapInner   = 8;  // 카드 속 헤더↔경계선, 경계선↔내용

@@ -27,14 +27,17 @@
 - driver_timeline_history_page.dart: uid 단일 where로 날짜 목록(클라 정렬 desc), 탭 시 그 날 경로 보기.
 - 한글 요일은 로케일 데이터 미초기화라 'ko' DateFormat 대신 수동 매핑(_kWeek).
 
-## 2026-06-11 미니게임 "스윙 러시" (CustomPainter MVP, 패키지 추가 없음)
-- swing_rush_game.dart 단일 파일. AnimationController(repeat) 프레임 루프 + CustomPainter 렌더.
-- 좌우 드래그로 스포너 이동(0~1), 게이트 행이 아래로 스크롤. 트리거 라인 통과 시 현재 레인의
-  게이트 연산(×2/+N/−N)을 군중 정수에 적용. 군중=숫자, 화면 점은 필로택시스 패턴 시각연출(최대 80).
-- 보스 수치 = "행마다 큰 쪽" 경로 결과의 55%(이기되 만만찮게). 군중>=적 이면 성공.
-- 최고점수는 shared_preferences('swing_rush_best')에 로컬 저장.
-- Firestore 랭킹 연동은 (선택)이라 보류 — 추후 점수를 users/랭킹 컬렉션에 올리면 됨.
-- driver_page 미니게임 버튼 → SwingRushGame 연결(준비중 DriverSoonPage는 "준비중" 버튼만 사용).
+## 2026-06-11 미니게임 변경: 스윙 러시 → 블록 퍼즐(테트리스류)
+- 스윙 러시(swing_rush_game.dart)는 완성난이도 높아 폐기·삭제. 블록 퍼즐로 대체.
+- block_puzzle_game.dart: 10x20 보드, 7블록(I,O,T,S,Z,J,L) 4x4 문자열 정의 + 간단 벽킥.
+  AnimationController(repeat) 프레임 + dt 누적으로 중력 낙하. CustomPainter 렌더.
+  조작 버튼: ◀ ⟳ ▶ 하드드롭. 줄 클리어 점수[100/300/500/800]×레벨, 10줄마다 레벨업(속도↑).
+- 점수 저장: 게임오버 시 game_scores/{uid} (uid,name,score,updatedAt)에 "최고점 갱신 시에만" set.
+  name은 users/{uid}.name 1회 조회.
+- game_ranking_page.dart: game_scores 전체 구독→화면 정렬(규칙 F). 상위 10 + 본인이 10등 밖이면
+  본인 순위만 따로 표시. 라이더 수 적어 전량 조회 OK.
+- tokens.dart에 kBlue/kGreen 추가(블록 7색용, 규칙 A 준수).
+- ★ Firestore 규칙에 game_scores 추가 필요(콘솔): match /game_scores/{docId} { allow read, write: if request.auth != null; }
 
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
