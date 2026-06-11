@@ -19,6 +19,7 @@ const _text     = kText;
 const _text2    = kText2;
 const _teal     = kTeal;
 const _pink     = kPink;
+const _amber    = kAmber;
 const List<BoxShadow> _panelShadow = kPanelShadow;
 
 const int _cols = 10;
@@ -347,7 +348,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
             onTap: _toggleMute,
             child: Icon(
                 _muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-                color: _text2,
+                color: _amber,
                 size: 20),
           ),
           const SizedBox(width: 14),
@@ -369,10 +370,10 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
 
   Widget _stat(String label, String value) => Row(children: [
         Text("$label ",
-            style: const TextStyle(color: _text2, fontSize: 12)),
+            style: const TextStyle(color: _amber, fontSize: 12)),
         Text(value,
             style: const TextStyle(
-                color: _text, fontSize: 15, fontWeight: FontWeight.w800)),
+                color: _amber, fontSize: 15, fontWeight: FontWeight.w800)),
       ]);
 
   Widget _boardArea() => Center(
@@ -405,7 +406,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
                 color: _text, fontSize: 22, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
         const Text("줄을 채워 점수를 올리세요!",
-            style: TextStyle(color: _text2, fontSize: 13)),
+            style: TextStyle(color: _amber, fontSize: 13)),
         const SizedBox(height: 18),
         GlassShineButton(
           label: "시작",
@@ -418,7 +419,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
           fontSize: 15,
         ),
         const SizedBox(height: 14),
-        const Text("배달플랫폼 알림 루틴 설정 필수!!",
+        const Text("플랫폼 알림루틴 설정필수!!",
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: _pink, fontSize: 12, fontWeight: FontWeight.w700)),
@@ -490,7 +491,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
         child: GestureDetector(
           onTap: onTap,
           child: Container(
-            height: 52,
+            height: 48,
             decoration: BoxDecoration(
               color: _chip,
               borderRadius: BorderRadius.circular(12),
