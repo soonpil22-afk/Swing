@@ -475,9 +475,9 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
           const SizedBox(width: 8),
           _btn(Icons.chevron_right_rounded, () => _move(1)),
           const SizedBox(width: 8),
-          _btn(Icons.rotate_right_rounded, _rotate),
-          const SizedBox(width: 8),
           _btn(Icons.keyboard_double_arrow_down_rounded, _hardDrop),
+          const SizedBox(width: 8),
+          _btn(Icons.rotate_right_rounded, _rotate),
         ]),
       );
 

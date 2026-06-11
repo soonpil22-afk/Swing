@@ -67,6 +67,12 @@ class _GameRankingPageState extends State<GameRankingPage> {
   Widget _list() => StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: _stream,
         builder: (_, snap) {
+          if (snap.hasError) {
+            return const Center(
+                child: Text("랭킹을 불러올 수 없습니다.\n(Firestore 규칙 확인 필요)",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: _text2, fontSize: 13, height: 1.4)));
+          }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator(color: _teal));
           }
