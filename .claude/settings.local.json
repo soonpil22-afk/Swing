@@ -89,7 +89,10 @@
       "Bash(python -m pip install openpyxl --quiet)",
       "Bash(python -c \"import openpyxl; print\\('openpyxl', openpyxl.__version__\\)\")",
       "Read(//c/Users/Owner/Downloads/Swing_Tiger/**)",
-      "Bash(python -)"
+      "Bash(python -)",
+      "Bash(\"C:/src/flutter/bin/flutter.bat\" analyze *)",
+      "Bash(f=\"/c/Users/Owner/AppData/Local/Pub/Cache/hosted/pub.dev/excel-4.0.6/lib/src/parser/parse.dart\"; echo \"=== 600~640 ===\"; sed -n '600,645p' \"$f\")",
+      "Bash(flutter build *)"
     ]
   }
 }
