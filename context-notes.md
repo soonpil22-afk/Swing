@@ -53,6 +53,9 @@
 - app_dialogs.dart: showExitConfirmDialog(취소/종료) 공통 다이얼로그.
 - 관리자: PopScope(canPop:false) — 서브뷰(_homeView!=null)면 대시보드로, 메인이면 종료 확인→SystemNavigator.pop.
 - 기사: PopScope — 상담 말풍선 열려있으면 닫기, 아니면 종료 확인. 서브 페이지는 기본 pop으로 메인 복귀.
+- 2026-06-12 보강: "종료"는 실제 종료가 아니라 백그라운드로 내림(minimizeApp → MainActivity moveTaskToBack).
+  앱이 살아있어 위치 추적 포그라운드 서비스가 유지됨(엔진 종료 시 추적 끊기던 문제 해결).
+  네이티브: android MainActivity.kt에 MethodChannel 'swingtiger/app' moveToBack 추가.
 
 ## 한계 (사용자에게 고지함)
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.

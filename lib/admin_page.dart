@@ -1118,7 +1118,7 @@ class _AdminPageState extends State<AdminPage> {
           return;
         }
         if (await showExitConfirmDialog(context)) {
-          await SystemNavigator.pop();
+          await minimizeApp(); // 종료 대신 백그라운드 → 위치 추적 계속
         }
       },
       child: Scaffold(

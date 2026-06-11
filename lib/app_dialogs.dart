@@ -1,7 +1,18 @@
 // 앱 공통 다이얼로그 — 시스템 뒤로가기 시 종료 확인 등
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'tokens.dart';
 import 'glass_shine_button.dart';
+
+// 앱을 종료하지 않고 백그라운드로 내림(홈 버튼과 동일) → 위치 추적 등 포그라운드 서비스 유지
+const MethodChannel _appChannel = MethodChannel('swingtiger/app');
+Future<void> minimizeApp() async {
+  if (kIsWeb) return;
+  try {
+    await _appChannel.invokeMethod('moveToBack');
+  } catch (_) {}
+}
 
 // "어플을 종료하시겠습니까?" 취소/종료 다이얼로그. 종료 선택 시 true.
 Future<bool> showExitConfirmDialog(BuildContext context) async {

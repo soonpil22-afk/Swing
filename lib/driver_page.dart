@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -785,7 +784,7 @@ class _DriverPageState extends State<DriverPage> {
         }
         // 메인 페이지 → 종료 확인 (서브 페이지는 기본 동작으로 메인 복귀)
         if (await showExitConfirmDialog(context)) {
-          await SystemNavigator.pop();
+          await minimizeApp(); // 종료 대신 백그라운드 → 위치 추적 계속
         }
       },
       child: Scaffold(
