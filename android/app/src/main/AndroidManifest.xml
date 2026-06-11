@@ -1,9 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.swingtiger.app">  // ✅ 변경
+    <!-- 동선 기록(타임라인) 위치 권한 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="SwingTiger"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <!-- Google Maps API 키 (사용자: 아래 YOUR_ANDROID_MAPS_API_KEY 를 발급받은 키로 교체) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_ANDROID_MAPS_API_KEY"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
