@@ -88,7 +88,6 @@ const String _greetNameFallback = '관리자';
 // 대시보드 섹션 사이 간격
 const double _gapGreetChart = 6; // 인사 ↔ 차트
 const double _gapChartRank  = 6; // 차트 ↔ 출금랭킹
-const double _gapRankMenu   = 6; // 출금랭킹 ↔ 하단 메뉴카드
 
 // ═══════════════════════════════════════════════════════════════════════
 // 4. 차트 (누적 지급액 · 일간/주간/월간)
@@ -1112,23 +1111,33 @@ class _AdminPageState extends State<AdminPage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: _appBg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(_panelOuterPad),
-          child: Container(
-            decoration: BoxDecoration(
-              color: _panel,
-              borderRadius: BorderRadius.circular(_panelRadius),
-              border: Border.all(
-                  color: _panelBorderColor.withValues(alpha: _panelBorderAlpha),
-                  width: _panelBorderWidth),
-              boxShadow: _panelShadow,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(_panelRadius),
-              child: _homeView == null ? _dashboard() : _subView(_homeView!),
+        child: Column(children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(_panelOuterPad),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _panel,
+                  borderRadius: BorderRadius.circular(_panelRadius),
+                  border: Border.all(
+                      color: _panelBorderColor.withValues(alpha: _panelBorderAlpha),
+                      width: _panelBorderWidth),
+                  boxShadow: _panelShadow,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(_panelRadius),
+                  child: _homeView == null ? _dashboard() : _subView(_homeView!),
+                ),
+              ),
             ),
           ),
-        ),
+          // ── 하단 고정 4버튼 바 ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                _panelOuterPad, 0, _panelOuterPad, _panelOuterPad),
+            child: _bottomMenuCard(),
+          ),
+        ]),
       ),
     );
   }
@@ -1142,8 +1151,6 @@ class _AdminPageState extends State<AdminPage> {
           _adminChartCard(),
           const SizedBox(height: _gapChartRank),
           _rankingCard(),
-          const SizedBox(height: _gapRankMenu),
-          _bottomMenuCard(),
         ],
       );
 

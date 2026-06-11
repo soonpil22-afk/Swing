@@ -417,6 +417,11 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
           height: 46,
           fontSize: 15,
         ),
+        const SizedBox(height: 14),
+        const Text("배달플랫폼 알림 루틴 설정 필수!!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: _pink, fontSize: 12, fontWeight: FontWeight.w700)),
       ]);
 
   Widget _overOverlay() => _overlayBox([

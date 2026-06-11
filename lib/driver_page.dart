@@ -9,7 +9,7 @@ import 'glass_shine_button.dart';
 import 'tokens.dart';
 import 'driver_common.dart';
 import 'driver_settings_page.dart';
-import 'driver_soon_page.dart';
+import 'driver_partners_page.dart';
 import 'block_puzzle_game.dart';
 import 'driver_timeline_page.dart';
 import 'driver_lease_page.dart';
@@ -776,7 +776,9 @@ class _DriverPageState extends State<DriverPage> {
       backgroundColor: _bgScaffold,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Stack(children: [
+        child: Column(children: [
+          Expanded(
+            child: Stack(children: [
           // ── 2. 메인 배경 ────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.all(_panelOuterPad),
@@ -821,6 +823,14 @@ class _DriverPageState extends State<DriverPage> {
             ),
           ),
           _buildFABArea(uid, bottomInset),
+            ]),
+          ),
+          // ── 하단 고정 4버튼 바 ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                _panelOuterPad, 0, _panelOuterPad, _panelOuterPad),
+            child: _bottomMenuCard(uid),
+          ),
         ]),
       ),
     );
@@ -1431,6 +1441,11 @@ class _DriverPageState extends State<DriverPage> {
                     MaterialPageRoute(builder: (_) => SettingsPage(uid: uid))))),
         divider(),
         Expanded(
+            child: _bottomMenuItem(Icons.handshake_rounded, _pink, "협력업체",
+                () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const DriverPartnersPage())))),
+        divider(),
+        Expanded(
             child: _bottomMenuItem(Icons.sports_esports_rounded, _teal, "미니게임",
                 () => Navigator.push(context, MaterialPageRoute(
                     builder: (_) => BlockPuzzleGame(uid: uid))))),
@@ -1439,11 +1454,6 @@ class _DriverPageState extends State<DriverPage> {
             child: _bottomMenuItem(Icons.timeline_rounded, _amber, "타임라인",
                 () => Navigator.push(context, MaterialPageRoute(
                     builder: (_) => DriverTimelinePage(uid: uid))))),
-        divider(),
-        Expanded(
-            child: _bottomMenuItem(Icons.more_horiz_rounded, _pink, "준비중",
-                () => Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => const DriverSoonPage(title: "준비중"))))),
       ]),
     );
   }
