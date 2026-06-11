@@ -69,6 +69,8 @@ class _RiderManagePageState extends State<RiderManagePage> {
   Map<String, bool> riderIdEditMode      = {};
   Map<String, bool> riderAccountEditMode = {};
   Map<String, bool> riderLeaseEditMode   = {};
+  Map<String, bool> riderPhoneEditMode   = {};
+  Map<String, bool> riderVehInsEditMode  = {};
 
   final TextEditingController _searchCtrl = TextEditingController();
   String _searchQuery = '';
@@ -77,6 +79,9 @@ class _RiderManagePageState extends State<RiderManagePage> {
   final Map<String, TextEditingController> _accountCtrlCache     = {};
   final Map<String, TextEditingController> _leaseCycleCtrlCache  = {};
   final Map<String, TextEditingController> _leaseAmountCtrlCache = {};
+  final Map<String, TextEditingController> _phoneCtrlCache       = {};
+  final Map<String, String> _vehCache = {}; // 운송수단 편집 중 값
+  final Map<String, String> _insCache = {}; // 유상운송보험 편집 중 값
 
   @override
   void dispose() {
@@ -85,6 +90,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
     for (final c in _accountCtrlCache.values)     { c.dispose(); }
     for (final c in _leaseCycleCtrlCache.values)  { c.dispose(); }
     for (final c in _leaseAmountCtrlCache.values) { c.dispose(); }
+    for (final c in _phoneCtrlCache.values)       { c.dispose(); }
     super.dispose();
   }
 
@@ -100,6 +106,20 @@ class _RiderManagePageState extends State<RiderManagePage> {
     });
     setState(() => riderAccountEditMode[uid] = false);
     _showDialog("계좌정보 저장완료!!");
+  }
+
+  Future<void> _savePhone(String uid, String phone) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({'phone': phone.trim()});
+    setState(() => riderPhoneEditMode[uid] = false);
+    _showDialog("전화번호 저장완료!!");
+  }
+
+  Future<void> _saveVehIns(String uid, String veh, String ins) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'vehicleType': veh, 'paidInsurance': ins,
+    });
+    setState(() => riderVehInsEditMode[uid] = false);
+    _showDialog("운송수단/보험 저장완료!!");
   }
 
   Future<void> _call(String phone) async { final u = Uri.parse('tel:$phone'); if (await canLaunchUrl(u)) await launchUrl(u); }
@@ -203,11 +223,19 @@ class _RiderManagePageState extends State<RiderManagePage> {
     final uid  = doc.id;
     final isEditingId      = riderIdEditMode[uid]      ?? false;
     final isEditingAccount = riderAccountEditMode[uid] ?? false;
+    final isEditingPhone   = riderPhoneEditMode[uid]   ?? false;
+    final isEditingVehIns  = riderVehInsEditMode[uid]  ?? false;
     final idCtrl = TextEditingController(text: data['reportId'] ?? "");
     _bankCtrlCache.putIfAbsent(uid, () => TextEditingController(text: data['bankName'] ?? ""));
     _accountCtrlCache.putIfAbsent(uid, () => TextEditingController(text: data['accountNumber'] ?? ""));
+    _phoneCtrlCache.putIfAbsent(uid, () => TextEditingController(text: data['phone'] ?? ""));
     final bankCtrl    = _bankCtrlCache[uid]!;
     final accountCtrl = _accountCtrlCache[uid]!;
+    final phoneCtrl   = _phoneCtrlCache[uid]!;
+    _vehCache.putIfAbsent(uid, () => (data['vehicleType']   as String?) ?? '오토바이');
+    _insCache.putIfAbsent(uid, () => (data['paidInsurance'] as String?) ?? '미가입');
+    final veh = _vehCache[uid]!;
+    final ins = _insCache[uid]!;
     final nameStr = data['name'] as String? ?? '?';
     final initial = nameStr.isNotEmpty ? nameStr.substring(0, 1) : '?';
 
@@ -239,11 +267,27 @@ class _RiderManagePageState extends State<RiderManagePage> {
         children: [Container(
           color: _surface.withAlpha(200), padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // 전화 / 메시지
+            // 전화 / 문자(아이콘) + 전화번호 + 수정·저장
             Row(children: [
-              GestureDetector(onTap: () => _call(data['phone'] ?? ""), child: Container(width: 38, height: 34, decoration: BoxDecoration(color: _rmCallColor.withAlpha(20), border: Border.all(color: _rmCallColor), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.wifi_calling_3, color: _rmCallColor, size: 16))),
+              GestureDetector(onTap: () => _call(phoneCtrl.text), child: Container(width: 38, height: 38, decoration: BoxDecoration(color: _rmCallColor.withAlpha(20), border: Border.all(color: _rmCallColor), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.wifi_calling_3, color: _rmCallColor, size: 16))),
               const SizedBox(width: 8),
-              GestureDetector(onTap: () => _sms(data['phone'] ?? ""), child: Container(width: 38, height: 34, decoration: BoxDecoration(color: _rmSmsColor.withAlpha(20), border: Border.all(color: _rmSmsColor), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.sms, color: _rmSmsColor, size: 16))),
+              GestureDetector(onTap: () => _sms(phoneCtrl.text), child: Container(width: 38, height: 38, decoration: BoxDecoration(color: _rmSmsColor.withAlpha(20), border: Border.all(color: _rmSmsColor), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.sms, color: _rmSmsColor, size: 16))),
+              const SizedBox(width: 8),
+              Expanded(child: SizedBox(height: 38, child: TextField(
+                controller: phoneCtrl, enabled: isEditingPhone, keyboardType: TextInputType.phone,
+                style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), cursorColor: _teal,
+                decoration: InputDecoration(hintText: "전화번호", hintStyle: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), filled: true, fillColor: _surface, contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _elevated)),
+                  enabledBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: _teal)),
+                  focusedBorder:  OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: _teal, width: 1)),
+                ),
+              ))),
+              const SizedBox(width: 8),
+              SizedBox(width: 46, height: 38, child: GlassShineButton(
+                label: isEditingPhone ? "저장" : "수정",
+                onPressed: () { if (isEditingPhone) { _savePhone(uid, phoneCtrl.text); } else { setState(() => riderPhoneEditMode[uid] = true); } },
+                accent: _teal, width: 46, height: 38, radius: 8, fontSize: _rmEditBtnFontSize,
+              )),
             ]),
             const SizedBox(height: _rmGapRow),
             // 은행 박스
@@ -301,6 +345,41 @@ class _RiderManagePageState extends State<RiderManagePage> {
                 height: 38,
                 radius: 8,
                 fontSize: _rmEditBtnFontSize,
+              )),
+            ]),
+            const SizedBox(height: _rmGapRow),
+            // 운송수단 / 유상운송보험 (한 줄) — 탭하면 값 토글, 공용 수정·저장
+            Row(children: [
+              Expanded(child: GestureDetector(
+                onTap: isEditingVehIns ? () => setState(() => _vehCache[uid] = veh == '오토바이' ? '자동차' : '오토바이') : null,
+                child: Container(height: 38, padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: isEditingVehIns ? _teal : _elevated)),
+                  child: Row(children: [
+                    Icon(veh == '자동차' ? Icons.directions_car : Icons.two_wheeler, color: _rmFieldTextColor, size: 15),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(veh, style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), overflow: TextOverflow.ellipsis)),
+                    if (isEditingVehIns) const Icon(Icons.swap_horiz, color: _teal, size: 16),
+                  ]),
+                ),
+              )),
+              const SizedBox(width: 8),
+              Expanded(child: GestureDetector(
+                onTap: isEditingVehIns ? () => setState(() => _insCache[uid] = ins == '가입' ? '미가입' : '가입') : null,
+                child: Container(height: 38, padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(8), border: Border.all(color: isEditingVehIns ? _teal : _elevated)),
+                  child: Row(children: [
+                    Icon(ins == '가입' ? Icons.verified_user : Icons.gpp_bad, color: ins == '가입' ? _teal : _rmFieldTextColor, size: 15),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text("보험 $ins", style: const TextStyle(color: _rmFieldTextColor, fontSize: _rmFieldFontSize), overflow: TextOverflow.ellipsis)),
+                    if (isEditingVehIns) const Icon(Icons.swap_horiz, color: _teal, size: 16),
+                  ]),
+                ),
+              )),
+              const SizedBox(width: 8),
+              SizedBox(width: 46, height: 38, child: GlassShineButton(
+                label: isEditingVehIns ? "저장" : "수정",
+                onPressed: () { if (isEditingVehIns) { _saveVehIns(uid, veh, ins); } else { setState(() => riderVehInsEditMode[uid] = true); } },
+                accent: _teal, width: 46, height: 38, radius: 8, fontSize: _rmEditBtnFontSize,
               )),
             ]),
           ]),
