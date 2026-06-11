@@ -155,6 +155,12 @@ This is the step LLMs skip most often after "run tests". They guess from error k
 - "초기화" 버튼 = pink 글씨+테두리. "조회" 버튼 = teal 아웃라인. 공제 타입(매일/주1회/매월) 버튼 = 아웃라인 스타일에 accent teal/pink/purple.
 - 한 화면 안에서 같은 역할 버튼은 **크기를 통일**한다(기사·관리자 대응 버튼 등).
 
+## D2. 토글키·탭 (관리자·기사 전 페이지 통일)
+- **토글키(펼침 화살표)**: 닫힘 = **`_teal`**(강조 — "눌러서 펼치세요"), 펼침 = **`_text2`**(차분하게). 모든 펼침 아이콘에 `expanded ? _text2 : _teal` 형태로 적용.
+  - `ExpansionTile`은 `collapsedIconColor: _teal`, `iconColor: _text2`.
+  - 펼침을 `_elevated`로 두면 너무 흐려서 금지. `_text2`로.
+- **탭(TabBar)**: 선택탭 배경 = **`_chip`**, 선택탭 테두리 = `_elevated`, 트랙 배경 = `_surface`. 선택 글씨 = `_teal`, 미선택 = `_text2`. 모서리: 트랙 10 / 선택탭 7. 관리자·기사 모든 탭 동일.
+
 ## E. 파일·구조
 - 관리자 서브페이지는 `admin_common.dart`의 **`adminPanelScaffold(context, title, child, {dividerColor, dividerInset})`** 로 감싼다.
 - 기사 서브페이지는 `driver_common.dart`의 `pageHeader` / `showInfoDialog` 등 공용 위젯을 쓴다.
