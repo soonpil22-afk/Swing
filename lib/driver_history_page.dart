@@ -602,6 +602,7 @@ class _HistoryPageState extends State<HistoryPage>
             .toList() ??
         [];
     final leaseDedu = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+    final etcDedu   = (data['etcDeduction']   as num?)?.toDouble() ?? 0;
     final exp = _settleExp[docId] ?? false;
     final status = data['_status'] as String? ?? '입금완료';
     final stColor = status == '신청대기'
@@ -694,7 +695,8 @@ class _HistoryPageState extends State<HistoryPage>
                 final ins = (item['insuranceFee'] as num?)?.toDouble() ?? 0;
                 final fee = wd + comm;
                 final dailyLease = items.isNotEmpty ? leaseDedu / items.length : 0.0;
-                final iDedu = ins + dailyLease;
+                final dailyEtc = items.isNotEmpty ? etcDedu / items.length : 0.0;
+                final iDedu = ins + dailyLease + dailyEtc;
 
                 final promoK = '${docId}_${i}_promo';
                 final taxK = '${docId}_${i}_tax';
@@ -752,6 +754,7 @@ class _HistoryPageState extends State<HistoryPage>
                       _stSubGroup([
                         _stSubRow("시간제보험", ins, _stSubRowColor),
                         _stSubRow("리스비", dailyLease, _stSubRowColor),
+                        _stSubRow("기타", dailyEtc, _stSubRowColor),
                       ]),
                     const SizedBox(height: 6),
                     Container(height: 1, color: _elevated),

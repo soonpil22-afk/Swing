@@ -430,6 +430,10 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                       leasePerDay: (() {
                         final ld = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
                         return items.isNotEmpty ? ld / items.length : 0.0;
+                      })(),
+                      etcPerDay: (() {
+                        final ed = (data['etcDeduction'] as num?)?.toDouble() ?? 0;
+                        return items.isNotEmpty ? ed / items.length : 0.0;
                       })()),
               ] else
                 _oldMsgView(data),
@@ -440,12 +444,12 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     );
   }
 
-  Widget _dateItemCard(Map<String, dynamic> item, String docId, {double leasePerDay = 0}) {
+  Widget _dateItemCard(Map<String, dynamic> item, String docId, {double leasePerDay = 0, double etcPerDay = 0}) {
     final iDate   = item['date']            as String? ?? '';
     final iFinal  = (item['finalAmount']    as num?)?.toDouble() ?? 0;
     final key     = '${docId}_$iDate';
     final iShort  = iDate.length >= 10 ? iDate.substring(5) : iDate;
-    final actualFinal = iFinal - leasePerDay;
+    final actualFinal = iFinal - leasePerDay - etcPerDay;
 
     final iDel    = (item['deliveryFee']    as num?)?.toDouble() ?? 0;
     final iPromo  = (item['promoTotal']     as num?)?.toDouble() ?? 0;
@@ -464,7 +468,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     final iITax   = (item['incomeTax']      as num?)?.toDouble() ?? 0;
     final iIns    = (item['insuranceFee']   as num?)?.toDouble() ?? 0;
     final iFee    = iWd + iComm;
-    final iDedu   = iIns + leasePerDay;
+    final iDedu   = iIns + leasePerDay + etcPerDay;
 
     bool tog(String k) => _dateExp[k] ?? false;
     void togSet(String k) => setState(() => _dateExp[k] = !(_dateExp[k] ?? false));
@@ -561,13 +565,14 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             if (tog('${key}_dedu')) subGroup([
               subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
               subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
+              subRow("기타",       "${_fmtC(etcPerDay)} 원",   vc: _text2),
             ]),
             Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 const Text("소계", style: TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
-                Text("${_fmtC(leasePerDay > 0 ? actualFinal : iFinal)} 원",
+                Text("${_fmtC((leasePerDay > 0 || etcPerDay > 0) ? actualFinal : iFinal)} 원",
                     style: const TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalValueFontSize, fontWeight: FontWeight.w700)),
               ]),
             ),
