@@ -15,8 +15,8 @@ const List<BoxShadow> _panelShadow = kPanelShadow;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 
 const List<String> _partners = [
-  '내연오토바이 H모터스 (정비/리스)',
-  '전기오토바이 #모터스 (정비/리스/렌탈)',
+  '내연오토바이 (정비/리스)',
+  '전기오토바이 (정비/리스/렌탈)',
   '보험 배달서비스공제조합',
   '손해사정사',
   '세무회계사 절세연구소',
