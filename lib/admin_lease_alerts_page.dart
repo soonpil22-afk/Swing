@@ -207,16 +207,47 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         Text(value, style: TextStyle(color: vc, fontSize: _laInfoFontSize, fontWeight: FontWeight.w600)),
       ]);
 
-  // 납부 도래(오늘 이하 미납) 여부
-  bool _hasDue(List<Map<String, dynamic>> ps, String anchor) =>
-      anchor.isNotEmpty &&
-      ps.any((p) =>
-          (p['dueDate'] as String? ?? '').compareTo(anchor) <= 0 && p['isPaid'] != true);
-  bool _isDueToday(List<Map<String, dynamic>> ps, String anchor) =>
-      anchor.isNotEmpty &&
-      ps.any((p) => (p['dueDate'] as String? ?? '') == anchor && p['isPaid'] != true);
-  bool _hasRiderPaid(List<Map<String, dynamic>> ps) =>
-      ps.any((p) => p['riderPaid'] == true && p['isPaid'] != true);
+  // 종류별 상태: 'paid'(기사 입금신고) | 'overdue'(미납부) | 'today'(납부일) | null
+  // 매일=리포트 최신 날짜(anchor) / 주1회·매월=실제 오늘 날짜 기준
+  String? _statusOf(List<Map<String, dynamic>> ps, String typeField, String anchor) {
+    final unpaid = ps.where((p) => p['isPaid'] != true).toList();
+    if (unpaid.isEmpty) return null;
+    if (unpaid.any((p) => p['riderPaid'] == true)) return 'paid';
+    final isDaily = ps.any((p) => (p[typeField] as String?) == 'daily');
+    final base = isDaily ? anchor : DateFormat('yyyy-MM-dd').format(DateTime.now());
+    if (base.isEmpty) return null;
+    String dd(Map p) => p['dueDate'] as String? ?? '';
+    if (unpaid.any((p) => dd(p).isNotEmpty && dd(p).compareTo(base) < 0)) return 'overdue';
+    if (unpaid.any((p) => dd(p) == base)) return 'today';
+    return null;
+  }
+
+  // 종류별 상태 칩 (리스비 미납부 / 기타 납부일 등)
+  Widget _statusChip(String title, String? status) {
+    if (status == null) return const SizedBox.shrink();
+    String label;
+    Color color;
+    if (status == 'paid') {
+      label = '$title 입금완료';
+      color = _amber;
+    } else if (status == 'today') {
+      label = '$title 납부일';
+      color = _teal;
+    } else {
+      label = '$title 미납부';
+      color = _pink;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+          color: _teal.withAlpha(20),
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: color)),
+      child: Text(label,
+          style: TextStyle(
+              color: color, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,11 +299,9 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                 final isExpanded = _expanded[uid] ?? false;
                 final anchor = _anchors[uid] ?? '';
 
-                // 헤더 칩 상태 = 리스비/기타 합산 (강조 기준 = 리포트 최신 날짜)
-                // 큰 카드 테두리는 강조 안 함(리스비/기타 구분 위해) → 강조는 각 전체현황 카드로 이동
-                final hasRiderPaid = _hasRiderPaid(lease) || _hasRiderPaid(etc);
-                final isDueToday   = _isDueToday(lease, anchor) || _isDueToday(etc, anchor);
-                final hasDue       = _hasDue(lease, anchor) || _hasDue(etc, anchor);
+                // 헤더 칩 = 리스비/기타 따로 (매일=anchor / 주1회·매월=오늘)
+                final leaseStatus = _statusOf(lease, 'leaseType', anchor);
+                final etcStatus   = _statusOf(etc, 'etcType', anchor);
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 10),
@@ -292,19 +321,17 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                           Text(riderName, style: const TextStyle(
                               color: _text,
                               fontSize: _laRiderNameFontSize, fontWeight: FontWeight.w700)),
-                          const Spacer(),
-                          if (hasRiderPaid) Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _amber)),
-                            child: const Text("입금완료!", style: TextStyle(color: _amber, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
-                          ) else if (isDueToday) Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _teal)),
-                            child: const Text("납부일", style: TextStyle(color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
-                          ) else if (hasDue) Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _pink)),
-                            child: const Text("미납중", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Wrap(
+                              alignment: WrapAlignment.end,
+                              spacing: 6,
+                              runSpacing: 4,
+                              children: [
+                                if (leaseStatus != null) _statusChip('리스비', leaseStatus),
+                                if (etcStatus != null) _statusChip('기타', etcStatus),
+                              ],
+                            ),
                           ),
                           const SizedBox(width: 6),
                           Icon(isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: isExpanded ? _text2 : _teal, size: _laChevronSize),
@@ -414,22 +441,28 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     final riderPaidList = payments.where((p) =>
         p['riderPaid'] == true && p['isPaid'] != true).toList();
     final hasRiderPaid = riderPaidList.isNotEmpty;
-    // 납기 도래(리포트 최신 날짜 이하) 미납 회차 존재 여부 — 기사 입금 신고 대기 표시용
-    final hasDue = anchor.isNotEmpty &&
-        payments.any((p) =>
-            (p['dueDate'] as String? ?? '').compareTo(anchor) <= 0 && p['isPaid'] != true);
-    // 이 종류(리스비/기타) 카드 테두리 강조 — 납부도래/기사신고/완납이면 민트
+    final base = isDaily ? anchor : DateFormat('yyyy-MM-dd').format(DateTime.now());
+    // 이 종류(리스비/기타) 카드 테두리 — 미납부=핑크 / 납부일·입금신고=민트
+    final status = _statusOf(payments, k.typeField, anchor);
     final allPaidKind = totalCount > 0 && paidCount == totalCount;
-    final emphasize = hasDue || hasRiderPaid;
+    Color borderCol = _laCardBorder;
+    double borderW = _laCardBorderWidth;
+    if (status == 'overdue') {
+      borderCol = _pink;
+      borderW = 1.5;
+    } else if (status == 'today' || status == 'paid') {
+      borderCol = _teal;
+      borderW = 1.5;
+    } else if (allPaidKind) {
+      borderCol = _teal;
+    }
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
       decoration: BoxDecoration(
         color: _surface, borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-            color: (emphasize || allPaidKind) ? _teal : _laCardBorder,
-            width: emphasize ? 1.5 : _laCardBorderWidth),
+        border: Border.all(color: borderCol, width: borderW),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -467,12 +500,12 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: (anchor.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(anchor) < 0 && paidCount < totalCount)
+                color: (base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(base) < 0 && paidCount < totalCount)
                     ? _amber.withAlpha(120) : _teal.withAlpha(80),
               ),
             ),
             child: Text(endShort, style: TextStyle(
-              color: (anchor.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(anchor) < 0 && paidCount < totalCount)
+              color: (base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(base) < 0 && paidCount < totalCount)
                   ? _amber : _teal,
               fontSize: _laRowFontSize, fontWeight: FontWeight.w600,
             )),
@@ -560,7 +593,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                 ),
               ]);
             }),
-          ] else if (hasDue) ...[
+          ] else if (status == 'overdue' || status == 'today') ...[
             // 기사 입금 신고 대기 — 비활성
             const SizedBox(height: 12),
             Container(
