@@ -7,6 +7,7 @@ import 'admin_common.dart';
 import 'glass_shine_button.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
+const _appBg    = kAppBg;
 const _surface  = kSurface;
 const _elevated = kElevated;
 const _chip     = kChip;
@@ -368,17 +369,20 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                 child: Text(label,
                     style: TextStyle(
                         color: on ? _teal : _text2,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700))),
+                        fontSize: 14,
+                        fontWeight: on ? FontWeight.w700 : FontWeight.w400))),
           ),
         ),
       );
     }
 
+    // 트랙을 카드(_surface)보다 어둡게(_appBg) + 테두리 → 위 허브 탭처럼 또렷하게
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-          color: _surface, borderRadius: BorderRadius.circular(10)),
+          color: _appBg,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _elevated, width: 1)),
       child: Row(children: [
         seg(0, '리스비'),
         const SizedBox(width: 3),
