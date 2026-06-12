@@ -12,18 +12,6 @@ const _text    = kText;
 // 절대값 천단위 콤마 포맷
 String fmtAbs(double v) => NumberFormat('#,###').format(v.abs());
 
-// 리스비/기타 일할 공제 — 리포트 날짜(yyyy-MM-dd)가 적용기간[start,last] 안이면 일일액, 밖이면 0.
-// (익일 출금 시스템: "오늘" 기준이 아니라 각 리포트 날짜로 가른다)
-double dayDeduction(String? reportDate, DateTime? start, DateTime? last, double dailyAmt) {
-  if (dailyAmt <= 0 || start == null || last == null || reportDate == null) return 0;
-  final d = DateTime.tryParse(reportDate);
-  if (d == null) return 0;
-  final day = DateTime(d.year, d.month, d.day);
-  if (day.isBefore(DateTime(start.year, start.month, start.day))) return 0;
-  if (day.isAfter(DateTime(last.year, last.month, last.day))) return 0;
-  return dailyAmt;
-}
-
 // 공통 안내 다이얼로그
 void showInfoDialog(BuildContext context, String msg) {
   showDialog(

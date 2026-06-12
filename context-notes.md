@@ -97,3 +97,12 @@ match /location_tracks/{docId} {
 - _parseExcelBytes: 두 컬럼 매칭 → 라이더당 값(합산 X). missionFee/insuranceFee 키.
 - _calcRiderPay: missionFee(지원금·과세 대상), insuranceFee(공제, deduction=wdFee+ins로 finalAmount 차감) 파라미터화.
 - 결과: 미션금액=지원금합계, 시간제보험=공제합계에 표시되고 finalAmount(=totalAmount)에 반영 → 미출금/출금/소계 자동 일치.
+
+## 2026-06-12 정산 계산 단일 출처 통합 (settlement.dart)
+- 두더지잡기(한 곳 고치면 다른 곳 어긋남) 원인 = 순출금액 계산이 5곳에 중복.
+- settlement.dart: dayDeduction(날짜별 공제) + DeductionConfig + computeSettlement(items, lease, etc) → SettlementResult{gross, leaseTotal, etcTotal, net}.
+- driver_page(_chartCard·_confirmWithdraw)·driver_history_page(미출금 카드)가 전부 computeSettlement 호출 → 항상 일치.
+- dayDeduction은 driver_common에서 settlement.dart로 이동(중복 제거).
+- ①(하루치 finalAmount)는 업로드 시 _calcRiderPay가 계산해 저장 → 그대로 유지(단일).
+- 단건/누적/개인 = computeSettlement에 "무엇을 넣느냐"만 다름. 전체(관리자)는 개인 계산 반복.
+- 입금완료 과거 카드의 날짜별 표시는 적용기간 정보 없어 기존 균등분배 폴백 유지(별개 컨텍스트).

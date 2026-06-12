@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'driver_common.dart';
+import 'settlement.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg     = kAppBg;
@@ -572,11 +573,15 @@ class _HistoryPageState extends State<HistoryPage>
 
     final cards = <Map<String, dynamic>>[];
     if (hasPending) {
-      // 리포트 날짜로 가른 일할 공제 합산
-      double sumD(DateTime? s, DateTime? l, double amt) => _pendingItems.fold(
-          0.0, (acc, it) => acc + dayDeduction(it['date'] as String?, s, l, amt));
-      final tLease = sumD(_pLeaseStart, _pLeaseLast, _pLeaseDailyAmt);
-      final tEtc   = sumD(_pEtcStart, _pEtcLast, _pEtcDailyAmt);
+      // 정산 계산 단일 출처(settlement.dart) — 기사 프레임·출금신청과 같은 함수
+      final res = computeSettlement(
+        _pendingItems,
+        DeductionConfig(_pLeaseDailyAmt, _pLeaseStart, _pLeaseLast),
+        DeductionConfig(_pEtcDailyAmt, _pEtcStart, _pEtcLast),
+        grossOverride: _pendingTotal,
+      );
+      final tLease = res.leaseTotal;
+      final tEtc   = res.etcTotal;
       // 상태 결정: 신청완료 → 입금대기 / 23시 마감 지남 → 미출금 / 그 외 → 신청대기
       final String pendingStatus;
       if (_pendingRequested) {
@@ -589,7 +594,7 @@ class _HistoryPageState extends State<HistoryPage>
       cards.add({
         '_docId': 'pending',
         'items': _pendingItems,
-        'amount': _pendingTotal - tLease - tEtc,
+        'amount': res.net,
         'leaseDeduction': tLease,
         'etcDeduction': tEtc,
         // 날짜별 표시용 — 적용기간/일일액 (있으면 _settlementCard가 리포트 날짜로 가름)

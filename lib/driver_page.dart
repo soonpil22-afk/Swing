@@ -9,6 +9,7 @@ import 'glass_shine_button.dart';
 import 'tokens.dart';
 import 'app_dialogs.dart';
 import 'driver_common.dart';
+import 'settlement.dart';
 import 'driver_settings_page.dart';
 import 'driver_partners_page.dart';
 import 'block_puzzle_game.dart';
@@ -892,18 +893,19 @@ class _DriverPageState extends State<DriverPage> {
   // 미출금 항목 하루치 소계 (정산내역 카드 맨 아래 "소계"와 동일한 계산식)
   //  소계 = 배달수수료 + 지원금 − 세금 − (출금수수료+협력사수수료) − 시간제보험 − 리스비(일)
   // ── 4. 차트 카드 ────────────────────────────────────────────────────
-  // 미출금 항목들 중 적용기간(리포트 날짜) 안인 날만 일일 공제 합산
-  double _sumDeduct(DateTime? start, DateTime? last, double dailyAmt) =>
-      _unpaidItems.fold(0.0,
-          (acc, it) => acc + dayDeduction(it['date'] as String?, start, last, dailyAmt));
+  // 정산 계산 단일 출처(settlement.dart) — 기사 프레임·출금신청이 같은 함수를 쓴다
+  SettlementResult _settle() => computeSettlement(
+        _unpaidItems,
+        DeductionConfig(_leaseDailyAmt, _leaseStart, _leaseLast),
+        DeductionConfig(_etcDailyAmt, _etcStart, _etcLast),
+        grossOverride: _unpaidTotal,
+      );
 
   Widget _chartCard(_PeriodData d) {
     final accent = _periodColor[_period];
     final up = d.delta >= 0;
-    final leaseDeduct = _sumDeduct(_leaseStart, _leaseLast, _leaseDailyAmt);
-    final etcDeduct   = _sumDeduct(_etcStart, _etcLast, _etcDailyAmt);
-    // 출금 가능액 = 미출금(누적) − 리스비 − 기타. 정산내역 '미출금'과 동일
-    final withdrawable = _unpaidTotal - leaseDeduct - etcDeduct;
+    // 출금 가능액 = 미출금(누적) − 리스비 − 기타 (정산내역 '미출금'과 동일 계산)
+    final withdrawable = _settle().net;
 
     // ── 차트 큰 금액 = 해당 기간(일/주/월) 입금완료 합계 (미출금분 제외) ──
     final headlineAmount = d.total;
@@ -1112,9 +1114,10 @@ class _DriverPageState extends State<DriverPage> {
       return;
     }
 
-    final leaseDeduct = _sumDeduct(_leaseStart, _leaseLast, _leaseDailyAmt);
-    final etcDeduct   = _sumDeduct(_etcStart, _etcLast, _etcDailyAmt);
-    final finalTotal  = _unpaidTotal - leaseDeduct - etcDeduct;
+    final s = _settle();
+    final leaseDeduct = s.leaseTotal;
+    final etcDeduct   = s.etcTotal;
+    final finalTotal  = s.net;
     if (finalTotal < 10000) {
       _showInfoDialog(context, "최종 출금금액이 너무 적습니다.");
       return;
