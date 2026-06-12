@@ -62,6 +62,49 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
 
   final Map<String, bool> _expanded = {};
 
+  // 기사별 미납 강조 기준일(anchor) = 그 기사의 업로드된 리포트 최신 날짜.
+  // 대기중(요청대기)이거나 미출금 없음이면 '' → 강조 안 함. (오늘 기준 → 리포트 날짜 기준)
+  final Map<String, String> _anchors = {};
+  final Set<String> _anchorLoading = {};
+
+  Future<void> _loadAnchors(Iterable<String> uids) async {
+    final todo = uids
+        .where((u) =>
+            u.isNotEmpty && !_anchors.containsKey(u) && !_anchorLoading.contains(u))
+        .toList();
+    if (todo.isEmpty) return;
+    _anchorLoading.addAll(todo);
+    Set<String> pendingUids = {};
+    try {
+      final pend = await FirebaseFirestore.instance
+          .collection('withdrawal_requests')
+          .where('status', isEqualTo: '요청대기')
+          .get();
+      pendingUids =
+          pend.docs.map((d) => (d.data()['uid'] as String?) ?? '').toSet();
+    } catch (_) {}
+    await Future.wait(todo.map((uid) async {
+      if (pendingUids.contains(uid)) {
+        _anchors[uid] = '';
+        return;
+      }
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('unpaid_balance').doc(uid).get();
+        final items = (doc.data()?['items'] as List?) ?? [];
+        var a = '';
+        for (final it in items) {
+          final d = (it as Map)['date'] as String? ?? '';
+          if (d.compareTo(a) > 0) a = d;
+        }
+        _anchors[uid] = a;
+      } catch (_) {
+        _anchors[uid] = '';
+      }
+    }));
+    if (mounted) setState(() {});
+  }
+
   // 스트림은 한 번만 생성 (매 빌드마다 재구독 방지 → 무한로딩 차단)
   final Stream<QuerySnapshot> _leaseStream =
       FirebaseFirestore.instance.collection('lease_payments').snapshots();
@@ -162,16 +205,18 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
       ]);
 
   // 납부 도래(오늘 이하 미납) 여부
-  bool _hasDue(List<Map<String, dynamic>> ps, String today) => ps.any((p) =>
-      (p['dueDate'] as String? ?? '').compareTo(today) <= 0 && p['isPaid'] != true);
-  bool _isDueToday(List<Map<String, dynamic>> ps, String today) => ps.any((p) =>
-      (p['dueDate'] as String? ?? '') == today && p['isPaid'] != true);
+  bool _hasDue(List<Map<String, dynamic>> ps, String anchor) =>
+      anchor.isNotEmpty &&
+      ps.any((p) =>
+          (p['dueDate'] as String? ?? '').compareTo(anchor) <= 0 && p['isPaid'] != true);
+  bool _isDueToday(List<Map<String, dynamic>> ps, String anchor) =>
+      anchor.isNotEmpty &&
+      ps.any((p) => (p['dueDate'] as String? ?? '') == anchor && p['isPaid'] != true);
   bool _hasRiderPaid(List<Map<String, dynamic>> ps) =>
       ps.any((p) => p['riderPaid'] == true && p['isPaid'] != true);
 
   @override
   Widget build(BuildContext context) {
-    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final body = StreamBuilder<QuerySnapshot>(
       stream: _leaseStream,
       builder: (ctx, leaseSnap) {
@@ -209,6 +254,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
 
             final uids = nameByUid.keys.toList()
               ..sort((a, b) => (nameByUid[a] ?? '').compareTo(nameByUid[b] ?? ''));
+            _loadAnchors(uids); // 기사별 리포트 최신 날짜(anchor) 로드(멱등)
 
             return ListView(
               padding: const EdgeInsets.fromLTRB(_laListPadL, _laListPadT, _laListPadR, _laListPadB),
@@ -217,11 +263,12 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                 final lease = leaseByUid[uid] ?? [];
                 final etc   = etcByUid[uid] ?? [];
                 final isExpanded = _expanded[uid] ?? false;
+                final anchor = _anchors[uid] ?? '';
 
-                // 헤더 상태 = 리스비/기타 합산
+                // 헤더 상태 = 리스비/기타 합산 (강조 기준 = 리포트 최신 날짜)
                 final hasRiderPaid = _hasRiderPaid(lease) || _hasRiderPaid(etc);
-                final isDueToday   = _isDueToday(lease, today) || _isDueToday(etc, today);
-                final hasDue       = _hasDue(lease, today) || _hasDue(etc, today);
+                final isDueToday   = _isDueToday(lease, anchor) || _isDueToday(etc, anchor);
+                final hasDue       = _hasDue(lease, anchor) || _hasDue(etc, anchor);
                 final allPaid = (lease.isEmpty || lease.every((p) => p['isPaid'] == true)) &&
                     (etc.isEmpty || etc.every((p) => p['isPaid'] == true));
                 final borderColor =
@@ -272,9 +319,9 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                         child: Column(children: [
-                          if (lease.isNotEmpty) _summaryCard(_kLease, lease, uid, riderName, today),
+                          if (lease.isNotEmpty) _summaryCard(_kLease, lease, uid, riderName, anchor),
                           if (lease.isNotEmpty && etc.isNotEmpty) const SizedBox(height: 10),
-                          if (etc.isNotEmpty) _summaryCard(_kEtc, etc, uid, riderName, today),
+                          if (etc.isNotEmpty) _summaryCard(_kEtc, etc, uid, riderName, anchor),
                         ]),
                       ),
                     ],
@@ -292,7 +339,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
   }
 
   // ── 전체현황 카드 (리스비/기타 공용) — 버튼을 카드 안에 포함 ──
-  Widget _summaryCard(_Kind k, List<Map<String, dynamic>> raw, String uid, String riderName, String today) {
+  Widget _summaryCard(_Kind k, List<Map<String, dynamic>> raw, String uid, String riderName, String anchor) {
     final payments = [...raw]
       ..sort((a, b) => (a['cycle'] as int? ?? 0).compareTo(b['cycle'] as int? ?? 0));
     final paidCount  = payments.where((p) => p['isPaid'] == true).length;
@@ -315,9 +362,10 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     final riderPaidList = payments.where((p) =>
         p['riderPaid'] == true && p['isPaid'] != true).toList();
     final hasRiderPaid = riderPaidList.isNotEmpty;
-    // 납기 도래(오늘 이하) 미납 회차 존재 여부 — 기사 입금 신고 대기 표시용
-    final hasDue = payments.any((p) =>
-        (p['dueDate'] as String? ?? '').compareTo(today) <= 0 && p['isPaid'] != true);
+    // 납기 도래(리포트 최신 날짜 이하) 미납 회차 존재 여부 — 기사 입금 신고 대기 표시용
+    final hasDue = anchor.isNotEmpty &&
+        payments.any((p) =>
+            (p['dueDate'] as String? ?? '').compareTo(anchor) <= 0 && p['isPaid'] != true);
 
     return Container(
       width: double.infinity,
@@ -362,12 +410,12 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: (dueDates.isNotEmpty && dueDates.last.compareTo(today) < 0 && paidCount < totalCount)
+                color: (anchor.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(anchor) < 0 && paidCount < totalCount)
                     ? _amber.withAlpha(120) : _teal.withAlpha(80),
               ),
             ),
             child: Text(endShort, style: TextStyle(
-              color: (dueDates.isNotEmpty && dueDates.last.compareTo(today) < 0 && paidCount < totalCount)
+              color: (anchor.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(anchor) < 0 && paidCount < totalCount)
                   ? _amber : _teal,
               fontSize: _laRowFontSize, fontWeight: FontWeight.w600,
             )),
