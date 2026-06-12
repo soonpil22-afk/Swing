@@ -9,6 +9,7 @@ import 'glass_shine_button.dart';
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _surface  = kSurface;
 const _elevated = kElevated;
+const _chip     = kChip;
 const _text     = kText;
 const _text2    = kText2;
 const _teal     = kTeal;
@@ -61,6 +62,7 @@ class LeaseAlertsPage extends StatefulWidget {
 class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
 
   final Map<String, bool> _expanded = {};
+  final Map<String, int>  _tab      = {}; // 기사별 리스비(0)/기타(1) 탭 선택
 
   // 기사별 미납 강조 기준일(anchor) = 그 기사의 업로드된 리포트 최신 날짜.
   // 대기중(요청대기)이거나 미출금 없음이면 '' → 강조 안 함. (오늘 기준 → 리포트 날짜 기준)
@@ -265,21 +267,17 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                 final isExpanded = _expanded[uid] ?? false;
                 final anchor = _anchors[uid] ?? '';
 
-                // 헤더 상태 = 리스비/기타 합산 (강조 기준 = 리포트 최신 날짜)
+                // 헤더 칩 상태 = 리스비/기타 합산 (강조 기준 = 리포트 최신 날짜)
+                // 큰 카드 테두리는 강조 안 함(리스비/기타 구분 위해) → 강조는 각 전체현황 카드로 이동
                 final hasRiderPaid = _hasRiderPaid(lease) || _hasRiderPaid(etc);
                 final isDueToday   = _isDueToday(lease, anchor) || _isDueToday(etc, anchor);
                 final hasDue       = _hasDue(lease, anchor) || _hasDue(etc, anchor);
-                final allPaid = (lease.isEmpty || lease.every((p) => p['isPaid'] == true)) &&
-                    (etc.isEmpty || etc.every((p) => p['isPaid'] == true));
-                final borderColor =
-                    (allPaid || hasDue || hasRiderPaid) ? _teal : _elevated;
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
                     color: _surface, borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: borderColor,
-                        width: hasRiderPaid || isDueToday || (hasDue && !isDueToday) ? 1.5 : 1),
+                    border: Border.all(color: _elevated, width: 1),
                     boxShadow: _cardShadow,
                   ),
                   child: Column(children: [
@@ -301,11 +299,11 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                           ) else if (isDueToday) Container(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                             decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _teal)),
-                            child: const Text("오늘 납부", style: TextStyle(color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
+                            child: const Text("납부일", style: TextStyle(color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
                           ) else if (hasDue) Container(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                             decoration: BoxDecoration(color: _teal.withAlpha(20), borderRadius: BorderRadius.circular(5), border: Border.all(color: _pink)),
-                            child: const Text("납부초과", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+                            child: const Text("미납중", style: TextStyle(color: _pink, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
                           ),
                           const SizedBox(width: 6),
                           Icon(isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: isExpanded ? _text2 : _teal, size: _laChevronSize),
@@ -313,16 +311,28 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                       ),
                     ),
 
-                    // 펼침: 리스비 전체현황 카드 + 기타 전체현황 카드 (각 카드 안에 버튼)
+                    // 펼침: 리스비 | 기타 탭 → 선택한 종류의 전체현황 카드
                     if (isExpanded) ...[
                       Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                        child: Column(children: [
-                          if (lease.isNotEmpty) _summaryCard(_kLease, lease, uid, riderName, anchor),
-                          if (lease.isNotEmpty && etc.isNotEmpty) const SizedBox(height: 10),
-                          if (etc.isNotEmpty) _summaryCard(_kEtc, etc, uid, riderName, anchor),
-                        ]),
+                        child: () {
+                          final hasLease = lease.isNotEmpty;
+                          final hasEtc   = etc.isNotEmpty;
+                          var tab = _tab[uid] ?? (hasLease ? 0 : 1);
+                          if (tab == 0 && !hasLease) tab = 1;
+                          if (tab == 1 && !hasEtc) tab = 0;
+                          return Column(children: [
+                            if (hasLease && hasEtc) ...[
+                              _kindTab(uid, tab),
+                              const SizedBox(height: 10),
+                            ],
+                            if (tab == 0)
+                              _summaryCard(_kLease, lease, uid, riderName, anchor)
+                            else
+                              _summaryCard(_kEtc, etc, uid, riderName, anchor),
+                          ]);
+                        }(),
                       ),
                     ],
                   ]),
@@ -339,6 +349,44 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
   }
 
   // ── 전체현황 카드 (리스비/기타 공용) — 버튼을 카드 안에 포함 ──
+  // 리스비 | 기타 탭 토글 (규칙 D2 탭 스타일)
+  Widget _kindTab(String uid, int current) {
+    Widget seg(int idx, String label) {
+      final on = current == idx;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => setState(() => _tab[uid] = idx),
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 7),
+            decoration: BoxDecoration(
+              color: on ? _chip : Colors.transparent,
+              borderRadius: BorderRadius.circular(7),
+              border: Border.all(color: on ? _elevated : Colors.transparent),
+            ),
+            child: Center(
+                child: Text(label,
+                    style: TextStyle(
+                        color: on ? _teal : _text2,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700))),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+          color: _surface, borderRadius: BorderRadius.circular(10)),
+      child: Row(children: [
+        seg(0, '리스비'),
+        const SizedBox(width: 3),
+        seg(1, '기타'),
+      ]),
+    );
+  }
+
   Widget _summaryCard(_Kind k, List<Map<String, dynamic>> raw, String uid, String riderName, String anchor) {
     final payments = [...raw]
       ..sort((a, b) => (a['cycle'] as int? ?? 0).compareTo(b['cycle'] as int? ?? 0));
@@ -366,13 +414,18 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     final hasDue = anchor.isNotEmpty &&
         payments.any((p) =>
             (p['dueDate'] as String? ?? '').compareTo(anchor) <= 0 && p['isPaid'] != true);
+    // 이 종류(리스비/기타) 카드 테두리 강조 — 납부도래/기사신고/완납이면 민트
+    final allPaidKind = totalCount > 0 && paidCount == totalCount;
+    final emphasize = hasDue || hasRiderPaid;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
       decoration: BoxDecoration(
         color: _surface, borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _laCardBorder, width: _laCardBorderWidth),
+        border: Border.all(
+            color: (emphasize || allPaidKind) ? _teal : _laCardBorder,
+            width: emphasize ? 1.5 : _laCardBorderWidth),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
