@@ -556,7 +556,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
               child: const Center(
                   child: Text("입금완료 처리됨 · 관리자 확인 대기중",
                       style: TextStyle(
-                          color: _lpPaidTextColor,
+                          color: _text,
                           fontSize: _lpPaidFontSize,
                           fontWeight: FontWeight.w600))),
             ),
