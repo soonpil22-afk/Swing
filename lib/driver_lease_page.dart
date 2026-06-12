@@ -292,22 +292,19 @@ class _DriverLeasePageState extends State<DriverLeasePage>
                       padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
                       children: _kindSection(k, docs, userData),
                     );
+                // 데이터 있으면 카드, 없으면 "내역 없음" (탭은 항상 유지)
+                Widget kindTabView(bool has, _DKind k, List<QueryDocumentSnapshot> docs) =>
+                    has ? kindList(k, docs) : _kindEmpty(k.title);
 
-                // 한 종류만 있으면 탭 없이 그 카드만
-                if (!(hasLease && hasEtc)) {
-                  return kindList(hasLease ? _kLease : _kEtc,
-                      hasLease ? leaseDocs : etcDocs);
-                }
-
-                // 둘 다 있으면 정산내역과 동일한 TabBar/TabBarView
+                // 탭(리스비|기타)은 항상 표시, 카드만 데이터 유무로 표시 (정산내역과 동일 TabBar)
                 return Column(children: [
                   _kindTabBar(),
                   Expanded(
                     child: TabBarView(
                       controller: _tabCtrl,
                       children: [
-                        kindList(_kLease, leaseDocs),
-                        kindList(_kEtc, etcDocs),
+                        kindTabView(hasLease, _kLease, leaseDocs),
+                        kindTabView(hasEtc, _kEtc, etcDocs),
                       ],
                     ),
                   ),
@@ -319,6 +316,19 @@ class _DriverLeasePageState extends State<DriverLeasePage>
       },
     );
   }
+
+  // 종류별 빈 상태 (해당 탭에 데이터 없을 때)
+  Widget _kindEmpty(String title) => Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          const Icon(Icons.moped, color: _lpEmptyIconColor, size: _lpEmptyIconSize),
+          const SizedBox(height: 12),
+          Text("$title 납부 내역이 없습니다.",
+              style: const TextStyle(
+                  color: _lpEmptyTitleColor,
+                  fontSize: _lpEmptyTitleFontSize,
+                  fontWeight: FontWeight.w600)),
+        ]),
+      );
 
   // 리스비 | 기타 탭 — 정산내역 페이지 탭과 동일(TabBar)
   Widget _kindTabBar() => Container(
