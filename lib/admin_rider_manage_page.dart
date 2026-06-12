@@ -247,12 +247,12 @@ class _RiderManagePageState extends State<RiderManagePage> {
     );
 
     return Container(
-      margin: const EdgeInsets.only(bottom: kGapCard),
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, kGapCard),
       decoration: BoxDecoration(color: _rmCardBg, borderRadius: BorderRadius.circular(_rmCardRadius), border: Border.all(color: _elevated, width: 1)),
       child: Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
-        tilePadding: const EdgeInsets.fromLTRB(16, 4, 14, 4), childrenPadding: EdgeInsets.zero, clipBehavior: Clip.hardEdge,
+        tilePadding: const EdgeInsets.fromLTRB(12, 4, 10, 4), childrenPadding: EdgeInsets.zero, clipBehavior: Clip.hardEdge,
         iconColor: _text2, collapsedIconColor: _teal,
         leading: Container(width: _rmAvatarSize, height: _rmAvatarSize,
             decoration: BoxDecoration(color: _rmAvatarBg, border: Border.all(color: _rmAvatarBorder), borderRadius: BorderRadius.circular(9)),
