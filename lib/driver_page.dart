@@ -389,6 +389,8 @@ class _DriverPageState extends State<DriverPage> {
   double _unpaidTotal    = 0;
   bool   _hasDailyLease  = false;
   double _leaseDailyAmt  = 0;
+  bool   _hasDailyEtc    = false;
+  double _etcDailyAmt    = 0;
   DateTime? _unpaidUpdatedAt; // 미출금(unpaid_balance) 마지막 업로드 시각
 
   // ── 실시간 구독 (관리자 입금완료/미출금 업로드 → 차트·금액 즉시 반영) ──
@@ -523,6 +525,23 @@ class _DriverPageState extends State<DriverPage> {
             !now.isAfter(DateTime(last.year, last.month, last.day))) {
           _hasDailyLease = true;
           _leaseDailyAmt = leaseAmt.toDouble();
+        }
+      }
+
+      // 기타(etc) 공제 — 리스비와 동일 구조 (오늘이 적용기간 안이면 활성)
+      final etcType    = userDoc.data()?['etcType']      as String? ?? '';
+      final etcAmt     = userDoc.data()?['etcAmount']    as int?    ?? 0;
+      final etcStartSt = userDoc.data()?['etcStartDate'] as String? ?? '';
+      final etcLastSt  = userDoc.data()?['etcLastDate']  as String? ?? '';
+      if (etcType == 'daily' && etcAmt > 0) {
+        final now   = DateTime.now();
+        final start = DateTime.tryParse(etcStartSt);
+        final last  = DateTime.tryParse(etcLastSt);
+        if (start != null && last != null &&
+            !now.isBefore(DateTime(start.year, start.month, start.day)) &&
+            !now.isAfter(DateTime(last.year, last.month, last.day))) {
+          _hasDailyEtc = true;
+          _etcDailyAmt = etcAmt.toDouble();
         }
       }
 
@@ -894,8 +913,10 @@ class _DriverPageState extends State<DriverPage> {
     final up = d.delta >= 0;
     final leaseDeduct =
         (_hasDailyLease ? _unpaidItems.length : 0) * _leaseDailyAmt;
-    // 출금 가능액 = 미출금(누적) − 리스비. 정산내역 '미출금'과 동일(기타는 출금에서 안 뺌)
-    final withdrawable = _unpaidTotal - leaseDeduct;
+    final etcDeduct =
+        (_hasDailyEtc ? _unpaidItems.length : 0) * _etcDailyAmt;
+    // 출금 가능액 = 미출금(누적) − 리스비 − 기타. 정산내역 '미출금'과 동일
+    final withdrawable = _unpaidTotal - leaseDeduct - etcDeduct;
 
     // ── 차트 큰 금액 = 해당 기간(일/주/월) 입금완료 합계 (미출금분 제외) ──
     final headlineAmount = d.total;
@@ -1106,7 +1127,9 @@ class _DriverPageState extends State<DriverPage> {
 
     final leaseDays   = _hasDailyLease ? _unpaidItems.length : 0;
     final leaseDeduct = leaseDays * _leaseDailyAmt;
-    final finalTotal  = _unpaidTotal - leaseDeduct;
+    final etcDays     = _hasDailyEtc ? _unpaidItems.length : 0;
+    final etcDeduct   = etcDays * _etcDailyAmt;
+    final finalTotal  = _unpaidTotal - leaseDeduct - etcDeduct;
     if (finalTotal < 10000) {
       _showInfoDialog(context, "최종 출금금액이 너무 적습니다.");
       return;
@@ -1142,6 +1165,7 @@ class _DriverPageState extends State<DriverPage> {
         "시간제보험: ${_fmt(tIns)}원\n"
         "출금수수료: ${_fmt(tWd)}원\n"
         "${leaseDeduct > 0 ? '리스비(일): ${_fmt(leaseDeduct)}원\n' : ''}"
+        "${etcDeduct > 0 ? '기타(일): ${_fmt(etcDeduct)}원\n' : ''}"
         "최종배달수수료: ${_fmt(finalTotal)}원\n"
         "최종출금금액: ${_fmt(finalTotal)}원";
 
@@ -1154,7 +1178,7 @@ class _DriverPageState extends State<DriverPage> {
         'amount':         finalTotal,
         'totalAmount':    _unpaidTotal,
         'leaseDeduction': leaseDeduct,
-        'etcDeduction':   0,
+        'etcDeduction':   etcDeduct,
         'items':          _unpaidItems,
         'message':        msg,
         'status':         '요청대기',

@@ -185,6 +185,8 @@ class _HistoryPageState extends State<HistoryPage>
   bool   _pendingRequested = false;
   bool   _pHasDailyLease   = false;
   double _pLeaseDailyAmt   = 0;
+  bool   _pHasDailyEtc     = false;
+  double _pEtcDailyAmt     = 0;
   bool   _pendingLoaded    = false;
 
   // 출금 내역 탭
@@ -255,6 +257,23 @@ class _HistoryPageState extends State<HistoryPage>
             !now.isAfter(DateTime(last.year, last.month, last.day))) {
           _pHasDailyLease = true;
           _pLeaseDailyAmt = leaseAmt.toDouble();
+        }
+      }
+
+      // 기타(etc) 공제 — 리스비와 동일 구조 (오늘이 적용기간 안이면 활성)
+      final etcType    = userDoc.data()?['etcType']      as String? ?? '';
+      final etcAmt     = userDoc.data()?['etcAmount']    as int?    ?? 0;
+      final etcStartSt = userDoc.data()?['etcStartDate'] as String? ?? '';
+      final etcLastSt  = userDoc.data()?['etcLastDate']  as String? ?? '';
+      if (etcType == 'daily' && etcAmt > 0) {
+        final now   = DateTime.now();
+        final start = DateTime.tryParse(etcStartSt);
+        final last  = DateTime.tryParse(etcLastSt);
+        if (start != null && last != null &&
+            !now.isBefore(DateTime(start.year, start.month, start.day)) &&
+            !now.isAfter(DateTime(last.year, last.month, last.day))) {
+          _pHasDailyEtc = true;
+          _pEtcDailyAmt = etcAmt.toDouble();
         }
       }
 
@@ -571,6 +590,8 @@ class _HistoryPageState extends State<HistoryPage>
     if (hasPending) {
       final leaseDays = _pHasDailyLease ? _pendingItems.length : 0;
       final tLease = leaseDays * _pLeaseDailyAmt;
+      final etcDays = _pHasDailyEtc ? _pendingItems.length : 0;
+      final tEtc = etcDays * _pEtcDailyAmt;
       // 상태 결정: 신청완료 → 입금대기 / 23시 마감 지남 → 미출금 / 그 외 → 신청대기
       final String pendingStatus;
       if (_pendingRequested) {
@@ -583,8 +604,9 @@ class _HistoryPageState extends State<HistoryPage>
       cards.add({
         '_docId': 'pending',
         'items': _pendingItems,
-        'amount': _pendingTotal - tLease,
+        'amount': _pendingTotal - tLease - tEtc,
         'leaseDeduction': tLease,
+        'etcDeduction': tEtc,
         '_status': pendingStatus,
       });
     }
