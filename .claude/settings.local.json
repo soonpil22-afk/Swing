@@ -99,7 +99,9 @@
       "Bash(python add_columns.py)",
       "Bash(dart run *)",
       "Bash(find ~/AppData/Local/Pub/Cache/hosted/pub.dev -path \"*excel*/lib/src/parser/parse.dart\" 2>/dev/null | head -1)",
-      "Bash(python patch_rels.py)"
+      "Bash(python patch_rels.py)",
+      "Bash(perl -0pi -e 's/anchor\\\\.isNotEmpty && dueDates\\\\.isNotEmpty && dueDates\\\\.last\\\\.compareTo\\\\\\(anchor\\\\\\) < 0/base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo\\(base\\) < 0/g' lib/admin_lease_alerts_page.dart)",
+      "Bash(perl -ni -e 'print unless /^const _rmDividerColor = _elevated;/' lib/admin_rider_manage_page.dart)"
     ]
   }
 }
