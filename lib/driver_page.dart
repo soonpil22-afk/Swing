@@ -1475,13 +1475,45 @@ class _DriverPageState extends State<DriverPage> {
         ]),
       );
 
-  // ── 리스비 메뉴 카드 (리스비+기타 현황 페이지로 이동, 배지는 둘 다 반영) ──
-  bool _anyDue(QuerySnapshot? snap, String today) =>
-      snap?.docs.any((dDoc) {
-        final dd = (dDoc.data() as Map)['dueDate'] as String? ?? '';
-        return dd.isNotEmpty && dd.compareTo(today) <= 0;
-      }) ??
-      false;
+  // ── 리스비 메뉴 카드 (리스비+기타 현황 페이지로 이동, 배지는 각각 표시) ──
+  // 마감일이 기준일(anchor) 이하인 미납분이 있으면 true
+  bool _anyDue(QuerySnapshot? snap, String anchor) =>
+      anchor.isNotEmpty &&
+      (snap?.docs.any((dDoc) {
+            final dd = (dDoc.data() as Map)['dueDate'] as String? ?? '';
+            return dd.isNotEmpty && dd.compareTo(anchor) <= 0;
+          }) ??
+          false);
+
+  // 배지 기준일 = 업로드된 리포트 중 최신 날짜(미출금 항목 기준). 계산식과 동일 기준.
+  // (오늘 기준이면 익일 업로드 전에 하루 먼저 떠서, 리포트 날짜 기준으로 맞춤)
+  String _reportAnchor() => _unpaidItems.isEmpty
+      ? ''
+      : _unpaidItems
+          .map((e) => (e['date'] as String?) ?? '')
+          .reduce((a, b) => b.compareTo(a) > 0 ? b : a);
+
+  // 라벨 + 우상단 N 배지
+  Widget _lblBadge(String text, bool due) =>
+      Stack(clipBehavior: Clip.none, children: [
+        Text(text,
+            style: const TextStyle(
+                color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
+        if (due)
+          Positioned(
+            right: -12,
+            top: -5,
+            child: Container(
+              width: 16,
+              height: 16,
+              decoration: const BoxDecoration(color: _red, shape: BoxShape.circle),
+              child: const Center(
+                  child: Text("N",
+                      style: TextStyle(
+                          color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
+            ),
+          ),
+      ]);
 
   Widget _deductMenuCard(String uid) => StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -1496,8 +1528,9 @@ class _DriverPageState extends State<DriverPage> {
               .where('isPaid', isEqualTo: false)
               .snapshots(),
           builder: (_, etcSnap) {
-            final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-            final hasDue = _anyDue(leaseSnap.data, today) || _anyDue(etcSnap.data, today);
+            final anchor = _reportAnchor();
+            final leaseDue = _anyDue(leaseSnap.data, anchor);
+            final etcDue   = _anyDue(etcSnap.data, anchor);
             return GestureDetector(
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => DriverLeasePage(uid: uid))),
@@ -1512,25 +1545,14 @@ class _DriverPageState extends State<DriverPage> {
                 child: Row(children: [
                   const Icon(Icons.moped, color: _pink, size: 24),
                   const SizedBox(width: 14),
-                  Stack(clipBehavior: Clip.none, children: [
-                    const Text('리스비',
+                  _lblBadge('리스비', leaseDue),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 14),
+                    child: Text('/',
                         style: TextStyle(
-                            color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
-                    if (hasDue)
-                      Positioned(
-                        right: -12,
-                        top: -5,
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: const BoxDecoration(color: _red, shape: BoxShape.circle),
-                          child: const Center(
-                              child: Text("N",
-                                  style: TextStyle(
-                                      color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
-                        ),
-                      ),
-                  ]),
+                            color: _text2, fontSize: 14, fontWeight: FontWeight.w600)),
+                  ),
+                  _lblBadge('기타', etcDue),
                   const Spacer(),
                   const Icon(Icons.chevron_right, color: _text2, size: 22),
                 ]),
