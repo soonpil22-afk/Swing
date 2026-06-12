@@ -108,15 +108,16 @@ class DriverLeasePage extends StatefulWidget {
   State<DriverLeasePage> createState() => _DriverLeasePageState();
 }
 
-class _DriverLeasePageState extends State<DriverLeasePage> {
+class _DriverLeasePageState extends State<DriverLeasePage>
+    with SingleTickerProviderStateMixin {
   // 입금완료 처리 중 상태 (컬렉션별)
   final Map<String, bool> _submitting = {};
+
+  late final TabController _tabCtrl = TabController(length: 2, vsync: this);
 
   // 미납 강조 기준일 = 업로드된 리포트 최신 날짜(메인 카드 배지와 동일 기준).
   // 출금신청 대기중이면 비움(처리중) → 강조 안 함. (매일 타입에만 사용)
   String _anchor = '';
-
-  int _tabIdx = 0; // 0=리스비, 1=기타
 
   // 스트림은 한 번만 생성 (재구독 방지)
   late final Stream<DocumentSnapshot> _userStream;
@@ -134,6 +135,12 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
         .collection(_kEtc.collection).where('uid', isEqualTo: widget.uid).snapshots();
     _markAsSeen();
     _loadAnchor();
+  }
+
+  @override
+  void dispose() {
+    _tabCtrl.dispose();
+    super.dispose();
   }
 
   // 미납 강조 기준일 로드 (driver_page와 동일: 대기중이면 빈값, 아니면 미출금 최신 리포트 날짜)
@@ -281,23 +288,27 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                   ]));
                 }
 
-                var tab = _tabIdx;
-                if (tab == 0 && !hasLease) tab = 1;
-                if (tab == 1 && !hasEtc) tab = 0;
-                final section = tab == 0
-                    ? _kindSection(_kLease, leaseDocs, userData)
-                    : _kindSection(_kEtc, etcDocs, userData);
-
-                return Column(children: [
-                  if (hasLease && hasEtc)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-                      child: _kindTab(tab),
-                    ),
-                  Expanded(
-                    child: ListView(
+                ListView kindList(_DKind k, List<QueryDocumentSnapshot> docs) => ListView(
                       padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-                      children: section,
+                      children: _kindSection(k, docs, userData),
+                    );
+
+                // 한 종류만 있으면 탭 없이 그 카드만
+                if (!(hasLease && hasEtc)) {
+                  return kindList(hasLease ? _kLease : _kEtc,
+                      hasLease ? leaseDocs : etcDocs);
+                }
+
+                // 둘 다 있으면 정산내역과 동일한 TabBar/TabBarView
+                return Column(children: [
+                  _kindTabBar(),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabCtrl,
+                      children: [
+                        kindList(_kLease, leaseDocs),
+                        kindList(_kEtc, etcDocs),
+                      ],
                     ),
                   ),
                 ]);
@@ -309,44 +320,28 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     );
   }
 
-  // 리스비 | 기타 탭 토글 (규칙 D2 탭 스타일)
-  Widget _kindTab(int current) {
-    Widget seg(int idx, String label) {
-      final on = current == idx;
-      return Expanded(
-        child: GestureDetector(
-          onTap: () => setState(() => _tabIdx = idx),
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: on ? _chip : Colors.transparent,
+  // 리스비 | 기타 탭 — 정산내역 페이지 탭과 동일(TabBar)
+  Widget _kindTabBar() => Container(
+        margin: const EdgeInsets.fromLTRB(12, 2, 12, 8),
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+            color: _surface, borderRadius: BorderRadius.circular(10)),
+        child: TabBar(
+          controller: _tabCtrl,
+          indicator: BoxDecoration(
+              color: _chip,
               borderRadius: BorderRadius.circular(7),
-              border: Border.all(color: on ? _elevated : Colors.transparent),
-            ),
-            child: Center(
-                child: Text(label,
-                    style: TextStyle(
-                        color: on ? _teal : _text2,
-                        fontSize: 14,
-                        fontWeight: on ? FontWeight.w700 : FontWeight.w400))),
-          ),
+              border: Border.all(color: _elevated, width: 1)),
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelColor: _teal,
+          unselectedLabelColor: _text2,
+          dividerColor: Colors.transparent,
+          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          unselectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
+          tabs: const [Tab(text: '리스비'), Tab(text: '기타')],
         ),
       );
-    }
-
-    // 정산내역 탭과 동일: 트랙 _surface(테두리 없음) + 선택 _chip+_elevated
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-          color: _surface, borderRadius: BorderRadius.circular(10)),
-      child: Row(children: [
-        seg(0, '리스비'),
-        const SizedBox(width: 3),
-        seg(1, '기타'),
-      ]),
-    );
-  }
 
   // 한 종류(리스비/기타)의 전체현황 카드. 미납(도래) 안내·입금완료 버튼은 카드 안에 표시.
   List<Widget> _kindSection(
