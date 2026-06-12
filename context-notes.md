@@ -91,3 +91,9 @@ match /location_tracks/{docId} {
 - 안드: android/app/src/main/AndroidManifest.xml <meta-data android:name="com.google.android.geo.API_KEY">
 - iOS: ios/Runner/AppDelegate.swift (GMSServices.provideAPIKey) — 또는 AppDelegate에 추가
 - 웹: web/index.html <script ...maps...key=>
+
+## 2026-06-12 리포트에 미션금액·시간제보험 항목 추가
+- 엑셀 리포트(test_files/daily/*.xlsx)에 '미션금액'·'시간제보험' 컬럼 추가(값 100). add_columns.py로 일괄.
+- _parseExcelBytes: 두 컬럼 매칭 → 라이더당 값(합산 X). missionFee/insuranceFee 키.
+- _calcRiderPay: missionFee(지원금·과세 대상), insuranceFee(공제, deduction=wdFee+ins로 finalAmount 차감) 파라미터화.
+- 결과: 미션금액=지원금합계, 시간제보험=공제합계에 표시되고 finalAmount(=totalAmount)에 반영 → 미출금/출금/소계 자동 일치.

@@ -878,6 +878,8 @@ class _AdminPageState extends State<AdminPage> {
     // 프로모(건당·구간) 건수·적용 — 평일은 건수만(금액 0), 주 마지막(화)에 주간 누적건수로 적용
     required int  promoCount,   // 티어 판정·곱셈에 쓸 건수 (평일=당일, 화=주간누적)
     required bool applyPromo,   // false면 금액 0 (건수만 저장)
+    double missionFee   = 0,    // 리포트 미션금액 (지원금·과세 대상)
+    double insuranceFee = 0,    // 리포트 시간제보험 (공제)
   }) {
     double perOrderAmount = 0;
     double rangeAmount    = 0;
@@ -899,7 +901,6 @@ class _AdminPageState extends State<AdminPage> {
         }
       }
     }
-    const missionFee = 0.0;
     final promoTotal = missionFee + perOrderAmount + rangeAmount;
     final baseAmt    = deliveryFee + promoTotal;
     final eTax       = (baseAmt * empRate    / 100).floorToDouble();
@@ -909,7 +910,8 @@ class _AdminPageState extends State<AdminPage> {
     final afterTax   = baseAmt - tTax;
     final commAmt    = (afterTax * commRate  / 100).floorToDouble();
     final wdFee      = deliveryFee > 0 ? wdFeeAmt : 0.0;
-    final deduction  = wdFee;
+    // 공제(미출금/출금에 반영) = 출금수수료 + 시간제보험
+    final deduction  = wdFee + insuranceFee;
     final finalAmt   = afterTax - commAmt - deduction;
 
     String fc(double v) => NumberFormat('#,###').format(v);
@@ -925,7 +927,7 @@ class _AdminPageState extends State<AdminPage> {
         "산재보험(${fr(accRate)}%): ${fc(aTax)}원\n"
         "원천세(${fr(taxRateVal)}%): ${fc(iTax)}원\n"
         "협력사수수료(${fr(commRate)}%): ${fc(commAmt)}원\n"
-        "시간제보험: 0원\n"
+        "시간제보험: ${fc(insuranceFee)}원\n"
         "출금수수료: ${fc(wdFee)}원\n"
         "최종배달수수료: ${fc(finalAmt)}원\n"
         "최종출금금액: ${fc(finalAmt)}원";
@@ -945,7 +947,7 @@ class _AdminPageState extends State<AdminPage> {
       'incomeTax':      iTax,
       'tax':            tTax,
       'commissionAmt':  commAmt,
-      'insuranceFee':   0.0,
+      'insuranceFee':   insuranceFee,
       'withdrawalFee':  wdFee,
       'finalAmount':    finalAmt,
       'message':        message,
@@ -1027,6 +1029,8 @@ class _AdminPageState extends State<AdminPage> {
         final riderName = userInfo['name'] as String;
         final dFee      = (riderData['deliveryFee']   as num?)?.toDouble() ?? 0;
         final dCount    = (riderData['deliveryCount'] as num?)?.toInt()    ?? 0;
+        final mFee      = (riderData['missionFee']    as num?)?.toDouble() ?? 0;
+        final iFee      = (riderData['insuranceFee']  as num?)?.toDouble() ?? 0;
         if (dFee <= 0) continue;
 
         // 평일=당일 건수(금액 0) / 화요일=주간 누적 건수(금액 적용)
@@ -1045,6 +1049,8 @@ class _AdminPageState extends State<AdminPage> {
           incentiveRatesList: incentiveRatesList,
           promoCount:         promoCount,
           applyPromo:         isWeekEnd,
+          missionFee:         mFee,
+          insuranceFee:       iFee,
         );
 
         // 기존 미출금 읽기
@@ -2317,13 +2323,15 @@ Map<String, Map<String, dynamic>> _parseExcelBytes(List<int> bytes) {
   final sheet = excel.tables[excel.tables.keys.first];
   if (sheet == null) return {};
   final header = sheet.rows[0];
-  int uidIdx = -1, nameIdx = -1, feeIdx = -1, dateIdx = -1;
+  int uidIdx = -1, nameIdx = -1, feeIdx = -1, dateIdx = -1, missionIdx = -1, insIdx = -1;
   for (int i = 0; i < header.length; i++) {
     final v = header[i]?.value?.toString().trim() ?? '';
     if (v == 'User ID')    uidIdx  = i;
     if (v == '라이더명')   nameIdx = i;
     if (v == '배달처리비') feeIdx  = i;
     if (v == '운행일')     dateIdx = i;
+    if (v == '미션금액')   missionIdx = i;
+    if (v == '시간제보험') insIdx    = i;
   }
   if (uidIdx == -1 || feeIdx == -1) return {};
   final Map<String, Map<String, dynamic>> result = {};
@@ -2332,19 +2340,32 @@ Map<String, Map<String, dynamic>> _parseExcelBytes(List<int> bytes) {
     final row = sheet.rows[r]; if (row.isEmpty) continue;
     final userId = row[uidIdx]?.value?.toString().trim() ?? ''; if (userId.isEmpty) continue;
     final name   = nameIdx != -1 ? (row[nameIdx]?.value?.toString().trim() ?? '') : '';
-    final feeRaw = row[feeIdx]?.value;
-    final fee    = feeRaw == null ? 0.0 : (feeRaw is num) ? (feeRaw as num).toDouble() : double.tryParse(feeRaw.toString()) ?? 0.0;
+    final fee    = _cellNum(row[feeIdx]?.value);
     if (detectedDate.isEmpty && dateIdx != -1) {
       final dr = row[dateIdx]?.value?.toString().trim() ?? '';
       if (dr.length == 8) detectedDate = '${dr.substring(0,4)}-${dr.substring(4,6)}-${dr.substring(6,8)}';
     }
-    result.putIfAbsent(userId, () => {'reportId': userId, 'name': name, 'deliveryFee': 0.0, 'deliveryCount': 0, 'date': detectedDate});
+    result.putIfAbsent(userId, () => {'reportId': userId, 'name': name, 'deliveryFee': 0.0, 'deliveryCount': 0, 'missionFee': 0.0, 'insuranceFee': 0.0, 'date': detectedDate});
     result[userId]!['deliveryFee']   = (result[userId]!['deliveryFee']   as double) + fee;
     result[userId]!['deliveryCount'] = (result[userId]!['deliveryCount'] as int)    + 1;
+    // 미션금액·시간제보험은 라이더당 하루 값 → 합산 X, 값이 있으면 세팅
+    if (missionIdx != -1) {
+      final mv = _cellNum(row[missionIdx]?.value);
+      if (mv > 0) result[userId]!['missionFee'] = mv;
+    }
+    if (insIdx != -1) {
+      final iv = _cellNum(row[insIdx]?.value);
+      if (iv > 0) result[userId]!['insuranceFee'] = iv;
+    }
     if (detectedDate.isNotEmpty) result[userId]!['date'] = detectedDate;
   }
   return result;
 }
+
+// 엑셀 셀 값 → double (숫자/문자 모두 대응)
+double _cellNum(dynamic v) => v == null
+    ? 0.0
+    : (v is num) ? v.toDouble() : double.tryParse(v.toString()) ?? 0.0;
 
 // === 누적 지급액 영역 차트 Painter (기사페이지 차트 포팅) =====================
 class _AdminAreaChartPainter extends CustomPainter {
