@@ -30,7 +30,6 @@ const double _rmCardRadius = 14;   // 목록 카드 모서리
 const _rmSearchBg    = _surface;     // 검색창 배경
 const _rmSearchHint  = _text2;     // 검색 힌트 색
 const double _rmSearchFontSize = 13; // 검색 글씨 크기
-const _rmDividerColor = _elevated; // 라이더 행 구분선 색
 const _rmAvatarBg     = _surface; // 아바타 배경
 const _rmAvatarBorder = _elevated;   // 아바타 테두리
 const _rmAvatarText   = _teal;   // 아바타 글씨(이니셜) 색
@@ -211,7 +210,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
               : Expanded(child: ListView.separated(
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                   itemCount: filtered.length,
-                  separatorBuilder: (_, __) => Container(margin: const EdgeInsets.symmetric(horizontal: 14), height: 1, color: _rmDividerColor),
+                  separatorBuilder: (_, __) => const SizedBox.shrink(),
                   itemBuilder: (_, i) => _riderCard(filtered[i]))),
         ]),
       );
