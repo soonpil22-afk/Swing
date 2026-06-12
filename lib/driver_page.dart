@@ -387,10 +387,10 @@ class _DriverPageState extends State<DriverPage> {
   bool _withdrawRequested = false;
   List<Map<String, dynamic>> _unpaidItems = [];
   double _unpaidTotal    = 0;
-  bool   _hasDailyLease  = false;
-  double _leaseDailyAmt  = 0;
-  bool   _hasDailyEtc    = false;
-  double _etcDailyAmt    = 0;
+  double _leaseDailyAmt  = 0;        // 일일 리스비 (0이면 미적용)
+  DateTime? _leaseStart, _leaseLast; // 리스비 적용기간 (리포트 날짜 기준)
+  double _etcDailyAmt    = 0;        // 일일 기타
+  DateTime? _etcStart, _etcLast;     // 기타 적용기간
   DateTime? _unpaidUpdatedAt; // 미출금(unpaid_balance) 마지막 업로드 시각
 
   // ── 실시간 구독 (관리자 입금완료/미출금 업로드 → 차트·금액 즉시 반영) ──
@@ -512,37 +512,21 @@ class _DriverPageState extends State<DriverPage> {
           .collection('users').doc(user.uid).get();
       _riderName = userDoc.data()?['name'] ?? _riderName;
 
-      final leaseType = userDoc.data()?['leaseType']      as String? ?? '';
-      final leaseAmt  = userDoc.data()?['leaseAmount']    as int?    ?? 0;
-      final startStr  = userDoc.data()?['leaseStartDate'] as String? ?? '';
-      final lastStr   = userDoc.data()?['leaseLastDate']  as String? ?? '';
+      // 리스비·기타 공제 = 일일액 + 적용기간(리포트 날짜로 가름). "오늘" 게이트 제거.
+      final leaseType = userDoc.data()?['leaseType']   as String? ?? '';
+      final leaseAmt  = userDoc.data()?['leaseAmount'] as int?    ?? 0;
       if (leaseType == 'daily' && leaseAmt > 0) {
-        final now   = DateTime.now();
-        final start = DateTime.tryParse(startStr);
-        final last  = DateTime.tryParse(lastStr);
-        if (start != null && last != null &&
-            !now.isBefore(DateTime(start.year, start.month, start.day)) &&
-            !now.isAfter(DateTime(last.year, last.month, last.day))) {
-          _hasDailyLease = true;
-          _leaseDailyAmt = leaseAmt.toDouble();
-        }
+        _leaseDailyAmt = leaseAmt.toDouble();
+        _leaseStart = DateTime.tryParse(userDoc.data()?['leaseStartDate'] as String? ?? '');
+        _leaseLast  = DateTime.tryParse(userDoc.data()?['leaseLastDate']  as String? ?? '');
       }
 
-      // 기타(etc) 공제 — 리스비와 동일 구조 (오늘이 적용기간 안이면 활성)
-      final etcType    = userDoc.data()?['etcType']      as String? ?? '';
-      final etcAmt     = userDoc.data()?['etcAmount']    as int?    ?? 0;
-      final etcStartSt = userDoc.data()?['etcStartDate'] as String? ?? '';
-      final etcLastSt  = userDoc.data()?['etcLastDate']  as String? ?? '';
+      final etcType = userDoc.data()?['etcType']   as String? ?? '';
+      final etcAmt  = userDoc.data()?['etcAmount'] as int?    ?? 0;
       if (etcType == 'daily' && etcAmt > 0) {
-        final now   = DateTime.now();
-        final start = DateTime.tryParse(etcStartSt);
-        final last  = DateTime.tryParse(etcLastSt);
-        if (start != null && last != null &&
-            !now.isBefore(DateTime(start.year, start.month, start.day)) &&
-            !now.isAfter(DateTime(last.year, last.month, last.day))) {
-          _hasDailyEtc = true;
-          _etcDailyAmt = etcAmt.toDouble();
-        }
+        _etcDailyAmt = etcAmt.toDouble();
+        _etcStart = DateTime.tryParse(userDoc.data()?['etcStartDate'] as String? ?? '');
+        _etcLast  = DateTime.tryParse(userDoc.data()?['etcLastDate']  as String? ?? '');
       }
 
       final pending = await FirebaseFirestore.instance
@@ -908,13 +892,16 @@ class _DriverPageState extends State<DriverPage> {
   // 미출금 항목 하루치 소계 (정산내역 카드 맨 아래 "소계"와 동일한 계산식)
   //  소계 = 배달수수료 + 지원금 − 세금 − (출금수수료+협력사수수료) − 시간제보험 − 리스비(일)
   // ── 4. 차트 카드 ────────────────────────────────────────────────────
+  // 미출금 항목들 중 적용기간(리포트 날짜) 안인 날만 일일 공제 합산
+  double _sumDeduct(DateTime? start, DateTime? last, double dailyAmt) =>
+      _unpaidItems.fold(0.0,
+          (acc, it) => acc + dayDeduction(it['date'] as String?, start, last, dailyAmt));
+
   Widget _chartCard(_PeriodData d) {
     final accent = _periodColor[_period];
     final up = d.delta >= 0;
-    final leaseDeduct =
-        (_hasDailyLease ? _unpaidItems.length : 0) * _leaseDailyAmt;
-    final etcDeduct =
-        (_hasDailyEtc ? _unpaidItems.length : 0) * _etcDailyAmt;
+    final leaseDeduct = _sumDeduct(_leaseStart, _leaseLast, _leaseDailyAmt);
+    final etcDeduct   = _sumDeduct(_etcStart, _etcLast, _etcDailyAmt);
     // 출금 가능액 = 미출금(누적) − 리스비 − 기타. 정산내역 '미출금'과 동일
     final withdrawable = _unpaidTotal - leaseDeduct - etcDeduct;
 
@@ -1125,10 +1112,8 @@ class _DriverPageState extends State<DriverPage> {
       return;
     }
 
-    final leaseDays   = _hasDailyLease ? _unpaidItems.length : 0;
-    final leaseDeduct = leaseDays * _leaseDailyAmt;
-    final etcDays     = _hasDailyEtc ? _unpaidItems.length : 0;
-    final etcDeduct   = etcDays * _etcDailyAmt;
+    final leaseDeduct = _sumDeduct(_leaseStart, _leaseLast, _leaseDailyAmt);
+    final etcDeduct   = _sumDeduct(_etcStart, _etcLast, _etcDailyAmt);
     final finalTotal  = _unpaidTotal - leaseDeduct - etcDeduct;
     if (finalTotal < 10000) {
       _showInfoDialog(context, "최종 출금금액이 너무 적습니다.");

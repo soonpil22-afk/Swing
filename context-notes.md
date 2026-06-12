@@ -57,7 +57,15 @@
   앱이 살아있어 위치 추적 포그라운드 서비스가 유지됨(엔진 종료 시 추적 끊기던 문제 해결).
   네이티브: android MainActivity.kt에 MethodChannel 'swingtiger/app' moveToBack 추가.
 
-## 한계 (사용자에게 고지함)
+## 2026-06-12 리스비/기타 공제 = 리포트 날짜 기준 (익일 출금 정합성)
+- 기존: "오늘(now) 활성이면 미출금 전체 × 일일액"(blanket) → 익일 시스템에서 시작일 전 날짜에도 소급 적용되는 버그.
+- 변경: 각 리포트 item['date']가 적용기간[start,last] 안일 때만 그 날치 공제. 리스비·기타 동일.
+- driver_common.dart `dayDeduction(reportDate, start, last, dailyAmt)` 공통 함수.
+- driver_page: _leaseStart/_leaseLast/_etcStart/_etcLast 저장(now 게이트 제거), _sumDeduct로 합산.
+  _chartCard·_confirmWithdraw 모두 per-date 합.
+- driver_history_page: 미출금 카드 tLease/tEtc per-date 합, 카드에 적용기간(_leaseStart 등) 실어서
+  _settlementCard가 날짜별로 표시(입금완료 과거 카드는 정보 없어 기존 균등분배 폴백).
+- 결과 금액은 관리자가 설정한 start/last 날짜에 따라 달라짐(시작일 이전 리포트엔 공제 0).
 - geolocator + 안드 포그라운드 서비스: 백그라운드·앱 스와이프 제거까지는 기록 지속.
   단, OS 강제종료 시 멈출 수 있음. 완전 생존은 유료 flutter_background_geolocation 필요.
 - iOS: 백그라운드 모드 location + allowBackgroundLocationUpdates로 suspend 중 지속.

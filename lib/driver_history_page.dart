@@ -183,10 +183,10 @@ class _HistoryPageState extends State<HistoryPage>
   List<Map<String, dynamic>> _pendingItems = [];
   double _pendingTotal     = 0;
   bool   _pendingRequested = false;
-  bool   _pHasDailyLease   = false;
   double _pLeaseDailyAmt   = 0;
-  bool   _pHasDailyEtc     = false;
+  DateTime? _pLeaseStart, _pLeaseLast;
   double _pEtcDailyAmt     = 0;
+  DateTime? _pEtcStart, _pEtcLast;
   bool   _pendingLoaded    = false;
 
   // 출금 내역 탭
@@ -244,37 +244,21 @@ class _HistoryPageState extends State<HistoryPage>
     try {
       final userDoc = await FirebaseFirestore.instance
           .collection('users').doc(user.uid).get();
-      final leaseType = userDoc.data()?['leaseType']      as String? ?? '';
-      final leaseAmt  = userDoc.data()?['leaseAmount']    as int?    ?? 0;
-      final startStr  = userDoc.data()?['leaseStartDate'] as String? ?? '';
-      final lastStr   = userDoc.data()?['leaseLastDate']  as String? ?? '';
+      // 리스비·기타 공제 = 일일액 + 적용기간(리포트 날짜로 가름). "오늘" 게이트 제거.
+      final leaseType = userDoc.data()?['leaseType']   as String? ?? '';
+      final leaseAmt  = userDoc.data()?['leaseAmount'] as int?    ?? 0;
       if (leaseType == 'daily' && leaseAmt > 0) {
-        final now   = DateTime.now();
-        final start = DateTime.tryParse(startStr);
-        final last  = DateTime.tryParse(lastStr);
-        if (start != null && last != null &&
-            !now.isBefore(DateTime(start.year, start.month, start.day)) &&
-            !now.isAfter(DateTime(last.year, last.month, last.day))) {
-          _pHasDailyLease = true;
-          _pLeaseDailyAmt = leaseAmt.toDouble();
-        }
+        _pLeaseDailyAmt = leaseAmt.toDouble();
+        _pLeaseStart = DateTime.tryParse(userDoc.data()?['leaseStartDate'] as String? ?? '');
+        _pLeaseLast  = DateTime.tryParse(userDoc.data()?['leaseLastDate']  as String? ?? '');
       }
 
-      // 기타(etc) 공제 — 리스비와 동일 구조 (오늘이 적용기간 안이면 활성)
-      final etcType    = userDoc.data()?['etcType']      as String? ?? '';
-      final etcAmt     = userDoc.data()?['etcAmount']    as int?    ?? 0;
-      final etcStartSt = userDoc.data()?['etcStartDate'] as String? ?? '';
-      final etcLastSt  = userDoc.data()?['etcLastDate']  as String? ?? '';
+      final etcType = userDoc.data()?['etcType']   as String? ?? '';
+      final etcAmt  = userDoc.data()?['etcAmount'] as int?    ?? 0;
       if (etcType == 'daily' && etcAmt > 0) {
-        final now   = DateTime.now();
-        final start = DateTime.tryParse(etcStartSt);
-        final last  = DateTime.tryParse(etcLastSt);
-        if (start != null && last != null &&
-            !now.isBefore(DateTime(start.year, start.month, start.day)) &&
-            !now.isAfter(DateTime(last.year, last.month, last.day))) {
-          _pHasDailyEtc = true;
-          _pEtcDailyAmt = etcAmt.toDouble();
-        }
+        _pEtcDailyAmt = etcAmt.toDouble();
+        _pEtcStart = DateTime.tryParse(userDoc.data()?['etcStartDate'] as String? ?? '');
+        _pEtcLast  = DateTime.tryParse(userDoc.data()?['etcLastDate']  as String? ?? '');
       }
 
       final pending = await FirebaseFirestore.instance
@@ -588,10 +572,11 @@ class _HistoryPageState extends State<HistoryPage>
 
     final cards = <Map<String, dynamic>>[];
     if (hasPending) {
-      final leaseDays = _pHasDailyLease ? _pendingItems.length : 0;
-      final tLease = leaseDays * _pLeaseDailyAmt;
-      final etcDays = _pHasDailyEtc ? _pendingItems.length : 0;
-      final tEtc = etcDays * _pEtcDailyAmt;
+      // 리포트 날짜로 가른 일할 공제 합산
+      double sumD(DateTime? s, DateTime? l, double amt) => _pendingItems.fold(
+          0.0, (acc, it) => acc + dayDeduction(it['date'] as String?, s, l, amt));
+      final tLease = sumD(_pLeaseStart, _pLeaseLast, _pLeaseDailyAmt);
+      final tEtc   = sumD(_pEtcStart, _pEtcLast, _pEtcDailyAmt);
       // 상태 결정: 신청완료 → 입금대기 / 23시 마감 지남 → 미출금 / 그 외 → 신청대기
       final String pendingStatus;
       if (_pendingRequested) {
@@ -607,6 +592,13 @@ class _HistoryPageState extends State<HistoryPage>
         'amount': _pendingTotal - tLease - tEtc,
         'leaseDeduction': tLease,
         'etcDeduction': tEtc,
+        // 날짜별 표시용 — 적용기간/일일액 (있으면 _settlementCard가 리포트 날짜로 가름)
+        '_leaseDaily': _pLeaseDailyAmt,
+        '_leaseStart': _pLeaseStart,
+        '_leaseLast':  _pLeaseLast,
+        '_etcDaily':   _pEtcDailyAmt,
+        '_etcStart':   _pEtcStart,
+        '_etcLast':    _pEtcLast,
         '_status': pendingStatus,
       });
     }
@@ -721,8 +713,18 @@ class _HistoryPageState extends State<HistoryPage>
                 final comm = (item['commissionAmt'] as num?)?.toDouble() ?? 0;
                 final ins = (item['insuranceFee'] as num?)?.toDouble() ?? 0;
                 final fee = wd + comm;
-                final dailyLease = items.isNotEmpty ? leaseDedu / items.length : 0.0;
-                final dailyEtc = items.isNotEmpty ? etcDedu / items.length : 0.0;
+                // 미출금(pending) 카드는 적용기간 정보가 있어 리포트 날짜로 그날치만 표시.
+                // 입금완료(과거) 카드는 정보가 없어 기존처럼 균등 분배로 표시.
+                final leaseDaily = (data['_leaseDaily'] as num?)?.toDouble();
+                final etcDaily = (data['_etcDaily'] as num?)?.toDouble();
+                final dailyLease = leaseDaily != null
+                    ? dayDeduction(item['date'] as String?,
+                        data['_leaseStart'] as DateTime?, data['_leaseLast'] as DateTime?, leaseDaily)
+                    : (items.isNotEmpty ? leaseDedu / items.length : 0.0);
+                final dailyEtc = etcDaily != null
+                    ? dayDeduction(item['date'] as String?,
+                        data['_etcStart'] as DateTime?, data['_etcLast'] as DateTime?, etcDaily)
+                    : (items.isNotEmpty ? etcDedu / items.length : 0.0);
                 final iDedu = ins + dailyLease + dailyEtc;
 
                 final promoK = '${docId}_${i}_promo';
