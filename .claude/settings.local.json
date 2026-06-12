@@ -94,7 +94,12 @@
       "Bash(f=\"/c/Users/Owner/AppData/Local/Pub/Cache/hosted/pub.dev/excel-4.0.6/lib/src/parser/parse.dart\"; echo \"=== 600~640 ===\"; sed -n '600,645p' \"$f\")",
       "Bash(flutter build *)",
       "Bash(flutter clean *)",
-      "Bash(flutter --version)"
+      "Bash(flutter --version)",
+      "Bash(python -c ' *)",
+      "Bash(python add_columns.py)",
+      "Bash(dart run *)",
+      "Bash(find ~/AppData/Local/Pub/Cache/hosted/pub.dev -path \"*excel*/lib/src/parser/parse.dart\" 2>/dev/null | head -1)",
+      "Bash(python patch_rels.py)"
     ]
   }
 }
