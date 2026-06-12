@@ -122,6 +122,10 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
   // 입금완료 처리 중 상태 (컬렉션별)
   final Map<String, bool> _submitting = {};
 
+  // 미납 강조 기준일 = 업로드된 리포트 최신 날짜(메인 카드 배지와 동일 기준).
+  // 출금신청 대기중이면 비움(처리중) → 강조 안 함.
+  String _anchor = '';
+
   // 스트림은 한 번만 생성 (재구독 방지)
   late final Stream<DocumentSnapshot> _userStream;
   late final Stream<QuerySnapshot> _leaseStream;
@@ -137,6 +141,29 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     _etcStream = FirebaseFirestore.instance
         .collection(_kEtc.collection).where('uid', isEqualTo: widget.uid).snapshots();
     _markAsSeen();
+    _loadAnchor();
+  }
+
+  // 미납 강조 기준일 로드 (driver_page와 동일: 대기중이면 빈값, 아니면 미출금 최신 리포트 날짜)
+  Future<void> _loadAnchor() async {
+    try {
+      final pending = await FirebaseFirestore.instance
+          .collection('withdrawal_requests')
+          .where('uid', isEqualTo: widget.uid)
+          .where('status', isEqualTo: '요청대기')
+          .limit(1).get();
+      var anchor = '';
+      if (pending.docs.isEmpty) {
+        final doc = await FirebaseFirestore.instance
+            .collection('unpaid_balance').doc(widget.uid).get();
+        final items = (doc.data()?['items'] as List?) ?? [];
+        for (final it in items) {
+          final d = (it as Map)['date'] as String? ?? '';
+          if (d.compareTo(anchor) > 0) anchor = d;
+        }
+      }
+      if (mounted) setState(() => _anchor = anchor);
+    } catch (_) {}
   }
 
   Future<void> _markAsSeen() async {
@@ -284,10 +311,13 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     final overdue = unpaid.where((d) =>
         ((d.data() as Map)['dueDate'] as String? ?? '').compareTo(today) < 0).toList();
     final riderAlreadyPaid = todayDue.any((d) => (d.data() as Map)['riderPaid'] == true);
-    final hasAlert = unpaid.any((d) {
-      final dd = (d.data() as Map)['dueDate'] as String? ?? '';
-      return dd.isNotEmpty && dd.compareTo(today) <= 0;
-    });
+    // 테두리 강조 = 미납 중 마감일이 "리포트 최신 날짜(anchor)" 이하인 게 있을 때.
+    // (오늘 기준이면 익일 업로드 전 하루 먼저 강조됨 → 리포트 날짜 기준으로 맞춤)
+    final hasAlert = _anchor.isNotEmpty &&
+        unpaid.any((d) {
+          final dd = (d.data() as Map)['dueDate'] as String? ?? '';
+          return dd.isNotEmpty && dd.compareTo(_anchor) <= 0;
+        });
 
     return [
       _summaryCard(k, userData, paid.length, docs.length,
