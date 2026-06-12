@@ -18,7 +18,6 @@ const _teal      = kTeal;
 const _amber     = kAmber;
 const _pink      = kPink;
 const _purple    = kPurple;
-const _red       = kRed;
 const Color _bgScaffold = _appBg;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 const List<BoxShadow> _panelShadow = kPanelShadow;
@@ -47,7 +46,6 @@ const Color  _lpPaidBorderColor = _teal;   // 테두리 색
 const Color  _lpPaidTextColor   = _text2;  // 글씨 색
 const double _lpPaidFontSize    = 12;      // 글씨 크기
 const double _lpPaidRadius      = 22;      // 박스 모서리
-const Color  _lpOverBoxColor    = _red;    // 박스 강조색
 const double _lpOverBoxBgAlpha  = 0.06;    // 배경 투명도
 const double _lpOverBoxRadius   = 12;      // 박스 모서리
 const double _lpOverBoxBorderWidth = 1;  // 테두리 두께
@@ -337,12 +335,11 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
       );
     }
 
+    // 정산내역 탭과 동일: 트랙 _surface(테두리 없음) + 선택 _chip+_elevated
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-          color: _surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: _elevated, width: 1)),
+          color: _surface, borderRadius: BorderRadius.circular(10)),
       child: Row(children: [
         seg(0, '리스비'),
         const SizedBox(width: 3),
@@ -361,29 +358,65 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     final isDaily = (userData['${k.prefix}Type'] as String?) == 'daily';
     final paid = docs.where((d) => (d.data() as Map)['isPaid'] == true).toList();
     final unpaid = docs.where((d) => (d.data() as Map)['isPaid'] != true).toList();
-    // 매일 = 정산(리포트)에 묶여 자동처리 → 리포트 최신 날짜(anchor) 기준.
-    // 주1회/매월 = 기사·관리자 수동처리 → 실제 오늘 날짜 기준.
-    final base = isDaily ? _anchor : DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final due = base.isEmpty
-        ? <QueryDocumentSnapshot>[]
-        : unpaid.where((d) {
-            final dd = (d.data() as Map)['dueDate'] as String? ?? '';
-            return dd.isNotEmpty && dd.compareTo(base) <= 0;
-          }).toList();
-    final riderAlreadyPaid = due.any((d) => (d.data() as Map)['riderPaid'] == true);
+    String dd(QueryDocumentSnapshot d) => (d.data() as Map)['dueDate'] as String? ?? '';
+
+    int overdueCount = 0, todayCount = 0;
+    bool hasAlert = false, riderAlreadyPaid = false;
+
+    if (isDaily) {
+      // 매일 = 정산(리포트)에 묶여 자동처리 → 리포트 최신 날짜(anchor) 기준 (테두리 강조만)
+      hasAlert = _anchor.isNotEmpty &&
+          unpaid.any((d) => dd(d).isNotEmpty && dd(d).compareTo(_anchor) <= 0);
+    } else {
+      // 주1회/매월 = 기사·관리자 수동처리 → 실제 오늘 날짜 기준
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final overdue = unpaid.where((d) => dd(d).isNotEmpty && dd(d).compareTo(today) < 0).toList();
+      final todayDue = unpaid.where((d) => dd(d) == today).toList();
+      overdueCount = overdue.length;
+      todayCount = todayDue.length;
+      hasAlert = overdueCount > 0 || todayCount > 0;
+      riderAlreadyPaid =
+          [...overdue, ...todayDue].any((d) => (d.data() as Map)['riderPaid'] == true);
+    }
 
     return [
       _summaryCard(k, userData, paid.length, docs.length,
-          hasAlert: due.isNotEmpty,
-          dueCount: due.length,
+          hasAlert: hasAlert,
+          overdueCount: overdueCount,
+          todayCount: todayCount,
           riderAlreadyPaid: riderAlreadyPaid),
     ];
   }
 
+  // 미납부(핑크)/오늘 납부일(민트) 안내 박스 — _lpOver* 사이즈 재사용
+  Widget _noticeBox(Color c, IconData icon, String title, String sub) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+            color: c.withValues(alpha: _lpOverBoxBgAlpha),
+            borderRadius: BorderRadius.circular(_lpOverBoxRadius),
+            border: Border.all(color: c, width: _lpOverBoxBorderWidth)),
+        child: Row(children: [
+          Icon(icon, color: c, size: _lpOverIconSize),
+          const SizedBox(width: 10),
+          Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title,
+                style: TextStyle(
+                    color: c,
+                    fontSize: _lpOverTitleFontSize,
+                    fontWeight: FontWeight.w700)),
+            Text(sub,
+                style: const TextStyle(
+                    color: _lpOverSubColor, fontSize: _lpOverSubFontSize)),
+          ])),
+        ]),
+      );
+
   // ── 전체현황 카드 (리스비/기타 공용) ──
   Widget _summaryCard(_DKind k, Map<String, dynamic> u, int paidCount, int totalCount,
       {bool hasAlert = false,
-      int dueCount = 0,
+      int overdueCount = 0,
+      int todayCount = 0,
       bool riderAlreadyPaid = false}) {
     final leaseType = u['${k.prefix}Type'] as String? ?? '';
     final leaseAmt = u['${k.prefix}Amount'] as int? ?? 0;
@@ -497,36 +530,19 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                     color: _lsRemainColor, fontSize: _lsRemainFontSize)),
           ]),
         ],
-        // 주1회/매월 미납(도래): 미납부 안내 + 입금완료 버튼 / 관리자 확인 대기중 (카드 안에 표시)
-        if (!isDaily && dueCount > 0) ...[
+        // 주1회/매월: 미납부(지난 회차, 핑크) / 오늘 납부일(민트) + 입금완료 버튼 (카드 안에 표시)
+        if (!isDaily && (overdueCount > 0 || todayCount > 0)) ...[
           const SizedBox(height: 14),
           if (!riderAlreadyPaid) ...[
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                  color: _lpOverBoxColor.withValues(alpha: _lpOverBoxBgAlpha),
-                  borderRadius: BorderRadius.circular(_lpOverBoxRadius),
-                  border: Border.all(
-                      color: _lpOverBoxColor,
-                      width: _lpOverBoxBorderWidth)),
-              child: Row(children: [
-                const Icon(Icons.warning_rounded,
-                    color: _lpOverBoxColor, size: _lpOverIconSize),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text("${k.title} 미납부 $dueCount건입니다!",
-                      style: const TextStyle(
-                          color: _lpOverBoxColor,
-                          fontSize: _lpOverTitleFontSize,
-                          fontWeight: FontWeight.w700)),
-                  Text(
-                      "${NumberFormat('#,###').format(leaseAmt * dueCount)}원 납부 부탁드립니다.",
-                      style: const TextStyle(
-                          color: _lpOverSubColor, fontSize: _lpOverSubFontSize)),
-                ])),
-              ]),
-            ),
+            if (overdueCount > 0)
+              _noticeBox(_pink, Icons.warning_rounded,
+                  "${k.title} 미납부 $overdueCount건입니다!",
+                  "${NumberFormat('#,###').format(leaseAmt * overdueCount)}원 납부 부탁드립니다."),
+            if (overdueCount > 0 && todayCount > 0) const SizedBox(height: 8),
+            if (todayCount > 0)
+              _noticeBox(_teal, Icons.notifications_active_rounded,
+                  "오늘 ${k.title} 납부일입니다!",
+                  "${NumberFormat('#,###').format(leaseAmt * todayCount)}원 납부 부탁드립니다."),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
