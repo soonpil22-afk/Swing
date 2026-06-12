@@ -1476,16 +1476,21 @@ class _DriverPageState extends State<DriverPage> {
       );
 
   // ── 리스비 메뉴 카드 (리스비+기타 현황 페이지로 이동, 배지는 각각 표시) ──
-  // 마감일이 기준일(anchor) 이하인 미납분이 있으면 true
-  bool _anyDue(QuerySnapshot? snap, String anchor) =>
-      anchor.isNotEmpty &&
-      (snap?.docs.any((dDoc) {
-            final dd = (dDoc.data() as Map)['dueDate'] as String? ?? '';
-            return dd.isNotEmpty && dd.compareTo(anchor) <= 0;
-          }) ??
-          false);
+  // 회차별 판정: 매일=리포트 최신 날짜(anchor) / 주1회·매월=실제 오늘 날짜 (리스비 페이지와 동일)
+  bool _anyDue(QuerySnapshot? snap, String typeField) {
+    final anchor = _reportAnchor();
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    return snap?.docs.any((dDoc) {
+          final m = dDoc.data() as Map;
+          final dd = m['dueDate'] as String? ?? '';
+          if (dd.isEmpty) return false;
+          final base = (m[typeField] as String?) == 'daily' ? anchor : today;
+          return base.isNotEmpty && dd.compareTo(base) <= 0;
+        }) ??
+        false;
+  }
 
-  // 배지 기준일 = 업로드된 리포트 중 최신 날짜(미출금 항목 기준). 계산식과 동일 기준.
+  // 매일 타입 배지 기준일 = 업로드된 리포트 중 최신 날짜(미출금 항목 기준).
   // (오늘 기준이면 익일 업로드 전에 하루 먼저 떠서, 리포트 날짜 기준으로 맞춤)
   String _reportAnchor() => _unpaidItems.isEmpty
       ? ''
@@ -1528,9 +1533,8 @@ class _DriverPageState extends State<DriverPage> {
               .where('isPaid', isEqualTo: false)
               .snapshots(),
           builder: (_, etcSnap) {
-            final anchor = _reportAnchor();
-            final leaseDue = _anyDue(leaseSnap.data, anchor);
-            final etcDue   = _anyDue(etcSnap.data, anchor);
+            final leaseDue = _anyDue(leaseSnap.data, 'leaseType');
+            final etcDue   = _anyDue(etcSnap.data, 'etcType');
             return GestureDetector(
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => DriverLeasePage(uid: uid))),
