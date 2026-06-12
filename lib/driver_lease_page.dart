@@ -115,8 +115,10 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
   final Map<String, bool> _submitting = {};
 
   // 미납 강조 기준일 = 업로드된 리포트 최신 날짜(메인 카드 배지와 동일 기준).
-  // 출금신청 대기중이면 비움(처리중) → 강조 안 함.
+  // 출금신청 대기중이면 비움(처리중) → 강조 안 함. (매일 타입에만 사용)
   String _anchor = '';
+
+  int _tabIdx = 0; // 0=리스비, 1=기타
 
   // 스트림은 한 번만 생성 (재구독 방지)
   late final Stream<DocumentSnapshot> _userStream;
@@ -186,10 +188,11 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
           .where('uid', isEqualTo: widget.uid)
           .where('isPaid', isEqualTo: false)
           .get();
-      // 마감일이 리포트 최신 날짜(anchor) 이하인 미납 회차를 일괄 입금신고
+      // 주1회/매월 수동 입금신고 = 오늘(실제 날짜) 이하 마감 미납 회차 일괄 처리
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final due = snap.docs.where((d) {
         final dd = (d.data() as Map)['dueDate'] as String? ?? '';
-        return _anchor.isNotEmpty && dd.isNotEmpty && dd.compareTo(_anchor) <= 0;
+        return dd.isNotEmpty && dd.compareTo(today) <= 0;
       }).toList();
       if (due.isEmpty) {
         if (mounted) showInfoDialog(context, "납부할 회차를 찾을 수 없습니다.");
@@ -261,13 +264,10 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                 }
                 final leaseDocs = leaseSnap.data?.docs ?? [];
                 final etcDocs = etcSnap.data?.docs ?? [];
+                final hasLease = userData != null && leaseDocs.isNotEmpty;
+                final hasEtc   = userData != null && etcDocs.isNotEmpty;
 
-                final sections = <Widget>[
-                  ..._kindSection(_kLease, leaseDocs, userData),
-                  ..._kindSection(_kEtc, etcDocs, userData),
-                ];
-
-                if (sections.isEmpty) {
+                if (!hasLease && !hasEtc) {
                   return const Center(
                       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Icon(Icons.moped, color: _lpEmptyIconColor, size: _lpEmptyIconSize),
@@ -283,15 +283,71 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
                   ]));
                 }
 
-                return ListView(
-                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-                  children: sections,
-                );
+                var tab = _tabIdx;
+                if (tab == 0 && !hasLease) tab = 1;
+                if (tab == 1 && !hasEtc) tab = 0;
+                final section = tab == 0
+                    ? _kindSection(_kLease, leaseDocs, userData)
+                    : _kindSection(_kEtc, etcDocs, userData);
+
+                return Column(children: [
+                  if (hasLease && hasEtc)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+                      child: _kindTab(tab),
+                    ),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                      children: section,
+                    ),
+                  ),
+                ]);
               },
             );
           },
         );
       },
+    );
+  }
+
+  // 리스비 | 기타 탭 토글 (규칙 D2 탭 스타일)
+  Widget _kindTab(int current) {
+    Widget seg(int idx, String label) {
+      final on = current == idx;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => setState(() => _tabIdx = idx),
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: on ? _chip : Colors.transparent,
+              borderRadius: BorderRadius.circular(7),
+              border: Border.all(color: on ? _elevated : Colors.transparent),
+            ),
+            child: Center(
+                child: Text(label,
+                    style: TextStyle(
+                        color: on ? _teal : _text2,
+                        fontSize: 14,
+                        fontWeight: on ? FontWeight.w700 : FontWeight.w400))),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+          color: _surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _elevated, width: 1)),
+      child: Row(children: [
+        seg(0, '리스비'),
+        const SizedBox(width: 3),
+        seg(1, '기타'),
+      ]),
     );
   }
 
@@ -302,14 +358,17 @@ class _DriverLeasePageState extends State<DriverLeasePage> {
     final docs = [...rawDocs]
       ..sort((a, b) => ((a.data() as Map)['dueDate'] as String? ?? '')
           .compareTo((b.data() as Map)['dueDate'] as String? ?? ''));
+    final isDaily = (userData['${k.prefix}Type'] as String?) == 'daily';
     final paid = docs.where((d) => (d.data() as Map)['isPaid'] == true).toList();
     final unpaid = docs.where((d) => (d.data() as Map)['isPaid'] != true).toList();
-    // 미납 도래 = 마감일이 "리포트 최신 날짜(anchor)" 이하인 미납 회차. (오늘 기준 → 리포트 날짜 기준)
-    final due = _anchor.isEmpty
+    // 매일 = 정산(리포트)에 묶여 자동처리 → 리포트 최신 날짜(anchor) 기준.
+    // 주1회/매월 = 기사·관리자 수동처리 → 실제 오늘 날짜 기준.
+    final base = isDaily ? _anchor : DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final due = base.isEmpty
         ? <QueryDocumentSnapshot>[]
         : unpaid.where((d) {
             final dd = (d.data() as Map)['dueDate'] as String? ?? '';
-            return dd.isNotEmpty && dd.compareTo(_anchor) <= 0;
+            return dd.isNotEmpty && dd.compareTo(base) <= 0;
           }).toList();
     final riderAlreadyPaid = due.any((d) => (d.data() as Map)['riderPaid'] == true);
 
