@@ -36,8 +36,6 @@ const Color  _lpEmptyIconColor  = _text2;  // 아이콘 색
 const double _lpEmptyIconSize   = 48;      // 아이콘 크기
 const Color  _lpEmptyTitleColor = _text2;  // 제목 색
 const double _lpEmptyTitleFontSize = 14;   // 제목 크기
-const Color  _lpEmptySubColor   = _text2;  // 부제 색
-const double _lpEmptySubFontSize = 12;     // 부제 크기
 const double _lpPayBtnHeight    = 46;      // 버튼 높이
 const double _lpPayBtnRadius    = 22;      // 버튼 모서리
 const double _lpPayBtnFontSize  = 14;      // 버튼 글씨 크기
@@ -271,22 +269,6 @@ class _DriverLeasePageState extends State<DriverLeasePage>
                 final etcDocs = etcSnap.data?.docs ?? [];
                 final hasLease = userData != null && leaseDocs.isNotEmpty;
                 final hasEtc   = userData != null && etcDocs.isNotEmpty;
-
-                if (!hasLease && !hasEtc) {
-                  return const Center(
-                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(Icons.moped, color: _lpEmptyIconColor, size: _lpEmptyIconSize),
-                    SizedBox(height: 12),
-                    Text("공제 납부 내역이 없습니다.",
-                        style: TextStyle(
-                            color: _lpEmptyTitleColor,
-                            fontSize: _lpEmptyTitleFontSize,
-                            fontWeight: FontWeight.w600)),
-                    SizedBox(height: 6),
-                    Text("관리자에게 문의해 주세요.",
-                        style: TextStyle(color: _lpEmptySubColor, fontSize: _lpEmptySubFontSize)),
-                  ]));
-                }
 
                 ListView kindList(_DKind k, List<QueryDocumentSnapshot> docs) => ListView(
                       padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
