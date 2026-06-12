@@ -41,7 +41,6 @@ const double _lpPayBtnRadius    = 22;      // 버튼 모서리
 const double _lpPayBtnFontSize  = 14;      // 버튼 글씨 크기
 const Color  _lpPaidBoxBg       = _chip;   // 박스 배경색
 const Color  _lpPaidBorderColor = _teal;   // 테두리 색
-const Color  _lpPaidTextColor   = _text2;  // 글씨 색
 const double _lpPaidFontSize    = 12;      // 글씨 크기
 const double _lpPaidRadius      = 22;      // 박스 모서리
 const double _lpOverBoxBgAlpha  = 0.06;    // 배경 투명도
@@ -49,7 +48,7 @@ const double _lpOverBoxRadius   = 12;      // 박스 모서리
 const double _lpOverBoxBorderWidth = 1;  // 테두리 두께
 const double _lpOverIconSize    = 22;      // 아이콘 크기
 const double _lpOverTitleFontSize = 13;    // 제목 글씨 크기
-const Color  _lpOverSubColor    = _text2;  // 부제 글씨 색
+const Color  _lpOverSubColor    = _text;  // 부제 글씨 색
 const double _lpOverSubFontSize = 12;      // 부제 글씨 크기
 
 const Color  _lsCardBg          = _surface;   // 카드 배경색
