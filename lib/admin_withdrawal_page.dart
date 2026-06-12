@@ -423,7 +423,8 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                 const Text("소계", style: TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
-                                Text("${_fmtC(iFinal - iDedu)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w700)),
+                                // finalAmount에 시간제보험이 이미 빠져 있으므로 리스비·기타만 추가 차감(보험 이중차감 방지)
+                                Text("${_fmtC(iFinal - iLease - iEtc)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w700)),
                               ]),
                             ),
                           ]),
