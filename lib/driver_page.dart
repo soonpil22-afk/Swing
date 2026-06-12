@@ -386,6 +386,7 @@ class _DriverPageState extends State<DriverPage> {
   // ── 출금신청 상태 ──
   bool _adminUploaded    = false;
   bool _withdrawRequested = false;
+  bool _withdrawSubmitting = false; // 출금신청 저장 중 잠금 (중복 신청 방지)
   List<Map<String, dynamic>> _unpaidItems = [];
   double _unpaidTotal    = 0;
   double _leaseDailyAmt  = 0;        // 일일 리스비 (0이면 미적용)
@@ -1107,6 +1108,7 @@ class _DriverPageState extends State<DriverPage> {
       _unpaidItems.fold(0.0, (s, e) => s + ((e[f] as num?)?.toDouble() ?? 0));
 
   Future<void> _confirmWithdraw() async {
+    if (_withdrawSubmitting) return; // 이미 저장 중이면 중복 실행 차단
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     if (_unpaidItems.isEmpty) {
@@ -1157,6 +1159,7 @@ class _DriverPageState extends State<DriverPage> {
         "최종배달수수료: ${_fmt(finalTotal)}원\n"
         "최종출금금액: ${_fmt(finalTotal)}원";
 
+    _withdrawSubmitting = true; // 저장 시작 → 잠금
     try {
       await FirebaseFirestore.instance.collection('withdrawal_requests').add({
         'uid':            user.uid,
@@ -1176,6 +1179,8 @@ class _DriverPageState extends State<DriverPage> {
       if (mounted) setState(() => _withdrawRequested = true);
     } catch (_) {
       if (mounted) _showInfoDialog(context, "출금 신청 실패. 다시 시도해 주세요.");
+    } finally {
+      _withdrawSubmitting = false; // 성공·실패 무관하게 잠금 해제
     }
   }
 
