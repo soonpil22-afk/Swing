@@ -917,9 +917,13 @@ class _DriverPageState extends State<DriverPage> {
     // 출금신청 마감: 업로드된 날의 23:00이 지나면 비활성 (밤새·새벽 포함, 누적금액은 계속 표시)
     // 다음 리포트가 올라오면 updatedAt이 새 날짜로 바뀌어 그날 23:00까지 다시 활성
     final upAt = _unpaidUpdatedAt;
-    final canWithdraw = upAt == null
+    final timeOpen = upAt == null
         ? DateTime.now().hour < 23
         : DateTime.now().isBefore(DateTime(upAt.year, upAt.month, upAt.day, 23));
+    // 출금 가능액이 1만원 미만(마이너스 포함)이면 출금 불가 — _confirmWithdraw의 최소금액과 동일
+    final belowMin = withdrawable < 10000;
+    final canWithdraw = timeOpen && !belowMin;
+    final disabledLabel = belowMin ? '출금 불가' : '23시 마감';
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -990,7 +994,7 @@ class _DriverPageState extends State<DriverPage> {
           const SizedBox(height: 14),
           Container(height: 1, color: _elevated),
           const SizedBox(height: 12),
-          _WithdrawFrame(amount: withdrawable.round(), onWithdraw: _onWithdrawTap, enabled: canWithdraw),
+          _WithdrawFrame(amount: withdrawable.round(), onWithdraw: _onWithdrawTap, enabled: canWithdraw, disabledLabel: disabledLabel),
         ],
       ]),
     );
@@ -1925,8 +1929,9 @@ class _DriverPageState extends State<DriverPage> {
 class _WithdrawFrame extends StatefulWidget {
   final int amount;
   final VoidCallback onWithdraw;
-  final bool enabled; // 23시 이후 false → 버튼 비활성(금액은 계속 표시)
-  const _WithdrawFrame({required this.amount, required this.onWithdraw, this.enabled = true});
+  final bool enabled; // false → 버튼 비활성(금액은 계속 표시)
+  final String disabledLabel; // 비활성 사유 글자 (23시 마감 / 출금 불가)
+  const _WithdrawFrame({required this.amount, required this.onWithdraw, this.enabled = true, this.disabledLabel = '23시 마감'});
   @override
   State<_WithdrawFrame> createState() => _WithdrawFrameState();
 }
@@ -2049,7 +2054,7 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
               ),
             )
           else
-            // 비활성: 23시 마감 (회색, 누를 수 없음)
+            // 비활성: 23시 마감 / 출금 불가 (회색, 누를 수 없음)
             Container(
               padding: const EdgeInsets.symmetric(
                   horizontal: _wfBtnPadH, vertical: _wfBtnPadV),
@@ -2058,8 +2063,8 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
                 color: _chip,
                 border: Border.all(color: _elevated),
               ),
-              child: const Text('23시 마감',
-                  style: TextStyle(
+              child: Text(widget.disabledLabel,
+                  style: const TextStyle(
                       color: _text2,
                       fontSize: _wfBtnFontSize,
                       fontWeight: FontWeight.w700)),

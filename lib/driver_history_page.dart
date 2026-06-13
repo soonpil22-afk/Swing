@@ -455,11 +455,11 @@ class _HistoryPageState extends State<HistoryPage>
 
   // ── 정산탭 전용 공통 함수 ──
   Widget _stAmt(double v, Color numColor,
-      {double fs = 13, bool bold = false, Color? unitColor, double? unitFs}) {
+      {double fs = 13, bool bold = false, Color? unitColor, double? unitFs, bool signed = false}) {
     return RichText(
       text: TextSpan(children: [
         TextSpan(
-          text: fmtAbs(v),
+          text: (signed && v < 0 ? '-' : '') + fmtAbs(v),
           style: TextStyle(
               color: numColor,
               fontSize: fs,
@@ -687,7 +687,7 @@ class _HistoryPageState extends State<HistoryPage>
               const Spacer(),
               statusBadge(status, stColor),
               const SizedBox(width: 8),
-              _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, bold: true),
+              _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, bold: true, signed: true),
             ]),
           ),
         ),
@@ -802,7 +802,8 @@ class _HistoryPageState extends State<HistoryPage>
                       _stAmt(del + prm - tax - fee - iDedu, _stSubtotalColor,
                           fs: _stSubtotalAmtFontSize,
                           unitColor: _stSubtotalUnitColor,
-                          unitFs: _stSubtotalUnitFontSize),
+                          unitFs: _stSubtotalUnitFontSize,
+                          signed: true),
                     ]),
                   ],
                 );
