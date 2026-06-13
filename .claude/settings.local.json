@@ -101,7 +101,23 @@
       "Bash(find ~/AppData/Local/Pub/Cache/hosted/pub.dev -path \"*excel*/lib/src/parser/parse.dart\" 2>/dev/null | head -1)",
       "Bash(python patch_rels.py)",
       "Bash(perl -0pi -e 's/anchor\\\\.isNotEmpty && dueDates\\\\.isNotEmpty && dueDates\\\\.last\\\\.compareTo\\\\\\(anchor\\\\\\) < 0/base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo\\(base\\) < 0/g' lib/admin_lease_alerts_page.dart)",
-      "Bash(perl -ni -e 'print unless /^const _rmDividerColor = _elevated;/' lib/admin_rider_manage_page.dart)"
+      "Bash(perl -ni -e 'print unless /^const _rmDividerColor = _elevated;/' lib/admin_rider_manage_page.dart)",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "mcp__9d0cd17d-9dda-43bd-b5cb-a7105230c662__generate-design",
+      "Bash(ls -la \"/mnt/c/Users/Owner/Downloads/Swing_Tiger\" 2>/dev/null || ls -la \"C:/Users/Owner/Downloads/Swing_Tiger\")",
+      "Bash(pip --version)",
+      "Read(//c/JejuProject/turtle_trading/**)",
+      "Bash(./.venv/Scripts/python.exe -m pip install -q backtrader yfinance pandas)",
+      "Bash(./.venv/Scripts/python.exe -c \"import backtrader as bt; import yfinance as yf; import pandas as pd; print\\('backtrader', bt.__version__\\); print\\('yfinance', yf.__version__\\); print\\('pandas', pd.__version__\\)\")",
+      "Bash(./.venv/Scripts/python.exe -c ' *)",
+      "Bash(./.venv/Scripts/python.exe main.py --system 1)",
+      "Bash(./.venv/Scripts/python.exe main.py --system 2)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe main.py --system 1)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe main.py --system 2)",
+      "Bash(git config *)",
+      "Bash(./.venv/Scripts/python.exe compare.py)",
+      "Bash(cd /mnt/c/JejuProject/swing_tiger && flutter analyze lib/admin_page.dart 2>&1 | tail -20)"
     ]
   }
 }

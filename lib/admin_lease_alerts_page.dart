@@ -5,6 +5,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'admin_common.dart';
 import 'glass_shine_button.dart';
+import 'lease_status.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg    = kAppBg;
@@ -77,34 +78,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         .toList();
     if (todo.isEmpty) return;
     _anchorLoading.addAll(todo);
-    Set<String> pendingUids = {};
-    try {
-      final pend = await FirebaseFirestore.instance
-          .collection('withdrawal_requests')
-          .where('status', isEqualTo: '요청대기')
-          .get();
-      pendingUids =
-          pend.docs.map((d) => (d.data()['uid'] as String?) ?? '').toSet();
-    } catch (_) {}
-    await Future.wait(todo.map((uid) async {
-      if (pendingUids.contains(uid)) {
-        _anchors[uid] = '';
-        return;
-      }
-      try {
-        final doc = await FirebaseFirestore.instance
-            .collection('unpaid_balance').doc(uid).get();
-        final items = (doc.data()?['items'] as List?) ?? [];
-        var a = '';
-        for (final it in items) {
-          final d = (it as Map)['date'] as String? ?? '';
-          if (d.compareTo(a) > 0) a = d;
-        }
-        _anchors[uid] = a;
-      } catch (_) {
-        _anchors[uid] = '';
-      }
-    }));
+    _anchors.addAll(await loadLeaseAnchors(todo));
     if (mounted) setState(() {});
   }
 
@@ -209,18 +183,8 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
 
   // 종류별 상태: 'paid'(기사 입금신고) | 'overdue'(미납부) | 'today'(납부일) | null
   // 매일=리포트 최신 날짜(anchor) / 주1회·매월=실제 오늘 날짜 기준
-  String? _statusOf(List<Map<String, dynamic>> ps, String typeField, String anchor) {
-    final unpaid = ps.where((p) => p['isPaid'] != true).toList();
-    if (unpaid.isEmpty) return null;
-    if (unpaid.any((p) => p['riderPaid'] == true)) return 'paid';
-    final isDaily = ps.any((p) => (p[typeField] as String?) == 'daily');
-    final base = isDaily ? anchor : DateFormat('yyyy-MM-dd').format(DateTime.now());
-    if (base.isEmpty) return null;
-    String dd(Map p) => p['dueDate'] as String? ?? '';
-    if (unpaid.any((p) => dd(p).isNotEmpty && dd(p).compareTo(base) < 0)) return 'overdue';
-    if (unpaid.any((p) => dd(p) == base)) return 'today';
-    return null;
-  }
+  String? _statusOf(List<Map<String, dynamic>> ps, String typeField, String anchor) =>
+      leaseStatusOf(ps, typeField, anchor);
 
   // 종류별 상태 칩 (리스비 미납부 / 기타 납부일 등)
   Widget _statusChip(String title, String? status) {

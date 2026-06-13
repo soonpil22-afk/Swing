@@ -11,6 +11,7 @@ import 'main.dart';
 import 'glass_shine_button.dart';
 import 'tokens.dart';
 import 'app_dialogs.dart';
+import 'lease_status.dart';
 import 'admin_chat_page.dart';
 import 'admin_withdrawal_page.dart';
 import 'admin_lease_alerts_page.dart';
@@ -425,56 +426,33 @@ class _AdminPageState extends State<AdminPage> {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final curWeekStart = weekStart(today);
-      final curMonthStr = DateFormat('yyyy-MM').format(today);
-      // 랭킹 주간: 수요일 시작(수~화). 가장 최근 수요일부터
-      final rankWeekStart = today
-          .subtract(Duration(days: (today.weekday - DateTime.wednesday + 7) % 7));
 
       final Map<String, double> byDay = {};
-      final Map<String, double> riderDay = {};
-      final Map<String, double> riderWeek = {};
-      final Map<String, double> riderMonth = {};
+      final Map<String, Map<String, double>> riderByDate = {}; // 배달날짜 → 기사 → net
       for (final d in snap.docs) {
         final data = d.data();
-        final amount = (data['amount'] as num?)?.toDouble() ?? 0;
+        final rnRaw = (data['riderName'] as String?)?.trim();
+        final rn = (rnRaw == null || rnRaw.isEmpty) ? '이름없음' : rnRaw;
 
-        // ── 차트: 배달 날짜별 정산액 (누적정산과 동일하게 항목별 net 합산) ──
+        // ── 항목(배달 날짜)별 실제 지급액(net) — 기사 소계와 동일 계산 ──
+        // net = finalAmount − 리스비(항목수 균등) − 기타(항목수 균등)
+        // finalAmount엔 세금·수수료·보험이 이미 빠져 있음 → 리스비·기타만 추가 차감
         final items = (data['items'] as List<dynamic>?) ?? [];
         final lease = (data['leaseDeduction'] as num?)?.toDouble() ?? 0;
+        final etc   = (data['etcDeduction']   as num?)?.toDouble() ?? 0;
         final perDayLease = items.isNotEmpty ? lease / items.length : 0.0;
+        final perDayEtc   = items.isNotEmpty ? etc   / items.length : 0.0;
         for (final raw in items) {
           final it = Map<String, dynamic>.from(raw as Map);
           final idate = it['date'] as String? ?? '';
           if (idate.length < 10) continue;
-          double n(String k) => (it[k] as num?)?.toDouble() ?? 0;
-          final net = n('deliveryFee') + n('promoTotal') - n('tax') -
-              (n('withdrawalFee') + n('commissionAmt')) - n('insuranceFee') - perDayLease;
+          final fin = (it['finalAmount'] as num?)?.toDouble() ?? 0;
+          final net = fin - perDayLease - perDayEtc;
+          // 차트: 전 기사 합산 (배달 날짜별 한 줄)
           byDay[idate] = (byDay[idate] ?? 0) + net;
-        }
-
-        // ── 랭킹: 기사별 지급 합계 (입금완료 처리일 기준, 출금 총액) ──
-        String? key;
-        final ts = data['approvedAt'] as Timestamp?;
-        if (ts != null) {
-          key = dk(ts.toDate());
-        } else if ((data['date'] as String?)?.isNotEmpty == true) {
-          key = data['date'] as String;
-        }
-        if (key == null) continue;
-        final rnRaw = (data['riderName'] as String?)?.trim();
-        final rn = (rnRaw == null || rnRaw.isEmpty) ? '이름없음' : rnRaw;
-        final dt = DateTime.tryParse(key);
-        if (dt != null) {
-          final dOnly = DateTime(dt.year, dt.month, dt.day);
-          if (dOnly == today) {
-            riderDay[rn] = (riderDay[rn] ?? 0) + amount; // 일간(오늘)
-          }
-          if (!dOnly.isBefore(rankWeekStart)) {
-            riderWeek[rn] = (riderWeek[rn] ?? 0) + amount; // 주간(수~화)
-          }
-          if (key.length >= 7 && key.substring(0, 7) == curMonthStr) {
-            riderMonth[rn] = (riderMonth[rn] ?? 0) + amount; // 월간(당월)
-          }
+          // 랭킹 원천: 기사별 개별 합산 (배달 날짜별 → 묶음출금 악용 방지)
+          final rmap = riderByDate.putIfAbsent(idate, () => {});
+          rmap[rn] = (rmap[rn] ?? 0) + net;
         }
       }
 
@@ -486,36 +464,61 @@ class _AdminPageState extends State<AdminPage> {
         return wd[d.weekday - 1];
       }).toList();
 
-      // 주간: 최근 7주(수요일 시작, 수~화)
+      // 주간: 최근 7주(수요일 시작, 수~화) — 전체 합산 + 기사별을 같은 버킷으로
       final Map<String, double> byWeek = {};
-      byDay.forEach((k, v) {
-        final dt = DateTime.tryParse(k);
-        if (dt != null) {
-          final ws = dk(weekStart(dt));
-          byWeek[ws] = (byWeek[ws] ?? 0) + v;
-        }
+      final Map<String, Map<String, double>> riderByWeek = {};
+      riderByDate.forEach((date, riders) {
+        final dt = DateTime.tryParse(date);
+        if (dt == null) return;
+        final ws = dk(weekStart(dt));
+        final wm = riderByWeek.putIfAbsent(ws, () => {});
+        riders.forEach((r, n) {
+          byWeek[ws] = (byWeek[ws] ?? 0) + n;
+          wm[r] = (wm[r] ?? 0) + n;
+        });
       });
       final weeks =
           List.generate(7, (i) => curWeekStart.subtract(Duration(days: (6 - i) * 7)));
       final seriesW = weeks.map((w) => byWeek[dk(w)] ?? 0).toList();
       final labelsW = weeks.map((w) => '${w.month}/${w.day}').toList();
 
-      // 월간: 최근 7개월
+      // 월간: 최근 7개월 — 전체 합산 + 기사별을 같은 버킷으로
       final Map<String, double> byMonth = {};
-      byDay.forEach((k, v) {
-        if (k.length >= 7) byMonth[k.substring(0, 7)] = (byMonth[k.substring(0, 7)] ?? 0) + v;
+      final Map<String, Map<String, double>> riderByMonth = {};
+      riderByDate.forEach((date, riders) {
+        if (date.length < 7) return;
+        final mk = date.substring(0, 7);
+        final mm = riderByMonth.putIfAbsent(mk, () => {});
+        riders.forEach((r, n) {
+          byMonth[mk] = (byMonth[mk] ?? 0) + n;
+          mm[r] = (mm[r] ?? 0) + n;
+        });
       });
       final months = List.generate(7, (i) => DateTime(today.year, today.month - (6 - i), 1));
       final seriesM = months.map((m) => byMonth[DateFormat('yyyy-MM').format(m)] ?? 0).toList();
       final labelsM = months.map((m) => '${m.month}월').toList();
 
-      // 랭킹 정렬(내림차순)
-      final rd = riderDay.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      final rw = riderWeek.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      final rm = riderMonth.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
+      // 랭킹 = 차트 헤드라인 칸(7칸 중 가장 최근 데이터 있는 칸) 기준 → 차트 큰 숫자와 합계 일치
+      String lastActiveKey(List<String> keysInWindow, Map<String, double> agg) {
+        var key = '';
+        for (final k in keysInWindow) {
+          if ((agg[k] ?? 0) != 0) key = k;
+        }
+        return key;
+      }
+      final dayKey = lastActiveKey([for (final d in days) dk(d)], byDay);
+      final weekKey = lastActiveKey([for (final w in weeks) dk(w)], byWeek);
+      final monthKey = lastActiveKey(
+          [for (final m in months) DateFormat('yyyy-MM').format(m)], byMonth);
+
+      List<MapEntry<String, double>> rankOf(Map<String, double>? m) {
+        final list = m?.entries.toList() ?? <MapEntry<String, double>>[];
+        list.sort((a, b) => b.value.compareTo(a.value));
+        return list;
+      }
+      final rd = rankOf(riderByDate[dayKey]);
+      final rw = rankOf(riderByWeek[weekKey]);
+      final rm = rankOf(riderByMonth[monthKey]);
 
       if (mounted) {
         setState(() {
@@ -1710,22 +1713,7 @@ class _AdminPageState extends State<AdminPage> {
         Expanded(
             child: _bottomMenuItem(Icons.manage_accounts_rounded, _purple, "라이더관리",
                 () => setState(() => _homeView = 'rider'),
-                badgeStream: FirebaseFirestore.instance
-                    .collection('lease_payments')
-                    .where('isPaid', isEqualTo: false)
-                    .snapshots(),
-                counter: (docs) {
-                  final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-                  return docs
-                      .where((d) {
-                        final dd = (d.data() as Map)['dueDate'] as String? ?? '';
-                        return dd.isNotEmpty && dd.compareTo(today) <= 0;
-                      })
-                      .map((d) => (d.data() as Map)['uid'])
-                      .toSet()
-                      .length;
-                },
-                badgeColor: _pink)),
+                customIcon: _riderMgmtBadgeIcon())),
         divider(),
         Expanded(
             child: _bottomMenuItem(Icons.payment_rounded, _teal, "출금신청", () {
@@ -1742,34 +1730,107 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
+  // 아이콘 + 우상단 카운트 배지 (배지 버블 마크업 단일 출처)
+  Widget _iconWithBadge(IconData icon, Color color, int c, Color badgeColor) {
+    return Stack(clipBehavior: Clip.none, children: [
+      Icon(icon, color: color, size: _menuItemIconSize),
+      if (c > 0)
+        Positioned(
+          top: -5,
+          right: -6,
+          child: Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(color: badgeColor, shape: BoxShape.circle),
+            child: Center(
+                child: Text(c > 9 ? "9+" : "$c",
+                    style: const TextStyle(
+                        color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
+          ),
+        ),
+    ]);
+  }
+
+  // 라이더관리 배지 = 이름카드 칩 총개수. 카드와 동일한 anchor·판정 로직(lease_status.dart) 사용.
+  final Map<String, String> _badgeAnchors = {};
+  final Set<String> _badgeAnchorLoading = {};
+  late final Stream<QuerySnapshot> _badgeLeaseStream = FirebaseFirestore.instance
+      .collection('lease_payments')
+      .where('isPaid', isEqualTo: false)
+      .snapshots();
+  late final Stream<QuerySnapshot> _badgeEtcStream = FirebaseFirestore.instance
+      .collection('etc_payments')
+      .where('isPaid', isEqualTo: false)
+      .snapshots();
+
+  // 기사별 anchor(리포트 최신 날짜) 멱등 로드 → 로드되면 배지 재계산
+  Future<void> _ensureBadgeAnchors(Iterable<String> uids) async {
+    final todo = uids
+        .where((u) =>
+            u.isNotEmpty &&
+            !_badgeAnchors.containsKey(u) &&
+            !_badgeAnchorLoading.contains(u))
+        .toList();
+    if (todo.isEmpty) return;
+    _badgeAnchorLoading.addAll(todo);
+    _badgeAnchors.addAll(await loadLeaseAnchors(todo));
+    _badgeAnchorLoading.removeAll(todo);
+    if (mounted) setState(() {});
+  }
+
+  Map<String, List<Map<String, dynamic>>> _groupByUid(
+      List<QueryDocumentSnapshot> docs) {
+    final m = <String, List<Map<String, dynamic>>>{};
+    for (final d in docs) {
+      final data = d.data() as Map<String, dynamic>;
+      final uid = data['uid'] as String? ?? '';
+      if (uid.isEmpty) continue;
+      m.putIfAbsent(uid, () => []).add(data);
+    }
+    return m;
+  }
+
+  Widget _riderMgmtBadgeIcon() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _badgeLeaseStream,
+      builder: (_, leaseSnap) {
+        return StreamBuilder<QuerySnapshot>(
+          stream: _badgeEtcStream,
+          builder: (_, etcSnap) {
+            final lease = _groupByUid(leaseSnap.data?.docs ?? []);
+            final etc = _groupByUid(etcSnap.data?.docs ?? []);
+            final uids = {...lease.keys, ...etc.keys};
+            _ensureBadgeAnchors(uids);
+            int count = 0;
+            for (final uid in uids) {
+              final anchor = _badgeAnchors[uid] ?? '';
+              final lStatus = leaseStatusOf(
+                  lease[uid] ?? const <Map<String, dynamic>>[], 'leaseType', anchor);
+              final eStatus = leaseStatusOf(
+                  etc[uid] ?? const <Map<String, dynamic>>[], 'etcType', anchor);
+              if (lStatus != null) count++;
+              if (eStatus != null) count++;
+            }
+            return _iconWithBadge(
+                Icons.manage_accounts_rounded, _purple, count, _pink);
+          },
+        );
+      },
+    );
+  }
+
   Widget _bottomMenuItem(IconData icon, Color color, String label, VoidCallback onTap,
       {Stream<QuerySnapshot>? badgeStream,
       int Function(List<QueryDocumentSnapshot>)? counter,
-      Color badgeColor = _pink}) {
-    Widget iconW = Icon(icon, color: color, size: _menuItemIconSize);
-    if (badgeStream != null) {
+      Color badgeColor = _pink,
+      Widget? customIcon}) {
+    Widget iconW = customIcon ?? Icon(icon, color: color, size: _menuItemIconSize);
+    if (customIcon == null && badgeStream != null) {
       iconW = StreamBuilder<QuerySnapshot>(
         stream: badgeStream,
         builder: (_, snap) {
           final c = snap.hasData ? counter!(snap.data!.docs) : 0;
-          return Stack(clipBehavior: Clip.none, children: [
-            Icon(icon, color: color, size: _menuItemIconSize),
-            if (c > 0)
-              Positioned(
-                top: -5,
-                right: -6,
-                child: Container(
-                  width: 16,
-                  height: 16,
-                  decoration:
-                      BoxDecoration(color: badgeColor, shape: BoxShape.circle),
-                  child: Center(
-                      child: Text(c > 9 ? "9+" : "$c",
-                          style: const TextStyle(
-                              color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
-                ),
-              ),
-          ]);
+          return _iconWithBadge(icon, color, c, badgeColor);
         },
       );
     }
