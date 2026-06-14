@@ -16,6 +16,7 @@ import 'block_puzzle_game.dart';
 import 'driver_timeline_page.dart';
 import 'driver_lease_page.dart';
 import 'driver_history_page.dart';
+import 'driver_chat_page.dart';
 // ═══════════════════════════════════════════════════════════════════════
 // 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
 // ═══════════════════════════════════════════════════════════════════════
@@ -283,46 +284,6 @@ const double _fabRightV      = 16;   // FAB 오른쪽 여백
 const double _fabMarginBottomV = 16; // FAB 아래쪽 여백
 const Color  _fabBadgeColor  = _red;      // 안읽음 빨간점 색
 const double _fabBadgeSize   = 14;   // 빨간점 크기
-const Color  _blBg           = _surface;  // 풍선창 배경색
-const Color  _blBorderColor  = _elevated;     // 풍선창 테두리 색
-const double _blBorderAlpha  = 2;       // 테두리 투명도
-const double _blWidth        = 280;  // 풍선창 너비
-const double _blRadius       = 14;   // 풍선창 모서리
-const double _blMaxHeight    = 420;  // 풍선창 최대 높이
-const Color  _blHeadIconColor = _teal;   // 헤더 아이콘 색
-const double _blHeadIconSize  = 20;      // 헤더 아이콘 크기
-const Color  _blHeadTitleColor = _text;  // "관리자 1:1 상담" 글씨 색
-const double _blHeadTitleFontSize = 13;  // 헤더 글씨 크기
-const Color  _blCloseColor   = _pink;    // 닫기(X) 색
-const double _blCloseSize    = 17;       // 닫기 크기
-const Color  _blDividerColor = _elevated;    // 헤더 아래 구분선 색
-const double _blDivMarginH   = 12;       // 헤더 구분선 좌우 여백(끝까지 안 붙음)
-const Color  _blEmptyColor   = _text2;   // "상담 내용을 입력해 보세요" 색
-const double _blEmptyFontSize = 11;      // 안내 글씨 크기
-const Color  _blRiderBubbleBg = _teal;   // 내(라이더) 말풍선 배경(틴트)
-const double _blRiderBubbleAlpha = 0.18; // 내 말풍선 배경 투명도
-const Color  _blAdminBubbleBg = _chip;   // 관리자 말풍선 배경
-const Color  _blAdminBorderColor = _elevated; // 관리자 말풍선 테두리
-const Color  _blAdminTagColor = _teal;   // "관리자" 표시 색
-const double _blAdminTagFontSize = 9;    // "관리자" 글씨 크기
-const Color  _blMsgColor     = _text;    // 메시지 글씨 색
-const double _blMsgFontSize  = 11;       // 메시지 글씨 크기
-const double _blMsgHeight    = 1.4;      // 메시지 줄간격
-const Color  _blTimeColor    = _text2;   // 시간 글씨 색
-const double _blTimeFontSize = 9;        // 시간 글씨 크기
-const double _blBubbleMaxWidth = 200;    // 말풍선 최대 너비
-const Color  _blInputBg      = _chip;    // 입력창 배경
-const Color  _blInputBorderColor = _teal; // 입력창 테두리 색
-const Color  _blInputTextColor = _text;  // 입력 글씨 색
-const double _blInputFontSize = 12;      // 입력 글씨 크기
-const Color  _blHintColor    = _text2;   // 힌트 글씨 색
-const double _blInputRadius  = 8;        // 입력창 모서리
-const Color  _blSendBg       = _teal;    // 전송 버튼 배경(틴트)
-const double _blSendBgAlpha  = 0.18;     // 전송 배경 투명도
-const Color  _blSendIconColor = _teal;   // 전송 아이콘 색
-const double _blSendSize     = 40;       // 전송 버튼 크기
-const double _blSendIconSize = 24;       // 전송 아이콘 크기
-const String _blHintText     = '메시지 입력...';  // 입력창 힌트
 
 // ═══════════════════════════════════════════════════════════════════════
 // 10. 공통 위젯 · 로직
@@ -408,11 +369,6 @@ class _DriverPageState extends State<DriverPage> {
   bool   _isAppOn    = true;
   bool   _appLoaded  = false;
 
-  // ── 1:1 상담 풍선창 ──
-  bool _showBalloon    = false;
-  bool _balloonSending = false;
-  final TextEditingController _balloonCtrl    = TextEditingController();
-  final ScrollController      _chatScrollCtrl = ScrollController();
 
   @override
   void initState() {
@@ -454,8 +410,6 @@ class _DriverPageState extends State<DriverPage> {
     _unpaidSub?.cancel();
     _appStatusSub?.cancel();
     _noticeSub?.cancel();
-    _balloonCtrl.dispose();
-    _chatScrollCtrl.dispose();
     super.dispose();
   }
 
@@ -764,11 +718,6 @@ class _DriverPageState extends State<DriverPage> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        // 상담 말풍선이 열려 있으면 먼저 닫기
-        if (_showBalloon) {
-          setState(() => _showBalloon = false);
-          return;
-        }
         // 메인 페이지 → 종료 확인 (서브 페이지는 기본 동작으로 메인 복귀)
         if (await showExitConfirmDialog(context)) {
           await minimizeApp(); // 종료 대신 백그라운드 → 위치 추적 계속
@@ -1577,16 +1526,10 @@ class _DriverPageState extends State<DriverPage> {
 
   // ── FAB & 1:1 상담 풍선창 ──────────────────────────────────────────
   Widget _buildFABArea(String uid, double bottomInset) {
-    final screenH = MediaQuery.of(context).size.height;
-    final safeTop = MediaQuery.of(context).padding.top;
     const fabSize = _fabSizeV;
     const fabRight = _fabRightV;
     const fabMarginBottom = _fabMarginBottomV;
-
-    final fabBottom     = fabMarginBottom + bottomInset;
-    final balloonBottom = fabBottom + fabSize + 10;
-    final maxBalloonH   =
-        (screenH - safeTop - 16 - balloonBottom).clamp(160.0, double.infinity);
+    final fabBottom = fabMarginBottom + bottomInset;
 
     return Positioned.fill(
       child: Stack(children: [
@@ -1602,17 +1545,10 @@ class _DriverPageState extends State<DriverPage> {
               return Stack(clipBehavior: Clip.none, children: [
                 GestureDetector(
                   onTap: () {
-                    final open = !_showBalloon;
-                    setState(() => _showBalloon = open);
-                    if (open) {
-                      FirebaseFirestore.instance.collection('chats').doc(uid)
-                          .set({'unreadByRider': false}, SetOptions(merge: true));
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (_chatScrollCtrl.hasClients) {
-                          _chatScrollCtrl.jumpTo(_chatScrollCtrl.position.maxScrollExtent);
-                        }
-                      });
-                    }
+                    FirebaseFirestore.instance.collection('chats').doc(uid)
+                        .set({'unreadByRider': false}, SetOptions(merge: true));
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => DriverChatPage(uid: uid, riderName: _riderName)));
                   },
                   child: Container(
                     width: fabSize,
@@ -1647,240 +1583,8 @@ class _DriverPageState extends State<DriverPage> {
             },
           ),
         ),
-        if (_showBalloon)
-          Positioned(
-            right: fabRight,
-            bottom: balloonBottom,
-            child: SizedBox(
-              width: _blWidth,
-              height: maxBalloonH.clamp(0, _blMaxHeight),
-              child: _buildBalloon(uid),
-            ),
-          ),
       ]),
     );
-  }
-
-  Widget _buildBalloon(String uid) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _blBg,
-        borderRadius: BorderRadius.circular(_blRadius),
-        border: Border.all(
-            color: _blBorderColor.withValues(alpha: _blBorderAlpha), width: 1),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withValues(alpha: 0.55),
-              blurRadius: 24,
-              offset: const Offset(0, 6))
-        ],
-      ),
-      child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(14, 12, 10, 0),
-          child: Row(children: [
-            const Icon(Icons.support_agent_rounded,
-                color: _blHeadIconColor, size: _blHeadIconSize),
-            const SizedBox(width: 6),
-            const Text("관리자 1:1 상담",
-                style: TextStyle(
-                    color: _blHeadTitleColor,
-                    fontSize: _blHeadTitleFontSize,
-                    fontWeight: FontWeight.w700)),
-            const Spacer(),
-            GestureDetector(
-              onTap: () => setState(() => _showBalloon = false),
-              child: const Icon(Icons.close_rounded,
-                  color: _blCloseColor, size: _blCloseSize),
-            ),
-          ]),
-        ),
-        Container(
-            height: 1,
-            color: _blDividerColor,
-            margin: const EdgeInsets.symmetric(
-                horizontal: _blDivMarginH, vertical: 8)),
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('chats')
-                .doc(uid)
-                .collection('messages')
-                .orderBy('at', descending: false)
-                .limitToLast(50)
-                .snapshots(),
-            builder: (_, snap) {
-              if (!snap.hasData || snap.data!.docs.isEmpty) {
-                return const Center(
-                  child: Text("상담 내용을 입력해 보세요.",
-                      style: TextStyle(color: _blEmptyColor, fontSize: _blEmptyFontSize)),
-                );
-              }
-              final docs = snap.data!.docs;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (_chatScrollCtrl.hasClients) {
-                  _chatScrollCtrl.animateTo(_chatScrollCtrl.position.maxScrollExtent,
-                      duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
-                }
-              });
-              return ListView.builder(
-                controller: _chatScrollCtrl,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                itemCount: docs.length,
-                itemBuilder: (_, i) {
-                  final d = docs[i].data() as Map<String, dynamic>;
-                  return _chatBubble(
-                      d['text'] as String? ?? '', d['sender'] == 'rider', d['at'] as Timestamp?);
-                },
-              );
-            },
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: _teal)),
-          ),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Expanded(
-              child: TextField(
-                controller: _balloonCtrl,
-                maxLines: 3,
-                minLines: 1,
-                style: const TextStyle(color: _blInputTextColor, fontSize: _blInputFontSize),
-                cursorColor: _teal,
-                decoration: InputDecoration(
-                  hintText: _blHintText,
-                  hintStyle: const TextStyle(color: _blHintColor, fontSize: _blInputFontSize),
-                  filled: true,
-                  fillColor: _blInputBg,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.all(9),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: _blInputBorderColor),
-                      borderRadius: BorderRadius.circular(_blInputRadius)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: _blInputBorderColor),
-                      borderRadius: BorderRadius.circular(_blInputRadius)),
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
-            GestureDetector(
-              onTap: _balloonSending ? null : _sendBalloon,
-              child: Container(
-                width: _blSendSize,
-                height: _blSendSize,
-                decoration: BoxDecoration(
-                  color: _balloonSending ? _chip : _blSendBg.withValues(alpha: _blSendBgAlpha),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                      color: _balloonSending ? _elevated : _teal, width: 0.8),
-                ),
-                child: _balloonSending
-                    ? const Padding(
-                        padding: EdgeInsets.all(9),
-                        child: CircularProgressIndicator(color: _teal, strokeWidth: 2))
-                    : const Icon(Icons.send_rounded,
-                        color: _blSendIconColor, size: _blSendIconSize),
-              ),
-            ),
-          ]),
-        ),
-      ]),
-    );
-  }
-
-  Widget _chatBubble(String text, bool isRider, Timestamp? at) {
-    return Align(
-      alignment: isRider ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 6),
-        constraints: const BoxConstraints(maxWidth: _blBubbleMaxWidth),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: isRider
-              ? _blRiderBubbleBg.withValues(alpha: _blRiderBubbleAlpha)
-              : _blAdminBubbleBg,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(10),
-            topRight: const Radius.circular(10),
-            bottomLeft: Radius.circular(isRider ? 10 : 2),
-            bottomRight: Radius.circular(isRider ? 2 : 10),
-          ),
-          border: Border.all(
-              color: isRider
-                  ? _blRiderBubbleBg
-                  : _blAdminBorderColor,
-              width: 0.6),
-        ),
-        child: Column(
-            crossAxisAlignment:
-                isRider ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              if (!isRider)
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 3),
-                  child: Text("관리자",
-                      style: TextStyle(
-                          color: _blAdminTagColor,
-                          fontSize: _blAdminTagFontSize,
-                          fontWeight: FontWeight.w700)),
-                ),
-              Text(text,
-                  style: const TextStyle(
-                      color: _blMsgColor,
-                      fontSize: _blMsgFontSize,
-                      height: _blMsgHeight)),
-              if (at != null) ...[
-                const SizedBox(height: 2),
-                Text(DateFormat('MM/dd HH:mm').format(at.toDate()),
-                    style: const TextStyle(
-                        color: _blTimeColor, fontSize: _blTimeFontSize)),
-              ],
-            ]),
-      ),
-    );
-  }
-
-  Future<void> _sendBalloon() async {
-    final msg = _balloonCtrl.text.trim();
-    if (msg.isEmpty) return;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    setState(() => _balloonSending = true);
-    try {
-      final chatRef = FirebaseFirestore.instance.collection('chats').doc(user.uid);
-      await chatRef.set({
-        'uid': user.uid,
-        'riderName': _riderName.isNotEmpty ? _riderName : user.uid,
-        'lastMessage': msg,
-        'lastAt': FieldValue.serverTimestamp(),
-        'unreadByAdmin': true,
-        'unreadByRider': false,
-      }, SetOptions(merge: true));
-      await chatRef.collection('messages').add({
-        'sender': 'rider',
-        'text': msg,
-        'at': FieldValue.serverTimestamp(),
-      });
-      _balloonCtrl.clear();
-      if (mounted) setState(() => _balloonSending = false);
-    } catch (e) {
-      if (mounted) {
-        setState(() => _balloonSending = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("전송 실패: $e", style: const TextStyle(fontSize: 12)),
-            backgroundColor: _surface,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 100),
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      }
-    }
   }
 
   Widget _buildMaintenanceScreen() {

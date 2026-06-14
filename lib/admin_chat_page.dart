@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'admin_common.dart';
+import 'chat_view.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _surface  = kSurface;
@@ -125,176 +126,20 @@ class ChatListPage extends StatelessWidget {
   }
 }
 
-// ═══════════════════════ 관리자 채팅 화면 (로직) ═══════════════════════
-class _AdminChatPage extends StatefulWidget {
+// ═══════════════════════ 관리자 채팅 화면 ═══════════════════════
+class _AdminChatPage extends StatelessWidget {
   final String uid;
   final String riderName;
   const _AdminChatPage({required this.uid, required this.riderName});
-  @override
-  State<_AdminChatPage> createState() => _AdminChatPageState();
-}
-
-class _AdminChatPageState extends State<_AdminChatPage> {
-  final TextEditingController _ctrl       = TextEditingController();
-  final ScrollController      _scrollCtrl = ScrollController();
-  bool _sending = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // 열릴 때 관리자 읽음 처리
-    FirebaseFirestore.instance.collection('chats').doc(widget.uid)
-        .set({'unreadByAdmin': false}, SetOptions(merge: true));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    _scrollCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _send() async {
-    final msg = _ctrl.text.trim();
-    if (msg.isEmpty || _sending) return;
-    setState(() => _sending = true);
-    try {
-      final chatRef = FirebaseFirestore.instance.collection('chats').doc(widget.uid);
-      await chatRef.set({
-        'lastMessage':  msg,
-        'lastAt':       FieldValue.serverTimestamp(),
-        'unreadByRider': true,
-        'unreadByAdmin': false,
-      }, SetOptions(merge: true));
-      await chatRef.collection('messages').add({
-        'sender': 'admin',
-        'text':   msg,
-        'at':     FieldValue.serverTimestamp(),
-      });
-      _ctrl.clear();
-    } catch (_) {}
-    if (mounted) setState(() => _sending = false);
-  }
-
-  Widget _bubble(String text, bool isAdmin, Timestamp? at) {
-    return Align(
-      alignment: isAdmin ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.70),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isAdmin ? _teal.withValues(alpha: 0.18) : _surface,
-          borderRadius: BorderRadius.only(
-            topLeft:     const Radius.circular(12),
-            topRight:    const Radius.circular(12),
-            bottomLeft:  Radius.circular(isAdmin ? 12 : 2),
-            bottomRight: Radius.circular(isAdmin ? 2 : 12),
-          ),
-          border: Border.all(
-            color: isAdmin ? _teal.withValues(alpha: 0.4) : _elevated, width: 1),
-        ),
-        child: Column(crossAxisAlignment: isAdmin ? CrossAxisAlignment.end : CrossAxisAlignment.start, children: [
-          Text(text, style: const TextStyle(color: _text, fontSize: 13, height: 1.4)),
-          if (at != null) ...[
-            const SizedBox(height: 3),
-            Text(DateFormat('MM/dd HH:mm').format(at.toDate()),
-                style: const TextStyle(color: _text2, fontSize: 9)),
-          ],
-        ]),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return adminPanelScaffold(
       context,
-      "${widget.riderName} 님",
+      "$riderName 님",
       dividerColor: _elevated,
       dividerInset: 15,
-      Column(children: [
-        // 메시지 목록
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('chats').doc(widget.uid)
-                .collection('messages')
-                .orderBy('at', descending: false)
-                .snapshots(),
-            builder: (ctx, snap) {
-              if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: _teal));
-              final docs = snap.data!.docs;
-              if (docs.isEmpty) {
-                return const Center(
-                  child: Text("아직 메시지가 없습니다.", style: TextStyle(color: _text2, fontSize: 13)),
-                );
-              }
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (_scrollCtrl.hasClients) {
-                  _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent,
-                      duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
-                }
-              });
-              return ListView.builder(
-                controller: _scrollCtrl,
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-                itemCount: docs.length,
-                itemBuilder: (_, i) {
-                  final d = docs[i].data() as Map<String, dynamic>;
-                  return _bubble(d['text'] as String? ?? '', d['sender'] == 'admin', d['at'] as Timestamp?);
-                },
-              );
-            },
-          ),
-        ),
-        // 입력창
-        Container(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-          decoration: const BoxDecoration(
-            color: _surface,
-            border: Border(top: BorderSide(color: _elevated)),
-          ),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Expanded(
-              child: TextField(
-                controller: _ctrl,
-                maxLines: 4, minLines: 1,
-                textInputAction: TextInputAction.newline,
-                style: const TextStyle(color: _text, fontSize: 13),
-                cursorColor: _teal,
-                decoration: InputDecoration(
-                  hintText: "답변 입력...",
-                  hintStyle: const TextStyle(color: _text2, fontSize: 13),
-                  filled: true, fillColor: _surface,
-                  isDense: true, contentPadding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: _elevated),
-                      borderRadius: BorderRadius.circular(12)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: _teal),
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: _sending ? null : _send,
-              child: Container(
-                width: 44, height: 44,
-                decoration: BoxDecoration(
-                  color: _teal.withValues(alpha: 0.18), shape: BoxShape.circle,
-                  border: Border.all(color: _teal, width: 1),
-                ),
-                child: _sending
-                    ? const Padding(padding: EdgeInsets.all(11),
-                        child: CircularProgressIndicator(color: _teal, strokeWidth: 2))
-                    : const Icon(Icons.send_rounded, color: _teal, size: 20),
-              ),
-            ),
-          ]),
-        ),
-      ]),
+      ChatView(uid: uid, mySide: 'admin'),
     );
   }
 }
