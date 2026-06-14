@@ -64,12 +64,12 @@ Widget pageHeader(BuildContext context, String title) => Padding(
 
 // 상태 배지 (출금가능 · 입금대기 등)
 Widget statusBadge(String label, Color c) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: c.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(20),
+        color: c.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(color: c),
       ),
       child: Text(label,
-          style: TextStyle(color: c, fontSize: 11)),
+          style: TextStyle(color: c, fontSize: 13)),
     );

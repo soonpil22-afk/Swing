@@ -71,19 +71,19 @@ const double _stCardRadius      = 12;  // 카드 모서리
 const double _stCardGap         = kGapCard;   // 카드 사이 간격
 const double _stCardHeadPadH    = 14;  // 카드 머리 좌우 여백 (본문과 정렬)
 const double _stCardHeadPadV    = 12;  // 카드 머리 위아래 여백
-const Color  _stDateChipBg      = _chip;   // 날짜 칩 배경
+const Color  _stDateChipBg      = _surface;   // 날짜 칩 배경
 const Color  _stDateChipBorder  = _elevated; // 날짜 칩 테두리
 const Color  _stDateChipText    = _teal;   // 날짜 칩 글씨 색
-const double _stDateChipFontSize = 13;     // 날짜 칩 글씨 크기
+const double _stDateChipFontSize = 14;     // 날짜 칩 글씨 크기
 const Color  _stDayCountColor   = _amber;  // "N일" 글씨 색
-const double _stDayCountFontSize = 13;     // "N일" 글씨 크기
+const double _stDayCountFontSize = 14;     // "N일" 글씨 크기
 const Color  _stHeadAmtColor    = _text;   // 머리 금액 색
-const double _stHeadAmtFontSize = 13;      // 머리 금액 크기
+const double _stHeadAmtFontSize = 14;      // 머리 금액 크기
 const double _stBodyPadL = 14;  // 상세 안쪽 여백 왼
 const double _stBodyPadT = 10;  // 상세 안쪽 여백 위
 const double _stBodyPadR = 14;  // 상세 안쪽 여백 오른
 const double _stBodyPadB = 14;  // 상세 안쪽 여백 아래
-const Color  _stDayChipBg       = _chip;   // 일자 칩 배경
+const Color  _stDayChipBg       = _surface;   // 일자 칩 배경
 const Color  _stDayChipBorder   = _elevated; // 일자 칩 테두리
 const Color  _stDayChipText     = _teal;   // 일자 칩 글씨 색
 const double _stDayChipFontSize = 14;      // 일자 칩(헤더 밑 날짜) 글씨 크기
@@ -636,8 +636,6 @@ class _HistoryPageState extends State<HistoryPage>
                   style: const TextStyle(
                       color: _stDayCountColor, fontSize: _stDayCountFontSize)),
               const Spacer(),
-              statusBadge(status, stColor),
-              const SizedBox(width: 8),
               _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, signed: true),
             ]),
           ),
@@ -697,18 +695,25 @@ class _HistoryPageState extends State<HistoryPage>
                         color: _elevated,
                         margin: const EdgeInsets.symmetric(vertical: 10),
                       ),
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: _stDayChipBg,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: _stDayChipBorder),
-                      ),
-                      child: Text(dateShort,
-                          style: const TextStyle(
-                              color: _stDayChipText,
-                              fontSize: _stDayChipFontSize)),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(children: [
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: _stDayChipBg,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: _stDayChipBorder),
+                          ),
+                          child: Text(dateShort,
+                              style: const TextStyle(
+                                  color: _stDayChipText,
+                                  fontSize: _stDayChipFontSize)),
+                        ),
+                        const Spacer(),
+                        statusBadge(status, stColor),
+                      ]),
                     ),
                     _stDetailRow("배달수수료 (세전)", del, _stRowLabelColor,
                         labelColor: _stRowLabelColor),

@@ -19,9 +19,7 @@ import 'admin_lease_alerts_page.dart';
 import 'admin_rider_manage_page.dart';
 import 'admin_ranking_page.dart';
 
-// ═══════════════════════════════════════════════════════════════════════
-// 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭)
-// ═══════════════════════════════════════════════════════════════════════
+// 공통 색 팔레트 (tokens.dart 단일 출처를 가리키는 별칭) ══════════════════════════════════
 const _surface  = kSurface;  // 카드
 const _chip     = kChip;     // 칩 · 선택탭 배경
 const _elevated = kElevated; // 트랙 · 테두리
@@ -31,40 +29,33 @@ const _teal     = kTeal;     // 민트 (메인 액센트)
 const _purple   = kPurple;   // 보라
 const _pink     = kPink;     // 핑크
 const _amber    = kAmber;    // 노랑
-// 카드 그림자 (모든 카드 공통)
-const List<BoxShadow> _cardShadow = kCardShadow;
+const _appBg    = kAppBg; // 전체 화면 배경색 모든 페이지 공통
+const _panel    = kPanel; // 메인 배경색 모든 페이지 공통
+const List<BoxShadow> _panelShadow = kPanelShadow; // 메인 패널 그림자
+const List<BoxShadow> _cardShadow = kCardShadow; // 카드 그림자 (모든 카드 공통)
 
-// ═══════════════════════════════════════════════════════════════════════
-// 1. 전체배경
-// ═══════════════════════════════════════════════════════════════════════
-const _appBg    = kAppBg; // 전체 화면 Scaffold 배경색
-
-// ═══════════════════════════════════════════════════════════════════════
-// 2. 메인배경 (inset 패널) — 모든 페이지 공통
-// ═══════════════════════════════════════════════════════════════════════
-const _panel    = kPanel; // 메인 배경(패널) 배경색
-// 메인 패널 그림자
-const List<BoxShadow> _panelShadow = kPanelShadow;
 // 메인 패널 테두리·여백
 const Color  _panelBorderColor = _elevated; // 패널 테두리 색
 const double _panelBorderAlpha = 1.0;        // 패널 테두리 투명도 (1.0=솔리드)
 const double _panelBorderWidth = 1;          // 패널 테두리 두께
 const double _panelOuterPad    = 10;
 const double _panelRadius      = 24;
+
 // 서브페이지 헤더 아래 경계선 (더보기·출금신청·라이더관리·공제설정·공지사항 공통)
 const Color  _subDivColor       = _elevated; // 경계선 색
 const double _subDivMarginH     = 15;        // 경계선 좌우 여백(끝까지 안 붙음)
+
 // 페이지별 헤더↔경계선 / 경계선↔카드 갭 (각자 따로 조정)
 const double _wrPageGapHeaderDiv = kGapInner; const double _wrPageGapDivCard = kGapSection; // 출금신청
 const double _rmPageGapHeaderDiv = kGapInner; const double _rmPageGapDivCard = kGapSection; // 라이더관리
 const double _stPageGapHeaderDiv = kGapInner; const double _stPageGapDivCard = kGapSection; // 공제설정
 const double _ntPageGapHeaderDiv = kGapInner; const double _ntPageGapDivCard = kGapSection; // 공지사항
+
 // 탭 ↔ 첫 카드 갭 (페이지별)
 const double _ntTabToStatGap    = 2; // 공지사항 탭 ↔ 누적방문 카드 갭
 const double _ntStatToNoticeGap = 8; // 누적방문 카드 ↔ 공지사항 갭
-// ═══════════════════════════════════════════════════════════════════════
-// 3. 안녕하세요 (인사)
-// ═══════════════════════════════════════════════════════════════════════
+
+// 3. 안녕하세요 (인사) ══════════════════════════════════════════════════════════════
 // ── 색 (팔레트에서 선택) ──
 const Color _greetIconOuterColor  = _teal;    // 바깥 원 색
 const Color _greetIconInnerColor  = _purple;  // 안쪽 원 색
