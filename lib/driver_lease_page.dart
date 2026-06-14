@@ -5,6 +5,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'driver_common.dart';
 import 'glass_shine_button.dart';
+import 'lease_summary_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg     = kAppBg;
@@ -15,11 +16,9 @@ const _elevated  = kElevated;
 const _text      = kText;
 const _text2     = kText2;
 const _teal      = kTeal;
-const _amber     = kAmber;
 const _pink      = kPink;
 const _purple    = kPurple;
 const Color _bgScaffold = _appBg;
-const List<BoxShadow> _cardShadow  = kCardShadow;
 const List<BoxShadow> _panelShadow = kPanelShadow;
 
 // ═══════════════ 리스비 페이지 상수(_lp* / _ls*) ═══════════════
@@ -51,38 +50,6 @@ const double _lpOverTitleFontSize = 13;    // 제목 글씨 크기
 const Color  _lpOverSubColor    = _text;  // 부제 글씨 색
 const double _lpOverSubFontSize = 12;      // 부제 글씨 크기
 
-const Color  _lsCardBg          = _surface;   // 카드 배경색
-const Color  _lsCardBorderNormal = _elevated; // 일반 테두리(기본)
-const Color  _lsCardBorderAlert = _teal;      // 알림 시 테두리 색(강조)
-const double _lsCardRadius      = 14;  // 카드 모서리
-const double _lsCardPadL = 16;  // 안쪽 여백 왼
-const double _lsCardPadT = 14;  // 안쪽 여백 위
-const double _lsCardPadR = 16;  // 안쪽 여백 오른
-const double _lsCardPadB = 16;  // 안쪽 여백 아래
-const double _lsHeadIconSize    = 26;      // 아이콘 크기
-const Color  _lsHeadTitleColor  = _text;   // "리스비 전체 현황" 글씨 색
-const double _lsHeadTitleFontSize = 14;    // 제목 글씨 크기
-const Color  _lsTypeChipBg      = _chip;   // 타입 칩 배경
-const Color  _lsTypeChipBorder  = _elevated; // 타입 칩 테두리
-const double _lsTypeChipFontSize = 14;     // 타입 칩 글씨 크기
-const Color  _lsInfoLabelColor  = _text;   // 정보 라벨 색
-const Color  _lsInfoValueColor  = _text;   // 정보 값 색
-const Color  _lsInfoPinkColor   = _pink;  // "출금 시 자동공제" 값 색
-const double _lsInfoFontSize    = 14;      // 정보 글씨 크기
-const Color  _lsPayMethodLabelColor    = _pink; // "납부 방식" 라벨 글씨 색
-const double _lsPayMethodLabelFontSize = 14;     // "납부 방식" 라벨 글씨 크기
-const Color  _lsProgressColor   = _amber;  // "진행 현황" 글씨·숫자 색
-const double _lsProgressLabelFontSize = 14; // "진행 현황" 라벨 크기
-const double _lsProgressNumFontSize = 14;  // 완료 숫자 크기
-const double _lsProgressTotalFontSize = 14; // "/ 총" 숫자 크기
-const Color  _lsBarFillColor    = _teal;   // 진행바 채움 색
-const Color  _lsBarTrackColor   = _chip;   // 진행바 배경 색
-const double _lsBarHeight       = 6;       // 진행바 높이
-const double _lsBarRadius       = 4;       // 진행바 모서리
-const Color  _lsPaidLabelColor  = _amber;  // "납부 완료" 라벨·금액 색
-const double _lsPaidFontSize    = 14;      // "납부 완료" 글씨 크기
-const Color  _lsRemainColor     = _teal;   // "잔여 금액" 라벨·금액 색
-const double _lsRemainFontSize  = 14;      // "잔여 금액" 글씨 크기
 
 // 공제 종류 (리스비 / 기타)
 class _DKind {
@@ -414,103 +381,26 @@ class _DriverLeasePageState extends State<DriverLeasePage>
     final cycleLabel = isDaily ? '일' : '회차';
     final totalAmt = leaseAmt * leaseCycle;
     final paidAmt = leaseAmt * paidCount;
-    final progress = totalCount > 0 ? paidCount / totalCount : 0.0;
     final startShort = startStr.length >= 10 ? startStr.substring(5) : startStr;
     final endShort = endStr.length >= 10 ? endStr.substring(5) : endStr;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.fromLTRB(
-          _lsCardPadL, _lsCardPadT, _lsCardPadR, _lsCardPadB),
-      decoration: BoxDecoration(
-          color: _lsCardBg,
-          borderRadius: BorderRadius.circular(_lsCardRadius),
-          border: Border.all(
-              color: hasAlert ? _lsCardBorderAlert : _lsCardBorderNormal,
-              width: 1),
-          boxShadow: _cardShadow),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Icon(k.icon, color: k.accent, size: _lsHeadIconSize),
-          const SizedBox(width: 6),
-          Text("${k.title} 전체 현황",
-              style: const TextStyle(
-                  color: _lsHeadTitleColor,
-                  fontSize: _lsHeadTitleFontSize)),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-                color: _lsTypeChipBg,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: _lsTypeChipBorder, width: 1)),
-            child: Text(typeLabel,
-                style: TextStyle(
-                    color: k.accent,
-                    fontSize: _lsTypeChipFontSize)),
-          ),
-        ]),
-        Container(
-            height: 1,
-            color: _elevated,
-            margin: const EdgeInsets.symmetric(vertical: 10)),
-        _infoRow2("1$cycleLabel 금액", "${NumberFormat('#,###').format(leaseAmt)} 원"),
-        const SizedBox(height: 5),
-        _infoRow2("총 $cycleLabel", "$leaseCycle $cycleLabel"),
-        const SizedBox(height: 5),
-        _infoRow2("총 ${k.title}", "${NumberFormat('#,###').format(totalAmt)} 원"),
-        const SizedBox(height: 5),
-        _infoRow2("기간", "$startShort  ~  $endShort"),
-        if (isDaily) ...[
-          const SizedBox(height: 5),
-          _infoRow2("납부 방식", "출금 시 자동 공제",
-              vc: _lsInfoPinkColor,
-              labelColor: _lsPayMethodLabelColor,
-              labelFs: _lsPayMethodLabelFontSize),
-        ],
-        const SizedBox(height: 10),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text("진행 현황",
-              style: TextStyle(
-                  color: _lsProgressColor, fontSize: _lsProgressLabelFontSize)),
-          Text.rich(TextSpan(children: [
-            TextSpan(text: "$paidCount",
-                style: const TextStyle(
-                    color: _lsProgressColor,
-                    fontSize: _lsProgressNumFontSize)),
-            TextSpan(text: " / $totalCount $cycleLabel",
-                style: const TextStyle(
-                    color: _lsProgressColor, fontSize: _lsProgressTotalFontSize)),
-          ])),
-        ]),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(_lsBarRadius),
-          child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: _lsBarTrackColor,
-              valueColor: const AlwaysStoppedAnimation<Color>(_lsBarFillColor),
-              minHeight: _lsBarHeight),
-        ),
-        const SizedBox(height: 8),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text("납부 완료",
-              style: TextStyle(color: _lsPaidLabelColor, fontSize: _lsPaidFontSize)),
-          Text("${NumberFormat('#,###').format(paidAmt)} 원",
-              style: const TextStyle(
-                  color: _lsPaidLabelColor,
-                  fontSize: _lsPaidFontSize)),
-        ]),
-        if (totalAmt > paidAmt) ...[
-          const SizedBox(height: 3),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text("잔여 금액",
-                style: TextStyle(color: _lsRemainColor, fontSize: _lsRemainFontSize)),
-            Text("${NumberFormat('#,###').format(totalAmt - paidAmt)} 원",
-                style: const TextStyle(
-                    color: _lsRemainColor, fontSize: _lsRemainFontSize)),
-          ]),
-        ],
+    return LeaseSummaryCard(
+      title: k.title,
+      icon: k.icon,
+      accent: k.accent,
+      typeLabel: typeLabel,
+      cycleLabel: cycleLabel,
+      isDaily: isDaily,
+      unitAmt: leaseAmt,
+      cycle: leaseCycle,
+      totalAmt: totalAmt,
+      startShort: startShort,
+      endShort: endShort,
+      paidCount: paidCount,
+      totalCount: totalCount,
+      paidAmt: paidAmt,
+      borderColor: hasAlert ? _teal : _elevated,
+      extra: [
         // 주1회/매월: 미납부(지난 회차, 핑크) / 오늘 납부일(민트) + 입금완료 버튼 (카드 안에 표시)
         if (!isDaily && (overdueCount > 0 || todayCount > 0)) ...[
           const SizedBox(height: 14),
@@ -555,19 +445,8 @@ class _DriverLeasePageState extends State<DriverLeasePage>
                           fontWeight: FontWeight.w400))),
             ),
         ],
-      ]),
+      ],
     );
   }
 
-  Widget _infoRow2(String label, String value,
-          {Color vc = _lsInfoValueColor,
-          Color labelColor = _lsInfoLabelColor,
-          double labelFs = _lsInfoFontSize}) =>
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label,
-            style: TextStyle(color: labelColor, fontSize: labelFs)),
-        Text(value,
-            style: TextStyle(
-                color: vc, fontSize: _lsInfoFontSize)),
-      ]);
 }

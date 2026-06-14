@@ -6,6 +6,7 @@ import 'tokens.dart';
 import 'admin_common.dart';
 import 'glass_shine_button.dart';
 import 'lease_status.dart';
+import 'lease_summary_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg    = kAppBg;
@@ -25,18 +26,10 @@ const double _laListPadL = 15;  // 목록 바깥 여백 왼
 const double _laListPadT = 4;  // 위
 const double _laListPadR = 15;  // 오른
 const double _laListPadB = 15;  // 아래
-const _laInfoLabelColor = _text;  // 정보 행 라벨 색
-const _laInfoValueColor = _text;  // 정보 행 값 색(기본)
-const double _laInfoFontSize = 12;// 정보 행 글씨 크기
 // 리스비 카드 내용 (글씨·테두리)
 const double _laRiderNameFontSize = 14; // 라이더 이름 칩 글씨 크기
 const double _laBadgeFontSize  = 10;    // 상태·타입 뱃지 글씨 크기
 const _laCardBorder            = _elevated; // 전체현황 카드 테두리 색
-const double _laCardBorderWidth = 1;    // 전체현황 카드 테두리 두께
-const _laCardTitleColor        = _text; // "리스비 전체 현황" 색
-const double _laCardTitleFontSize = 13; // "리스비 전체 현황" 크기
-const double _laRowFontSize    = 12;    // 정보행(기간·진행·납부·잔여) 글씨 크기
-const double _laRowValueFontSize = 16;  // 진행현황 강조 숫자 크기
 const double _laChevronSize    = 18;    // 펼침 아이콘 크기
 
 // 공제 종류 설정값 (리스비 / 기타)
@@ -172,14 +165,6 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     ));
   }
 
-  Widget _infoRow(String label, String value,
-          {Color vc = _laInfoValueColor,
-          Color labelColor = _laInfoLabelColor,
-          double labelFs = _laInfoFontSize}) =>
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(color: labelColor, fontSize: labelFs)),
-        Text(value, style: TextStyle(color: vc, fontSize: _laInfoFontSize, fontWeight: FontWeight.w400)),
-      ]);
 
   // 종류별 상태: 'paid'(기사 입금신고) | 'overdue'(미납부) | 'today'(납부일) | null
   // 매일=리포트 최신 날짜(anchor) / 주1회·매월=실제 오늘 날짜 기준
@@ -401,118 +386,38 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
     final cycleLabel = isDaily ? '일' : '회차';
     final totalAmt   = leaseAmt * totalCycle;
     final paidAmt    = leaseAmt * paidCount;
-    final progress   = totalCount > 0 ? paidCount / totalCount : 0.0;
     final riderPaidList = payments.where((p) =>
         p['riderPaid'] == true && p['isPaid'] != true).toList();
     final hasRiderPaid = riderPaidList.isNotEmpty;
-    final base = isDaily ? anchor : DateFormat('yyyy-MM-dd').format(DateTime.now());
     // 이 종류(리스비/기타) 카드 테두리 — 미납부=핑크 / 납부일·입금신고=민트
     final status = _statusOf(payments, k.typeField, anchor);
     final allPaidKind = totalCount > 0 && paidCount == totalCount;
     Color borderCol = _laCardBorder;
-    double borderW = _laCardBorderWidth;
     if (status == 'overdue') {
       borderCol = _pink;
-      borderW = 1.5;
     } else if (status == 'today' || status == 'paid') {
       borderCol = _teal;
-      borderW = 1.5;
     } else if (allPaidKind) {
       borderCol = _teal;
     }
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-      decoration: BoxDecoration(
-        color: _surface, borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: borderCol, width: borderW),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Icon(k.icon, color: k.accent, size: 16),
-          const SizedBox(width: 6),
-          Text("${k.title} 전체 현황", style: const TextStyle(color: _laCardTitleColor, fontSize: _laCardTitleFontSize, fontWeight: FontWeight.w400)),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: const Color(0xFF18203A), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0x4D303854))),
-            child: Text(typeLabel, style: TextStyle(color: k.accent, fontSize: 11, fontWeight: FontWeight.w400)),
-          ),
-        ]),
-        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
-        _infoRow("1$cycleLabel 금액", "${NumberFormat('#,###').format(leaseAmt)} 원"),
-        const SizedBox(height: 5),
-        _infoRow("총 $cycleLabel", "$totalCycle $cycleLabel"),
-        const SizedBox(height: 5),
-        _infoRow("총 ${k.title}", "${NumberFormat('#,###').format(totalAmt)} 원"),
-        const SizedBox(height: 5),
-        Row(children: [
-          const Text("기간", style: TextStyle(color: _text, fontSize: _laRowFontSize)),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: _teal),
-            ),
-            child: Text(startShort, style: const TextStyle(color: _teal, fontSize: _laRowFontSize, fontWeight: FontWeight.w400)),
-          ),
-          const Text("  ~  ", style: TextStyle(color: _text, fontSize: _laRowFontSize)),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: (base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(base) < 0 && paidCount < totalCount)
-                    ? _amber.withAlpha(120) : _teal.withAlpha(80),
-              ),
-            ),
-            child: Text(endShort, style: TextStyle(
-              color: (base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(base) < 0 && paidCount < totalCount)
-                  ? _amber : _teal,
-              fontSize: _laRowFontSize, fontWeight: FontWeight.w400,
-            )),
-          ),
-        ]),
-        if (isDaily) ...[
-          const SizedBox(height: 5),
-          _infoRow("납부 방식", "출금 시 자동 공제", vc: _pink, labelColor: _pink, labelFs: 13),
-        ],
-        const SizedBox(height: 10),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text("진행 현황", style: TextStyle(color: _amber, fontSize: _laRowFontSize)),
-          Text.rich(TextSpan(children: [
-            TextSpan(text: "$paidCount",
-                style: const TextStyle(color: _amber, fontSize: _laRowValueFontSize, fontWeight: FontWeight.w400)),
-            TextSpan(text: " / $totalCount $cycleLabel",
-                style: const TextStyle(color: _amber, fontSize: 17)),
-          ])),
-        ]),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: progress,
-            backgroundColor: const Color(0xFF18203A),
-            valueColor: const AlwaysStoppedAnimation<Color>(_teal),
-            minHeight: 6,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text("납부 완료", style: TextStyle(color: _amber, fontSize: _laRowFontSize)),
-          Text("${NumberFormat('#,###').format(paidAmt)} 원",
-              style: const TextStyle(color: _amber, fontSize: _laRowFontSize, fontWeight: FontWeight.w400)),
-        ]),
-        if (totalAmt > paidAmt) ...[
-          const SizedBox(height: 3),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text("잔여 금액", style: TextStyle(color: _teal, fontSize: _laRowFontSize)),
-            Text("${NumberFormat('#,###').format(totalAmt - paidAmt)} 원",
-                style: const TextStyle(color: _teal, fontSize: _laRowFontSize)),
-          ]),
-        ],
+    return LeaseSummaryCard(
+      title: k.title,
+      icon: k.icon,
+      accent: k.accent,
+      typeLabel: typeLabel,
+      cycleLabel: cycleLabel,
+      isDaily: isDaily,
+      unitAmt: leaseAmt,
+      cycle: totalCycle,
+      totalAmt: totalAmt,
+      startShort: startShort,
+      endShort: endShort,
+      paidCount: paidCount,
+      totalCount: totalCount,
+      paidAmt: paidAmt,
+      borderColor: borderCol,
+      extra: [
 
         // 주1회/매월 — 기사 신청 → 관리자 확인 흐름 (매일은 출금 자동공제라 버튼 없음)
         if (!isDaily) ...[
@@ -574,7 +479,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             ),
           ],
         ],
-      ]),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
+import 'withdrawal_breakdown_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _surface  = kSurface;
@@ -36,42 +37,33 @@ const double _tabTrackPad        = 3;  // 트랙 안쪽 여백
 // ── [8-3] 라이더 출금내역 (정산내역·누적정산 카드) ──
 const double _rhCardBorderWidth = 1;   // 카드 테두리 두께
 const _rhDateChipColor   = _teal;      // 날짜칩 글씨 색
-const double _rhDateChipFontSize = 13; // 날짜칩 글씨 크기
+const double _rhDateChipFontSize = 14; // 날짜칩 글씨 크기
 const _rhDaysColor       = _amber;     // "N일" 색
-const double _rhDaysFontSize = 13;     // "N일" 크기
+const double _rhDaysFontSize = 14;     // "N일" 크기
 const _rhHeadAmtColor    = _text;      // 헤더 금액 색
-const double _rhHeadAmtFontSize = 13;  // 헤더 금액 크기
+const double _rhHeadAmtFontSize = 14;  // 헤더 금액 크기
 const _rhPaidBadgeColor  = _teal;      // "입금완료" 박스 색
 const double _rhPaidFontSize = 10;     // "입금완료" 박스 글씨 크기
 // 상세 내역 행 (정산내역·누적정산 공통 헬퍼)
 const _rhMainColor       = _text;      // "배달수수료(세전)" 등 메인 행 색
-const double _rhMainFontSize = 12;     // 메인 행 글씨 크기
+const double _rhMainFontSize = 14;     // 메인 행 글씨 크기
 const _rhTogLabelColor   = _text;     // 토글 라벨 색
-const double _rhTogFontSize  = 12;     // 토글 글씨 크기
+const double _rhTogFontSize  = 14;     // 토글 글씨 크기
 const double _rhTogIconSize  = 14;     // 토글 아이콘 크기
 const _rhSubColor        = _text2;     // 하위행 색
-const double _rhSubFontSize  = 11;     // 하위행 글씨 크기
+const double _rhSubFontSize  = 12;     // 하위행 글씨 크기
 const _rhSubtotalColor   = _teal;      // 소계·총출금 색
-const double _rhSubtotalLabelFontSize = 12; // 소계 라벨 크기
-const double _rhSubtotalValueFontSize = 13; // 소계 값 크기
+const double _rhSubtotalLabelFontSize = 16; // 소계 라벨 크기
+const double _rhSubtotalValueFontSize = 16; // 소계 값 크기
 // 날짜별 상세 카드
 const double _rhItemGap  = kGapCard;          // 날짜 카드 사이 갭
 const _rhItemChipColor   = _teal;      // 날짜칩 글씨 색
 const double _rhItemChipFontSize = 11; // 날짜칩 글씨 크기
-// 누적정산 시작일·마지막일 날짜 버튼
-const _rhDateHintColor   = _text;     // 기본(미선택) 글씨 색
-const _rhDateSelColor    = _teal;     // 선택 시 글씨 색
-const double _rhDateFontSize = 11;    // 날짜 버튼 글씨 크기
-const _rhDateBorderColor = _elevated; // 날짜 버튼 테두리 색
 // 누적정산 카드 여백
 const double _rhCumOuterL = 15; // 카드 바깥 여백 왼
 const double _rhCumOuterT = 2; // 위 (탭 ↔ 카드)
 const double _rhCumOuterR = 15; // 오른
 const double _rhCumOuterB = 15; // 아래
-const double _rhCumPadL = 16;   // 카드 안쪽 여백 왼
-const double _rhCumPadT = 14;   // 위
-const double _rhCumPadR = 10;   // 오른
-const double _rhCumPadB = 16;   // 아래
 // 정산내역 목록 여백·카드 갭
 const double _rhSettleOuterL = 15; // 목록 바깥 여백 왼
 const double _rhSettleOuterT = 2; // 위 (탭 ↔ 카드)
@@ -116,7 +108,6 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
   DateTime? _start, _end, _startApplied, _endApplied;
   bool   _cumLoaded  = false;
   bool   _cumLoading = false;
-  bool   _taxExp = false, _promoExp = false, _deduExp = false, _commExp = false;
   double _gross = 0, _emp = 0, _acc = 0, _tax = 0;
   double _mission = 0, _perOrder = 0, _range = 0;
   double _ins = 0, _wdFee = 0, _comm = 0, _lease = 0, _etc = 0, _total = 0;
@@ -641,78 +632,37 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
   // ── 탭 2: 누적정산 ──────────────────────────────────────────────────
 
   Widget _cumulativeTab() {
-    final totalTax   = _emp + _acc + _tax;
-    final totalPromo = _mission + _perOrder + _range;
-    final totalFee   = _wdFee + _comm;
-    final totalDedu  = _ins + _lease + _etc;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(_rhCumOuterL, _rhCumOuterT, _rhCumOuterR, _rhCumOuterB),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(_rhCumPadL, _rhCumPadT, _rhCumPadR, _rhCumPadB),
-        decoration: BoxDecoration(
-          color: _surface, borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _elevated, width: _rhCardBorderWidth),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // 날짜 필터
-          Row(children: [
-            Flexible(child: _dateBtn(_start, "시작일",   (d) => setState(() => _start = d))),
-            const Text(" ~ ", style: TextStyle(color: _text2, fontSize: 12)),
-            Flexible(child: _dateBtn(_end,   "마지막일", (d) => setState(() => _end   = d))),
-            const SizedBox(width: 6),
-            _smallBtn("조회", () {
-              setState(() { _startApplied = _start; _endApplied = _end; _cumLoaded = false; });
-              _loadCumulative();
-            }, filled: true),
-            const SizedBox(width: 6),
-            _smallBtn("초기화", () {
-              if (_start == null && _end == null && _startApplied == null && _endApplied == null) return; // 기본 상태면 변화 없음
-              setState(() { _start = _end = _startApplied = _endApplied = null; });
-              _loadCumulative(); // 전체 다시 로드
-            }),
-          ]),
-          Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 12)),
-          if (!_cumLoaded)
-            const Center(child: Padding(
-              padding: EdgeInsets.all(20),
-              child: CircularProgressIndicator(color: _teal),
-            ))
-          else ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w400)),
-                Text("${_fmtC(_gross)} 원", style: const TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize)),
-              ]),
-            ),
-            _toggle("지원금합계", "${_fmtC(totalPromo)} 원", _text, _promoExp,
-                () => setState(() => _promoExp = !_promoExp), [
-              _subC("미션금액",     "${_fmtC(_mission)} 원"),
-              _subC("건당프로모션", "${_fmtC(_perOrder)} 원"),
-              _sub("구간프로모션", "${_fmtC(_range)} 원"),
-            ]),
-            _toggle("세금합계", "${_fmtC(totalTax)} 원", _pink, _taxExp,
-                () => setState(() => _taxExp = !_taxExp), [
-              _subC("고용보험", "${_fmtC(_emp)} 원", vc: _text2),
-              _subC("산재보험", "${_fmtC(_acc)} 원", vc: _text2),
-              _subC("원천세",   "${_fmtC(_tax)} 원", vc: _text2),
-            ]),
-            _toggle("수수료합계", "${_fmtC(totalFee)} 원", _pink, _commExp,
-                () => setState(() => _commExp = !_commExp), [
-              _subC("출금수수료",   "${_fmtC(_wdFee)} 원", vc: _text2),
-              _subC("협력사수수료", "${_fmtC(_comm)} 원",  vc: _text2),
-            ]),
-            _toggle("공제합계", "${_fmtC(totalDedu)} 원", _pink, _deduExp,
-                () => setState(() => _deduExp = !_deduExp), [
-              _subC("시간제보험", "${_fmtC(_ins)} 원",   vc: _text2),
-              _subC("리스비",     "${_fmtC(_lease)} 원", vc: _text2),
-              _subC("기타",       "${_fmtC(_etc)} 원",   vc: _text2),
-            ]),
-            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
-            _row("총 출금금액", "${_fmtC(_total)} 원",
-                lc: _teal, vc: _teal, bold: true, fs: 14),
-          ],
-        ]),
+      child: WithdrawalBreakdownCard(
+        startDate: _start,
+        endDate: _end,
+        onPickStart: (d) => setState(() => _start = d),
+        onPickEnd: (d) => setState(() => _end = d),
+        onSearch: () {
+          setState(() { _startApplied = _start; _endApplied = _end; _cumLoaded = false; });
+          _loadCumulative();
+        },
+        onReset: () {
+          if (_start == null && _end == null && _startApplied == null && _endApplied == null) return;
+          setState(() { _start = _end = _startApplied = _endApplied = null; });
+          _loadCumulative();
+        },
+        loading: !_cumLoaded,
+        loaded: _cumLoaded,
+        gross: _gross,
+        mission: _mission,
+        perOrder: _perOrder,
+        range: _range,
+        emp: _emp,
+        acc: _acc,
+        incomeTax: _tax,
+        wdFee: _wdFee,
+        comm: _comm,
+        ins: _ins,
+        lease: _lease,
+        etc: _etc,
+        total: _total,
       ),
     );
   }
@@ -736,12 +686,6 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           Text(value, style: const TextStyle(color: _rhSubColor, fontSize: _rhSubFontSize)),
         ]));
 
-  Widget _subC(String label, String value, {Color lc = _rhSubColor, Color vc = _rhSubColor}) =>
-      Padding(padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: TextStyle(color: lc, fontSize: _rhSubFontSize)),
-          Text(value, style: TextStyle(color: vc, fontSize: _rhSubFontSize)),
-        ]));
 
   Widget _toggle(String label, String value, Color vc,
       bool expanded, VoidCallback onTap, List<Widget> children) =>
@@ -770,42 +714,4 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             child: Column(children: children)),
       ]);
 
-  Widget _dateBtn(DateTime? date, String hint, Function(DateTime) onPick) =>
-      GestureDetector(
-        onTap: () async {
-          final p = await showDatePicker(context: context,
-              initialDate: date ?? DateTime.now(),
-              firstDate: DateTime(2026), lastDate: DateTime(2030),
-              builder: (ctx, child) => Theme(
-                  data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: _teal)),
-                  child: child!));
-          if (p != null) onPick(p);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-              border: Border.all(color: _rhDateBorderColor, width: 1),
-              borderRadius: BorderRadius.circular(7)),
-          child: Text(date != null ? DateFormat('MM-dd').format(date) : hint,
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: date != null ? _rhDateSelColor : _rhDateHintColor, fontSize: _rhDateFontSize)),
-        ),
-      );
-
-  Widget _smallBtn(String label, VoidCallback onTap, {bool filled = false}) =>
-      GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 28, padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(color: filled ? _teal : _pink, width: 1),
-            borderRadius: BorderRadius.circular(7),
-          ),
-          alignment: Alignment.center,
-          child: Text(label, style: TextStyle(
-              color: filled ? _teal : _pink,
-              fontSize: 12, fontWeight: FontWeight.w400)),
-        ),
-      );
 }

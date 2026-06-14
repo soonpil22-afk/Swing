@@ -43,9 +43,9 @@ const double _wrBankFontSize     = 12; // 은행명 글씨 크기
 const _wrAcctNumColor   = _text;       // 계좌번호 글씨 색(박스 안)
 const double _wrAcctNumFontSize  = 13; // 계좌번호 글씨 크기
 const _wrFinalLabelColor = _amber;    // "최종출금금액" 라벨 색
-const double _wrFinalLabelFontSize = 12;// "최종출금금액" 라벨 크기
+const double _wrFinalLabelFontSize = 16;// "최종출금금액" 라벨 크기
 const _wrFinalAmtColor  = _text;       // 최종출금금액 숫자 색
-const double _wrFinalAmtFontSize = 12; // 최종출금금액 숫자 크기
+const double _wrFinalAmtFontSize = 16; // 최종출금금액 숫자 크기
 const _wrValBoxBg       = _surface;      // 값 박스 배경(블랙)
 const _wrValBoxBorder   = _elevated;   // 값 박스 테두리
 const double _wrValBoxRadius = 6;      // 값 박스 모서리
@@ -66,15 +66,15 @@ const _wrItemChipColor         = _teal; // 날짜칩 글씨 색
 const double _wrItemChipFontSize = 11; // 날짜칩 글씨 크기
 const double _wrItemChevronSize  = 15; // 날짜 펼침 아이콘 크기
 const _wrDtMainColor           = _text; // "배달수수료(세전)" 색
-const double _wrDtMainFontSize   = 12; // "배달수수료(세전)" 크기
+const double _wrDtMainFontSize   = 14; // "배달수수료(세전)" 크기
 const _wrDtTogLabelColor       = _text; // 토글 라벨 색
-const double _wrDtTogFontSize    = 12; // 토글 글씨 크기
+const double _wrDtTogFontSize    = 14; // 토글 글씨 크기
 const double _wrDtTogIconSize    = 14; // 토글 아이콘 크기
 const _wrDtSubColor            = _text2; // 하위행(subRow) 색
-const double _wrDtSubFontSize    = 11; // 하위행 글씨 크기
+const double _wrDtSubFontSize    = 12; // 하위행 글씨 크기
 const _wrDtSubtotalColor       = _teal; // 소계 색
-const double _wrDtSubtotalLabelFontSize = 12; // 소계 라벨 크기
-const double _wrDtSubtotalValueFontSize = 13; // 소계 값 크기
+const double _wrDtSubtotalLabelFontSize = 16; // 소계 라벨 크기
+const double _wrDtSubtotalValueFontSize = 16; // 소계 값 크기
 
 // ═══════════════ 출금신청 페이지 (로직) ═══════════════
 class WithdrawalRequestPage extends StatefulWidget {

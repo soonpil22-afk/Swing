@@ -6,6 +6,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'driver_common.dart';
 import 'settlement.dart';
+import 'withdrawal_breakdown_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg     = kAppBg;
@@ -114,53 +115,7 @@ const int    _stCutoffHour    = 23;       // 출금 마감 시각(23시)
 // ═══════════════════════════════════════════════════════════════════════
 // 출금내역 탭 (시작일 카드 등) (조정값)
 // ═══════════════════════════════════════════════════════════════════════
-const Color  _htCardBg          = _surface;    // 카드 배경색
-const Color  _htCardBorder      = _elevated; // 카드 테두리 색
-const double _htCardRadius      = 14;  // 카드 모서리
-const double _htCardPadL = 16;  // 카드 안쪽 여백 왼
-const double _htCardPadT = 14;  // 카드 안쪽 여백 위
-const double _htCardPadR = 16;  // 카드 안쪽 여백 오른
-const double _htCardPadB = 16;  // 카드 안쪽 여백 아래
 const double _htGapTabToCard = 2; // 출금내역 탭 ↔ 날짜(시작일) 카드 갭
-const Color  _htDateActiveColor = _teal;      // 날짜 선택됨 글씨·테두리
-const Color  _htDateBorderColor = _elevated; // 미선택 테두리
-const Color  _htDateHintColor   = _text;      // 미선택 글씨(힌트) 색
-const double _htDateFontSize    = 14;  // 날짜 버튼 글씨 크기
-const double _htDatePadH        = 10;  // 날짜 버튼 좌우 여백
-const double _htDatePadV        = 5;   // 날짜 버튼 위아래 여백
-const double _htDateRadius      = 7;   // 날짜 버튼 모서리
-const Color  _htTildeColor      = _text;  // "~" 글씨 색
-const double _htTildeFontSize   = 14;     // "~" 글씨 크기
-const Color  _htBtnFilledBg     = _teal;     // 조회(채움) 배경색
-const Color  _htBtnFilledText   = _teal;    // 조회(채움) 글씨 색
-const Color  _htBtnLineBorder   = _pink; // 초기화(선) 테두리
-const Color  _htBtnLineText     = _pink;     // 초기화(선) 글씨 색
-const double _htBtnFontSize     = 14;  // 버튼 글씨 크기
-const double _htBtnHeight       = 28;  // 버튼 높이
-const double _htBtnPadH         = 10;  // 버튼 좌우 여백
-const double _htBtnRadius       = 7;   // 버튼 모서리
-const String _htBtnSearchText   = '조회';   // 조회 버튼 글씨
-const String _htBtnResetText    = '초기화';  // 초기화 버튼 글씨
-const double _htRowFontSize     = 14;  // 행 라벨 글씨 크기
-const double _htRowAmtFontSize  = 14;  // 행 금액(+ 원) 글씨 크기
-const Color  _htRowLabelColor   = _text;  // 기본 라벨 색
-const Color  _htRowPinkColor    = _pink;  // 세금/수수료/공제 라벨 색
-const double _htToggleIconSize  = 15;     // 토글 화살표 크기
-const Color  _htSubBoxBg        = _appBg;     // 하위 박스 배경
-const Color  _htSubBoxBorder    = _elevated; // 하위 박스 테두리
-const double _htSubBoxRadius    = 8;       // 하위 박스 모서리
-const Color  _htSubRowColor     = _text2;  // 하위 행 금액 색
-const Color  _htSubLabelColor   = _text2;  // 하위 행 라벨 색
-const double _htSubRowFontSize  = 12;      // 하위 행 라벨 크기
-const double _htSubAmtFontSize  = 12;      // 하위 행 금액 크기
-const Color  _htSubAmtUnitColor     = _text2; // 하위 행 " 원" 글씨 색
-const double _htSubAmtUnitFontSize  = 12;    // 하위 행 " 원" 글씨 크기
-const Color  _htTotalColor      = _teal;   // "총 출금금액" 글씨/금액 색
-const double _htTotalFontSize   = 16;      // 라벨 크기
-const double _htTotalAmtFontSize = 16;     // 금액 크기
-const Color  _htTotalUnitColor    = _teal; // "총 출금금액" " 원" 글씨 색
-const double _htTotalUnitFontSize = 16;    // "총 출금금액" " 원" 글씨 크기
-const Color  _htAmtUnitColor    = _text;   // " 원" 글씨 색(기본·기타 행)
 
 // ═══════════════ 정산내역 조회 페이지 (로직) ═══════════════
 class HistoryPage extends StatefulWidget {
@@ -194,8 +149,8 @@ class _HistoryPageState extends State<HistoryPage>
   DateTime? _start, _end, _startApplied, _endApplied;
   bool _histLoaded = false;
   bool _histLoading = false;
-  double _hGross = 0, _hPromo = 0, _hPOrd = 0, _hRng = 0, _hMission = 0;
-  double _hTax = 0, _hEmp = 0, _hAcc = 0, _hInc = 0;
+  double _hGross = 0, _hPOrd = 0, _hRng = 0, _hMission = 0;
+  double _hEmp = 0, _hAcc = 0, _hInc = 0;
   double _hWd = 0, _hComm = 0, _hIns = 0, _hLease = 0, _hEtc = 0, _hTotal = 0;
 
   @override
@@ -373,8 +328,8 @@ class _HistoryPageState extends State<HistoryPage>
       }
 
       if (mounted) setState(() {
-        _hGross = gross; _hPromo = promo; _hPOrd = pOrd; _hRng = rng;
-        _hTax = tax; _hEmp = emp; _hAcc = acc; _hInc = inc;
+        _hGross = gross; _hPOrd = pOrd; _hRng = rng;
+        _hEmp = emp; _hAcc = acc; _hInc = inc;
         _hWd = wd; _hComm = comm; _hIns = ins; _hLease = lease; _hEtc = etc; _hMission = mission;
         _hTotal = total; _histLoaded = true; _histLoading = false;
       });
@@ -809,227 +764,46 @@ class _HistoryPageState extends State<HistoryPage>
     );
   }
 
-  // ── 출금탭 전용 공통 함수 ──
-  Widget _htAmt(double v, Color numColor,
-      {double fs = 13, Color? unitColor, double? unitFs}) {
-    return Text.rich(
-      TextSpan(children: [
-        TextSpan(
-          text: fmtAbs(v),
-          style: TextStyle(
-              color: numColor,
-              fontSize: fs),
-        ),
-        TextSpan(
-          text: ' 원',
-          style: TextStyle(
-              color: unitColor ?? _htAmtUnitColor,
-              fontSize: unitFs ?? fs,
-              fontWeight: FontWeight.w400),
-        ),
-      ]),
-    );
-  }
-
-  Widget _htDetailRow(String label, double v, Color vc, {Color labelColor = _htRowLabelColor}) =>
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label,
-              style: TextStyle(
-                  color: labelColor,
-                  fontSize: _htRowFontSize)),
-          _htAmt(v, vc, fs: _htRowAmtFontSize),
-        ]),
-      );
-
-  Widget _htToggleRow(String key, String label, double v, Color vc) {
-    final exp = _itemToggles[key] ?? false;
-    return GestureDetector(
-      onTap: () => setState(() => _itemToggles[key] = !exp),
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(children: [
-          Text(label,
-              style: const TextStyle(
-                  color: _htRowLabelColor,
-                  fontSize: _htRowFontSize)),
-          const SizedBox(width: 4),
-          Icon(exp ? Icons.expand_less : Icons.expand_more,
-              color: exp ? _text2 : _teal, size: _htToggleIconSize),
-          const Spacer(),
-          _htAmt(v, vc, fs: _htRowAmtFontSize),
-        ]),
-      ),
-    );
-  }
-
-  Widget _htSubGroup(List<Widget> children) => Container(
-        margin: const EdgeInsets.only(bottom: 4),
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        decoration: BoxDecoration(
-            color: _htSubBoxBg,
-            borderRadius: BorderRadius.circular(_htSubBoxRadius),
-            border: Border.all(color: _htSubBoxBorder)),
-        child: Column(children: children),
-      );
-
-  Widget _htSubRow(String label, double v, Color vc) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label,
-              style: const TextStyle(
-                  color: _htSubLabelColor, fontSize: _htSubRowFontSize)),
-          _htAmt(v, vc,
-              fs: _htSubAmtFontSize,
-              unitColor: _htSubAmtUnitColor,
-              unitFs: _htSubAmtUnitFontSize),
-        ]),
-      );
 
   Widget _buildTotalTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(15, _htGapTabToCard, 15, 24),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(
-            _htCardPadL, _htCardPadT, _htCardPadR, _htCardPadB),
-        decoration: BoxDecoration(
-          color: _htCardBg,
-          borderRadius: BorderRadius.circular(_htCardRadius),
-          border: Border.all(color: _htCardBorder, width: 1),
-          boxShadow: _cardShadow,
-        ),
-        child: Column(children: [
-          Row(children: [
-            _dateBtn(_start, "시작일", (d) => setState(() => _start = d)),
-            const Text("  ~  ",
-                style: TextStyle(color: _htTildeColor, fontSize: _htTildeFontSize)),
-            _dateBtn(_end, "종료일", (d) => setState(() => _end = d)),
-            const SizedBox(width: 8),
-            _smallBtn(_htBtnSearchText, () {
-              setState(() {
-                _startApplied = _start;
-                _endApplied = _end;
-              });
-              _loadHistData();
-            }, filled: true),
-            const SizedBox(width: 6),
-            _smallBtn(_htBtnResetText, () {
-              setState(() {
-                _start = _end = _startApplied = _endApplied = null;
-              });
-              _loadHistData();
-            }),
-          ]),
-          Container(
-              height: 1,
-              color: _elevated.withValues(alpha: 0.6),
-              margin: const EdgeInsets.symmetric(vertical: 12)),
-          if (!_histLoaded)
-            const Padding(
-                padding: EdgeInsets.all(20),
-                child: CircularProgressIndicator(color: _teal))
-          else ...[
-            _htDetailRow("배달수수료 (세전)", _hGross, _htRowLabelColor,
-                labelColor: _htRowLabelColor),
-            const SizedBox(height: 2),
-            _htToggleRow('h_promo', "지원금합계", _hPromo, _htRowLabelColor),
-            if (_itemToggles['h_promo'] == true)
-              _htSubGroup([
-                _htSubRow("미션금액", _hMission, _htSubRowColor),
-                _htSubRow("건당프로모션", _hPOrd, _htSubRowColor),
-                _htSubRow("구간프로모션", _hRng, _htSubRowColor),
-              ]),
-            _htToggleRow('h_tax', "세금합계", _hTax, _htRowPinkColor),
-            if (_itemToggles['h_tax'] == true)
-              _htSubGroup([
-                _htSubRow("고용보험", _hEmp, _htSubRowColor),
-                _htSubRow("산재보험", _hAcc, _htSubRowColor),
-                _htSubRow("원천세", _hInc, _htSubRowColor),
-              ]),
-            _htToggleRow('h_comm', "수수료합계", _hWd + _hComm, _htRowPinkColor),
-            if (_itemToggles['h_comm'] == true)
-              _htSubGroup([
-                _htSubRow("출금수수료", _hWd, _htSubRowColor),
-                _htSubRow("협력사수수료", _hComm, _htSubRowColor),
-              ]),
-            _htToggleRow('h_dedu', "공제합계", _hIns + _hLease + _hEtc, _htRowPinkColor),
-            if (_itemToggles['h_dedu'] == true)
-              _htSubGroup([
-                _htSubRow("시간제보험", _hIns, _htSubRowColor),
-                _htSubRow("리스비", _hLease, _htSubRowColor),
-                _htSubRow("기타", _hEtc, _htSubRowColor),
-              ]),
-            Container(
-                height: 1,
-                color: _elevated.withValues(alpha: 0.6),
-                margin: const EdgeInsets.symmetric(vertical: 12)),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              const Text("총 출금금액",
-                  style: TextStyle(
-                      color: _htTotalColor,
-                      fontSize: _htTotalFontSize)),
-              _htAmt(_hTotal, _htTotalColor,
-                  fs: _htTotalAmtFontSize,
-                  unitColor: _htTotalUnitColor,
-                  unitFs: _htTotalUnitFontSize),
-            ]),
-          ],
-        ]),
+      child: WithdrawalBreakdownCard(
+        startDate: _start,
+        endDate: _end,
+        onPickStart: (d) => setState(() => _start = d),
+        onPickEnd: (d) => setState(() => _end = d),
+        onSearch: () {
+          setState(() {
+            _startApplied = _start;
+            _endApplied = _end;
+          });
+          _loadHistData();
+        },
+        onReset: () {
+          setState(() {
+            _start = _end = _startApplied = _endApplied = null;
+          });
+          _loadHistData();
+        },
+        loading: !_histLoaded,
+        loaded: _histLoaded,
+        gross: _hGross,
+        mission: _hMission,
+        perOrder: _hPOrd,
+        range: _hRng,
+        emp: _hEmp,
+        acc: _hAcc,
+        incomeTax: _hInc,
+        wdFee: _hWd,
+        comm: _hComm,
+        ins: _hIns,
+        lease: _hLease,
+        etc: _hEtc,
+        total: _hTotal,
       ),
     );
   }
 
-  Widget _dateBtn(DateTime? date, String hint, Function(DateTime) onPick) {
-    return GestureDetector(
-      onTap: () async {
-        final p = await showDatePicker(
-          context: context,
-          initialDate: date ?? DateTime.now(),
-          firstDate: DateTime(2026),
-          lastDate: DateTime(2030),
-          builder: (ctx, child) => Theme(
-            data: ThemeData.dark().copyWith(
-                colorScheme: const ColorScheme.dark(primary: _teal)),
-            child: child!,
-          ),
-        );
-        if (p != null) onPick(p);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: _htDatePadH, vertical: _htDatePadV),
-        decoration: BoxDecoration(
-            border: Border.all(
-                color: date != null ? _htDateActiveColor : _htDateBorderColor),
-            borderRadius: BorderRadius.circular(_htDateRadius)),
-        child: Text(date != null ? DateFormat('MM-dd').format(date) : hint,
-            style: TextStyle(
-                color: date != null ? _htDateActiveColor : _htDateHintColor,
-                fontSize: _htDateFontSize)),
-      ),
-    );
-  }
-
-  Widget _smallBtn(String label, VoidCallback onTap, {bool filled = false}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: _htBtnHeight,
-        padding: const EdgeInsets.symmetric(horizontal: _htBtnPadH),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border.all(color: filled ? _htBtnFilledBg : _htBtnLineBorder),
-          borderRadius: BorderRadius.circular(_htBtnRadius),
-        ),
-        alignment: Alignment.center,
-        child: Text(label,
-            style: TextStyle(
-                color: filled ? _htBtnFilledText : _htBtnLineText,
-                fontSize: _htBtnFontSize)),
-      ),
-    );
-  }
 }
 

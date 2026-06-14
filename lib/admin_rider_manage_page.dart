@@ -667,7 +667,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         const SizedBox(height: 6),
         Row(children: [
           Expanded(child: Container(height: 32, decoration: BoxDecoration(color: _surface, border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(7)), padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(children: [const Icon(Icons.event_rounded, color: _text2, size: 14), const SizedBox(width: 4), Expanded(child: Text(lastDate != null ? DateFormat('yyyy-MM-dd').format(lastDate) : "마지막일", textAlign: TextAlign.right, style: const TextStyle(color: _text2, fontSize: _rmLeaseInputFontSize)))]),
+            child: Row(children: [const Icon(Icons.event_rounded, color: _text2, size: 14), const SizedBox(width: 4), Expanded(child: Text(lastDate != null ? DateFormat('yyyy-MM-dd').format(lastDate) : "종료일", textAlign: TextAlign.right, style: const TextStyle(color: _text2, fontSize: _rmLeaseInputFontSize)))]),
           )),
           const SizedBox(width: 8),
           Expanded(child: Row(children: [
