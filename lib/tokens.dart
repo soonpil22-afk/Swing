@@ -18,6 +18,11 @@ const kRed        = Color(0xFFE05252);
 const kBlue       = Color(0xFF5B8DEF); // 미니게임 블록용
 const kGreen      = Color(0xFF5BD08B); // 미니게임 블록용
 
+// 랭킹 메달 — 1·2·3등 금·은·동 (출금랭킹·미니게임랭킹 공용)
+const kRankGold   = Color.fromARGB(255, 241, 201, 97);  // 1등 금
+const kRankSilver = Color.fromARGB(255, 200, 207, 216); // 2등 은
+const kRankBronze = Color.fromARGB(255, 177, 118, 79);  // 3등 동
+
 // ═══ 갭(여백) — 안쪽 8 / 카드사이 8 / 큰구역 10 ═══
 const double kGapInner   = 8;  // 카드 속 헤더↔경계선, 경계선↔내용
 const double kGapCard    = 8;  // 카드 ↔ 카드 사이

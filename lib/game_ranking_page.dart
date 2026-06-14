@@ -13,7 +13,9 @@ const _chip     = kChip;
 const _text     = kText;
 const _text2    = kText2;
 const _teal     = kTeal;
-const _amber    = kAmber;
+const _rankGold   = kRankGold;   // 1등 금
+const _rankSilver = kRankSilver; // 2등 은
+const _rankBronze = kRankBronze; // 3등 동
 const List<BoxShadow> _panelShadow = kPanelShadow;
 const List<BoxShadow> _cardShadow  = kCardShadow;
 
@@ -115,9 +117,14 @@ class _GameRankingPageState extends State<GameRankingPage> {
   Widget _rankRow(int rank, Map<String, dynamic> d, {required bool me}) {
     final name = (d['name'] as String?)?.trim();
     final score = (d['score'] as num?)?.toInt() ?? 0;
-    final medal = rank == 1
-        ? _amber
-        : (rank <= 3 ? _teal : _text2); // 1등 금, 2~3등 민트, 그외 회색
+    // 1·2·3등 = 금·은·동 메달 아이콘 / 그외 = 숫자 (출금랭킹과 동일)
+    final medalColor = rank == 1
+        ? _rankGold
+        : rank == 2
+            ? _rankSilver
+            : rank == 3
+                ? _rankBronze
+                : _text2;
     return Container(
       margin: const EdgeInsets.only(bottom: kGapCard),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -130,10 +137,14 @@ class _GameRankingPageState extends State<GameRankingPage> {
       child: Row(children: [
         SizedBox(
           width: 30,
-          child: Text("$rank",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: medal, fontSize: 16, fontWeight: FontWeight.w800)),
+          child: rank <= 3
+              ? Icon(Icons.military_tech, color: medalColor, size: 26)
+              : Text("$rank",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: medalColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800)),
         ),
         const SizedBox(width: 10),
         Expanded(
