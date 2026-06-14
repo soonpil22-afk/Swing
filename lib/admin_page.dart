@@ -425,7 +425,6 @@ class _AdminPageState extends State<AdminPage> {
       }
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
-      final curWeekStart = weekStart(today);
 
       final Map<String, double> byDay = {};
       final Map<String, Map<String, double>> riderByDate = {}; // 배달날짜 → 기사 → net
@@ -456,8 +455,15 @@ class _AdminPageState extends State<AdminPage> {
         }
       }
 
-      // 일간: 최근 7일
-      final days = List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
+      // 모든 차트·랭킹 기준점 = 마지막 리포트 날짜(데이터 최신일). 없으면 오늘.
+      final dayKeys = byDay.keys.toList()..sort();
+      final lastDay = dayKeys.isNotEmpty
+          ? (DateTime.tryParse(dayKeys.last) ?? today)
+          : today;
+      final curWeekStart = weekStart(lastDay);
+
+      // 일간: 최근 7일 (마지막 리포트 날짜 기준)
+      final days = List.generate(7, (i) => lastDay.subtract(Duration(days: 6 - i)));
       final seriesD = days.map((d) => byDay[dk(d)] ?? 0).toList();
       final labelsD = days.map((d) {
         const wd = ['월', '화', '수', '목', '금', '토', '일'];
@@ -494,7 +500,7 @@ class _AdminPageState extends State<AdminPage> {
           mm[r] = (mm[r] ?? 0) + n;
         });
       });
-      final months = List.generate(7, (i) => DateTime(today.year, today.month - (6 - i), 1));
+      final months = List.generate(7, (i) => DateTime(lastDay.year, lastDay.month - (6 - i), 1));
       final seriesM = months.map((m) => byMonth[DateFormat('yyyy-MM').format(m)] ?? 0).toList();
       final labelsM = months.map((m) => '${m.month}월').toList();
 

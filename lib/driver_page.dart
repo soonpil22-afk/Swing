@@ -644,8 +644,8 @@ class _DriverPageState extends State<DriverPage> {
         dDays.map((d) => wd[d.weekday] ?? '').toList(),
       );
 
-      final back = (today.weekday - DateTime.wednesday + 7) % 7;
-      final curWed = today.subtract(Duration(days: back));
+      final back = (lastDay.weekday - DateTime.wednesday + 7) % 7;
+      final curWed = lastDay.subtract(Duration(days: back));
       final weeks =
           List.generate(7, (i) => curWed.subtract(Duration(days: (6 - i) * 7)));
       final weekly = buildPeriod(
@@ -654,7 +654,7 @@ class _DriverPageState extends State<DriverPage> {
       );
 
       final months =
-          List.generate(7, (i) => DateTime(today.year, today.month - (6 - i), 1));
+          List.generate(7, (i) => DateTime(lastDay.year, lastDay.month - (6 - i), 1));
       final monthly = buildPeriod(
         months.map((m) => byMonth[DateFormat('yyyy-MM').format(m)] ?? 0).toList(),
         months.map((m) => '${m.month}월').toList(),
