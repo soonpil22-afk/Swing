@@ -180,7 +180,7 @@ const Color  _wfPurple      = Color(0xFF9D7BFF); // 보라
 const Color  _wfInnerTop    = Color(0xFF141A30); // 안쪽 배경 위
 const Color  _wfInnerBottom = Color(0xFF10142A); // 안쪽 배경 아래
 const double _wfRadius      = 14;   // 프레임 모서리
-const double _wfBorderWidth = 1.5;  // 테두리(빛) 두께
+const double _wfBorderWidth = 1;  // 테두리(빛) 두께
 const int    _wfFlowMs      = 3500; // 빛 한 바퀴 도는 시간(ms, 작을수록 빠름)
 // 금액 글씨
 const double _wfAmtLeftGap      = 34; // 금액 왼쪽 여백(오른쪽으로 밀기)
