@@ -129,7 +129,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _teal, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(msg, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          Text(msg, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: GlassShineButton(
             label: "확인",
@@ -221,7 +221,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                 horizontal: _wrHeadPadH, vertical: _wrHeadPadV),
             child: Row(children: [
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                RichText(text: TextSpan(style: const TextStyle(fontWeight: FontWeight.w700), children: [
+                Text.rich(TextSpan(style: const TextStyle(fontWeight: FontWeight.w400), children: [
                   TextSpan(text: riderName, style: const TextStyle(color: _wrNameColor, fontSize: _wrNameFontSize)),
                   const TextSpan(text: " 님의 출금 신청!!", style: TextStyle(color: _wrTitleColor, fontSize: _wrTitleFontSize)),
                 ])),
@@ -230,7 +230,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
               ])),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 Text("${NumberFormat('#,###').format(totalAmount)} 원",
-                    style: const TextStyle(color: _wrAmtColor, fontWeight: FontWeight.w700, fontSize: _wrAmtFontSize)),
+                    style: const TextStyle(color: _wrAmtColor, fontWeight: FontWeight.w400, fontSize: _wrAmtFontSize)),
                 if (hasItems)
                   Text("${items.length}일 합산", style: const TextStyle(color: _wrDaysColor, fontSize: _wrDaysFontSize)),
               ]),
@@ -284,7 +284,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                   child: Text("${_fmtC(totalAmount)} 원",
                       style: const TextStyle(
                           color: _wrFinalAmtColor,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w400,
                           fontSize: _wrFinalAmtFontSize)),
                 ),
                 const SizedBox(width: 8),
@@ -348,7 +348,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(children: [
-                            Text(label, style: const TextStyle(color: _wrDtTogLabelColor, fontSize: _wrDtTogFontSize, fontWeight: FontWeight.w500)),
+                            Text(label, style: const TextStyle(color: _wrDtTogLabelColor, fontSize: _wrDtTogFontSize, fontWeight: FontWeight.w400)),
                             const SizedBox(width: 4),
                             Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: tog(k) ? _text2 : _teal, size: _wrDtTogIconSize),
                             const Spacer(),
@@ -376,7 +376,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                               decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(5), border: Border.all(color: _elevated)),
-                              child: Text(iShort, style: const TextStyle(color: _wrItemChipColor, fontSize: _wrItemChipFontSize, fontWeight: FontWeight.w700)),
+                              child: Text(iShort, style: const TextStyle(color: _wrItemChipColor, fontSize: _wrItemChipFontSize, fontWeight: FontWeight.w400)),
                             ),
                             const SizedBox(width: 4),
                             Icon(iExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: iExp ? _text2 : _teal, size: _wrItemChevronSize),
@@ -391,7 +391,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text("배달수수료 (세전)", style: TextStyle(color: _wrDtMainColor, fontSize: _wrDtMainFontSize, fontWeight: FontWeight.w500)),
+                                const Text("배달수수료 (세전)", style: TextStyle(color: _wrDtMainColor, fontSize: _wrDtMainFontSize, fontWeight: FontWeight.w400)),
                                 Text("${_fmtC(iDel)} 원", style: const TextStyle(color: _wrDtMainColor, fontSize: _wrDtMainFontSize)),
                               ]),
                             ),
@@ -422,9 +422,9 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text("소계", style: TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
+                                const Text("소계", style: TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalLabelFontSize, fontWeight: FontWeight.w400)),
                                 // finalAmount에 시간제보험이 이미 빠져 있으므로 리스비·기타만 추가 차감(보험 이중차감 방지)
-                                Text("${_fmtC(iFinal - iLease - iEtc)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w700)),
+                                Text("${_fmtC(iFinal - iLease - iEtc)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w400)),
                               ]),
                             ),
                           ]),
@@ -629,8 +629,8 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
   Widget _row(String label, String value, {Color lc = _text2, Color vc = _text2, bool bold = false, double fs = 12}) =>
       Padding(padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: TextStyle(color: lc, fontSize: fs, fontWeight: bold ? FontWeight.w700 : FontWeight.w400)),
-          Text(value, style: TextStyle(color: vc, fontSize: fs, fontWeight: bold ? FontWeight.w700 : FontWeight.w500)),
+          Text(label, style: TextStyle(color: lc, fontSize: fs, fontWeight: bold ? FontWeight.w400 : FontWeight.w400)),
+          Text(value, style: TextStyle(color: vc, fontSize: fs, fontWeight: bold ? FontWeight.w400 : FontWeight.w400)),
         ]));
 
   Widget _sub(String label, String value) =>
@@ -645,15 +645,15 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
         GestureDetector(onTap: onTap, behavior: HitTestBehavior.opaque,
           child: Padding(padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(children: [
-              Text(label, style: const TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w500)),
+              Text(label, style: const TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w400)),
               const SizedBox(width: 4),
               Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: expanded ? _text2 : _teal, size: 16),
               const Spacer(),
               Text.rich(TextSpan(children: [
                 TextSpan(text: value.endsWith(' 원') ? value.substring(0, value.length - 2) : value,
-                    style: TextStyle(color: vc, fontSize: 12, fontWeight: FontWeight.w600)),
+                    style: TextStyle(color: vc, fontSize: 12, fontWeight: FontWeight.w400)),
                 if (value.endsWith(' 원'))
-                  const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w600)),
+                  const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w400)),
               ])),
             ]))),
         if (expanded)

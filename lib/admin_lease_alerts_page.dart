@@ -104,11 +104,11 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             const Icon(Icons.check_circle_outline_rounded, color: _teal, size: 36),
             const SizedBox(height: 12),
             Text("$riderName 님 ${k.title} $cycle회차",
-                style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w700),
+                style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w400),
                 textAlign: TextAlign.center),
             const SizedBox(height: 4),
             Text("${NumberFormat('#,###').format(amount)}원",
-                style: const TextStyle(color: _teal, fontSize: 17, fontWeight: FontWeight.w700)),
+                style: const TextStyle(color: _teal, fontSize: 17, fontWeight: FontWeight.w400)),
             const SizedBox(height: 6),
             const Text("입금완료 확인 하셨나요!!",
                 style: TextStyle(color: _text, fontSize: 13)),
@@ -157,7 +157,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _elevated, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(msg, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          Text(msg, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: GlassShineButton(
             label: "확인",
@@ -178,7 +178,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
           double labelFs = _laInfoFontSize}) =>
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(label, style: TextStyle(color: labelColor, fontSize: labelFs)),
-        Text(value, style: TextStyle(color: vc, fontSize: _laInfoFontSize, fontWeight: FontWeight.w600)),
+        Text(value, style: TextStyle(color: vc, fontSize: _laInfoFontSize, fontWeight: FontWeight.w400)),
       ]);
 
   // 종류별 상태: 'paid'(기사 입금신고) | 'overdue'(미납부) | 'today'(납부일) | null
@@ -209,7 +209,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
           border: Border.all(color: color)),
       child: Text(label,
           style: TextStyle(
-              color: color, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w700)),
+              color: color, fontSize: _laBadgeFontSize, fontWeight: FontWeight.w400)),
     );
   }
 
@@ -284,7 +284,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                         child: Row(children: [
                           Text(riderName, style: const TextStyle(
                               color: _text,
-                              fontSize: _laRiderNameFontSize, fontWeight: FontWeight.w700)),
+                              fontSize: _laRiderNameFontSize, fontWeight: FontWeight.w400)),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Wrap(
@@ -361,7 +361,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                     style: TextStyle(
                         color: on ? _teal : _text2,
                         fontSize: 14,
-                        fontWeight: on ? FontWeight.w700 : FontWeight.w400))),
+                        fontWeight: on ? FontWeight.w400 : FontWeight.w400))),
           ),
         ),
       );
@@ -432,12 +432,12 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         Row(children: [
           Icon(k.icon, color: k.accent, size: 16),
           const SizedBox(width: 6),
-          Text("${k.title} 전체 현황", style: const TextStyle(color: _laCardTitleColor, fontSize: _laCardTitleFontSize, fontWeight: FontWeight.w700)),
+          Text("${k.title} 전체 현황", style: const TextStyle(color: _laCardTitleColor, fontSize: _laCardTitleFontSize, fontWeight: FontWeight.w400)),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(color: const Color(0xFF18203A), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0x4D303854))),
-            child: Text(typeLabel, style: TextStyle(color: k.accent, fontSize: 11, fontWeight: FontWeight.w600)),
+            child: Text(typeLabel, style: TextStyle(color: k.accent, fontSize: 11, fontWeight: FontWeight.w400)),
           ),
         ]),
         Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 10)),
@@ -456,7 +456,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color: _teal),
             ),
-            child: Text(startShort, style: const TextStyle(color: _teal, fontSize: _laRowFontSize, fontWeight: FontWeight.w600)),
+            child: Text(startShort, style: const TextStyle(color: _teal, fontSize: _laRowFontSize, fontWeight: FontWeight.w400)),
           ),
           const Text("  ~  ", style: TextStyle(color: _text, fontSize: _laRowFontSize)),
           Container(
@@ -471,7 +471,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
             child: Text(endShort, style: TextStyle(
               color: (base.isNotEmpty && dueDates.isNotEmpty && dueDates.last.compareTo(base) < 0 && paidCount < totalCount)
                   ? _amber : _teal,
-              fontSize: _laRowFontSize, fontWeight: FontWeight.w600,
+              fontSize: _laRowFontSize, fontWeight: FontWeight.w400,
             )),
           ),
         ]),
@@ -482,9 +482,9 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           const Text("진행 현황", style: TextStyle(color: _amber, fontSize: _laRowFontSize)),
-          RichText(text: TextSpan(children: [
+          Text.rich(TextSpan(children: [
             TextSpan(text: "$paidCount",
-                style: const TextStyle(color: _amber, fontSize: _laRowValueFontSize, fontWeight: FontWeight.w700)),
+                style: const TextStyle(color: _amber, fontSize: _laRowValueFontSize, fontWeight: FontWeight.w400)),
             TextSpan(text: " / $totalCount $cycleLabel",
                 style: const TextStyle(color: _amber, fontSize: 17)),
           ])),
@@ -503,7 +503,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           const Text("납부 완료", style: TextStyle(color: _amber, fontSize: _laRowFontSize)),
           Text("${NumberFormat('#,###').format(paidAmt)} 원",
-              style: const TextStyle(color: _amber, fontSize: _laRowFontSize, fontWeight: FontWeight.w600)),
+              style: const TextStyle(color: _amber, fontSize: _laRowFontSize, fontWeight: FontWeight.w400)),
         ]),
         if (totalAmt > paidAmt) ...[
           const SizedBox(height: 3),
@@ -539,7 +539,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
                     Expanded(
                         child: Text("$riderName 님이 입금완료하였습니다!\n확인하시고 완료해주세요.",
                             style: const TextStyle(
-                                color: _text, fontSize: 13, height: 1.5, fontWeight: FontWeight.w600))),
+                                color: _text, fontSize: 13, height: 1.5, fontWeight: FontWeight.w400))),
                   ]),
                 ),
                 const SizedBox(height: 10),
@@ -570,7 +570,7 @@ class _LeaseAlertsPageState extends State<LeaseAlertsPage> {
               ),
               alignment: Alignment.center,
               child: const Text("기사 입금 대기중",
-                  style: TextStyle(color: _text2, fontSize: 14, fontWeight: FontWeight.w600)),
+                  style: TextStyle(color: _text2, fontSize: 14, fontWeight: FontWeight.w400)),
             ),
           ],
         ],

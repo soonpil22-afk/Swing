@@ -73,7 +73,7 @@ class FullRankingPage extends StatelessWidget {
                         style: const TextStyle(
                             color: _text,
                             fontSize: 18,
-                            fontWeight: FontWeight.w700)),
+                            fontWeight: FontWeight.w400)),
                   ]),
                 ),
                 const SizedBox(height: _subGapHeaderToDiv),
@@ -117,7 +117,7 @@ class FullRankingPage extends StatelessWidget {
                                               style: TextStyle(
                                                   color: badgeColor,
                                                   fontSize: _rankBadgeFontSize,
-                                                  fontWeight: FontWeight.w700)),
+                                                  fontWeight: FontWeight.w400)),
                                         ),
                                 ),
                                 const SizedBox(width: 12),
@@ -127,7 +127,7 @@ class FullRankingPage extends StatelessWidget {
                                       style: const TextStyle(
                                           color: _rankNameColor,
                                           fontSize: _rankNameFontSize,
-                                          fontWeight: FontWeight.w600)),
+                                          fontWeight: FontWeight.w400)),
                                 ),
                                 Text.rich(TextSpan(children: [
                                   TextSpan(
@@ -136,7 +136,7 @@ class FullRankingPage extends StatelessWidget {
                                       style: const TextStyle(
                                           color: _rankAmtColor,
                                           fontSize: _rankAmtFontSize,
-                                          fontWeight: FontWeight.w700)),
+                                          fontWeight: FontWeight.w400)),
                                   const TextSpan(
                                       text: ' 원',
                                       style: TextStyle(

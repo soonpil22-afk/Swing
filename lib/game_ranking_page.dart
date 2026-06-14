@@ -144,7 +144,7 @@ class _GameRankingPageState extends State<GameRankingPage> {
                   style: TextStyle(
                       color: medalColor,
                       fontSize: 16,
-                      fontWeight: FontWeight.w800)),
+                      fontWeight: FontWeight.w400)),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -153,13 +153,13 @@ class _GameRankingPageState extends State<GameRankingPage> {
               style: TextStyle(
                   color: me ? _teal : _text,
                   fontSize: 14,
-                  fontWeight: FontWeight.w600)),
+                  fontWeight: FontWeight.w400)),
         ),
         Text.rich(TextSpan(children: [
           TextSpan(
               text: "$score",
               style: const TextStyle(
-                  color: _teal, fontSize: 15, fontWeight: FontWeight.w800)),
+                  color: _teal, fontSize: 15, fontWeight: FontWeight.w400)),
           const TextSpan(
               text: " 점",
               style: TextStyle(color: _text, fontSize: 12)),

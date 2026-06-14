@@ -171,19 +171,19 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                     style: TextStyle(
                         color: _greetHelloColor,
                         fontSize: _greetHelloFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
                 TextSpan(
                     text: _greetName,
                     style: TextStyle(
                         color: _greetNameColor,
                         fontSize: _greetNameFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
                 TextSpan(
                     text: _greetSuffixText,
                     style: TextStyle(
                         color: _greetSuffixColor,
                         fontSize: _greetSuffixFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
               ]),
             ),
           ),
@@ -228,7 +228,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                           style: TextStyle(
                               color: _appTitleColor,
                               fontSize: _appTitleFontSize,
-                              fontWeight: FontWeight.w700)),
+                              fontWeight: FontWeight.w400)),
                       const SizedBox(height: 3),
                       Text(isOn ? _appOnDescText : _appOffDescText,
                           style: TextStyle(

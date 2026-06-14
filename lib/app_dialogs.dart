@@ -39,7 +39,7 @@ Future<bool> showExitConfirmDialog(BuildContext context) async {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text("어플을 종료하시겠습니까?",
               style: TextStyle(
-                  color: kText, fontSize: 15, fontWeight: FontWeight.w700),
+                  color: kText, fontSize: 15, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center),
           const SizedBox(height: 20),
           Row(children: [

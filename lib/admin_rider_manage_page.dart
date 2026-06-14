@@ -132,7 +132,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _elevated, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(title, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          Text(title, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: GlassShineButton(
             label: "확인",
@@ -153,7 +153,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
       builder: (ctx) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(margin: const EdgeInsets.only(top: 12), width: 36, height: 4, decoration: BoxDecoration(color: _text2, borderRadius: BorderRadius.circular(2))),
-        const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text("은행 선택", style: TextStyle(color: _teal, fontSize: 14, fontWeight: FontWeight.w700))),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 14), child: Text("은행 선택", style: TextStyle(color: _teal, fontSize: 14, fontWeight: FontWeight.w400))),
         Container(height: 1, color: _elevated),
         Flexible(child: ListView.builder(shrinkWrap: true, itemCount: bankList.length,
           itemBuilder: (ctx, i) => ListTile(dense: true,
@@ -242,7 +242,7 @@ class _RiderManagePageState extends State<RiderManagePage> {
       onTap: onTap,
       child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(6)),
-          child: Text(label, style: TextStyle(color: color, fontSize: _rmHistBtnFontSize, fontWeight: FontWeight.w700))),
+          child: Text(label, style: TextStyle(color: color, fontSize: _rmHistBtnFontSize, fontWeight: FontWeight.w400))),
     );
 
     return Container(
@@ -255,9 +255,9 @@ class _RiderManagePageState extends State<RiderManagePage> {
         iconColor: _text2, collapsedIconColor: _teal,
         leading: Container(width: _rmAvatarSize, height: _rmAvatarSize,
             decoration: BoxDecoration(color: _rmAvatarBg, border: Border.all(color: _rmAvatarBorder), borderRadius: BorderRadius.circular(9)),
-            child: Center(child: Text(initial, style: const TextStyle(color: _rmAvatarText, fontSize: _rmAvatarFontSize, fontWeight: FontWeight.w700)))),
+            child: Center(child: Text(initial, style: const TextStyle(color: _rmAvatarText, fontSize: _rmAvatarFontSize, fontWeight: FontWeight.w400)))),
         title: Row(children: [
-          Flexible(child: Text(nameStr, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _rmNameColor, fontWeight: FontWeight.w700, fontSize: _rmNameFontSize))),
+          Flexible(child: Text(nameStr, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _rmNameColor, fontWeight: FontWeight.w400, fontSize: _rmNameFontSize))),
           const SizedBox(width: 8),
           headBtn("출금내역", _rmHistBtnColor, () => Navigator.push(context, MaterialPageRoute(builder: (_) => RiderHistoryPage(name: nameStr, uid: uid)))),
           const SizedBox(width: 6),
@@ -471,7 +471,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _elevated, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(msg, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          Text(msg, style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: GlassShineButton(label: "확인", onPressed: () => Navigator.pop(ctx), accent: _teal, pill: true, height: 46, fontSize: 14)),
         ]),
@@ -533,7 +533,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _elevated, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text("초기화 확인", style: TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          const Text("초기화 확인", style: TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
           const SizedBox(height: 12),
           Text("${k.title} 설정을 초기화하면\n모든 납부일이 삭제됩니다.", style: const TextStyle(color: _text2, fontSize: 13, height: 1.6), textAlign: TextAlign.center),
           const SizedBox(height: 20),
@@ -570,7 +570,7 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
       child: AnimatedContainer(duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         decoration: BoxDecoration(color: selected ? accent.withValues(alpha: 0.16) : Colors.transparent, border: Border.all(color: selected ? accent.withValues(alpha: 0.6) : _elevated), borderRadius: BorderRadius.circular(5)),
-        child: Text(label, style: TextStyle(color: selected ? accent : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w600)),
+        child: Text(label, style: TextStyle(color: selected ? accent : _text2, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w400)),
       ),
     );
   }
@@ -602,14 +602,14 @@ class _RiderDeductionPageState extends State<RiderDeductionPage> {
       decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: _elevated)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
         Row(children: [
-          Text(k.title, style: const TextStyle(color: _rmLeaseTitleColor, fontSize: _rmLeaseTitleFontSize, fontWeight: FontWeight.w700)),
+          Text(k.title, style: const TextStyle(color: _rmLeaseTitleColor, fontSize: _rmLeaseTitleFontSize, fontWeight: FontWeight.w400)),
           const Spacer(),
           GestureDetector(
             onTap: () { if (s.editing) { _save(k, s); } else { setState(() => s.editing = true); } },
             child: AnimatedContainer(duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
               decoration: BoxDecoration(color: s.editing ? _teal : Colors.transparent, border: Border.all(color: _elevated), borderRadius: BorderRadius.circular(6)),
-              child: Text(s.editing ? "저장" : "수정", style: TextStyle(color: s.editing ? _surface : _teal, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w700)),
+              child: Text(s.editing ? "저장" : "수정", style: TextStyle(color: s.editing ? _surface : _teal, fontSize: _rmLeaseBtnFontSize, fontWeight: FontWeight.w400)),
             ),
           ),
           const SizedBox(width: 4),

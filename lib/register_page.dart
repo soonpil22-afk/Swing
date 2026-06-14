@@ -222,7 +222,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         title: Text(title,
             style: const TextStyle(
-                color: _teal, fontSize: 14, fontWeight: FontWeight.w700)),
+                color: _teal, fontSize: 14, fontWeight: FontWeight.w400)),
         content: Text(msg,
             style: const TextStyle(color: _text, fontSize: 13, height: 1.6)),
         actions: [
@@ -232,7 +232,7 @@ class _RegisterPageState extends State<RegisterPage> {
               if (title == "요청 완료") Navigator.pop(context);
             },
             child: const Text("확인",
-                style: TextStyle(color: _teal, fontWeight: FontWeight.w700)),
+                style: TextStyle(color: _teal, fontWeight: FontWeight.w400)),
           ),
         ],
       ),
@@ -288,7 +288,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: TextStyle(
                               color: _hdrTitleColor,
                               fontSize: _hdrTitleFontSize,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w400,
                               letterSpacing: _hdrTitleLetterSp)),
                       SizedBox(height: _hdrTitleSubGap),
                       Text("모든 입력 항목은 필수입니다.",
@@ -382,7 +382,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: TextStyle(
                         color: _loginLinkColor,
                         fontSize: _loginLinkFontSize,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w400,
                         decoration: TextDecoration.underline,
                         decorationColor: _loginLinkColor,
                         decorationThickness: 1.2,
@@ -466,7 +466,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             color: sel ? _choiceSelColor : _choiceUnselColor,
                             fontSize: _choiceFontSize,
                             fontWeight:
-                                sel ? FontWeight.w700 : FontWeight.w500)),
+                                sel ? FontWeight.w400 : FontWeight.w400)),
                   ]),
                 ),
               ),

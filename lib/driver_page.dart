@@ -662,7 +662,7 @@ class _DriverPageState extends State<DriverPage> {
                     const Icon(Icons.moped, color: _pink, size: 20),
                     const SizedBox(width: 8),
                     Text("$title 납부일 안내",
-                        style: const TextStyle(color: _pink, fontSize: 15, fontWeight: FontWeight.w700)),
+                        style: const TextStyle(color: _pink, fontSize: 15, fontWeight: FontWeight.w400)),
                   ]),
                   const SizedBox(height: 4),
                   const Divider(color: _elevated, height: 16),
@@ -811,19 +811,19 @@ class _DriverPageState extends State<DriverPage> {
                     style: TextStyle(
                         color: _greetHelloColor,
                         fontSize: _greetHelloFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
                 TextSpan(
                     text: _riderName.isNotEmpty ? _riderName : _greetNameFallback,
                     style: const TextStyle(
                         color: _greetNameColor,
                         fontSize: _greetNameFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
                 const TextSpan(
                     text: _greetSuffixText,
                     style: TextStyle(
                         color: _greetSuffixColor,
                         fontSize: _greetSuffixFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
               ]),
             ),
           ),
@@ -895,14 +895,14 @@ class _DriverPageState extends State<DriverPage> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
                 padding: const EdgeInsets.only(left: _chartTotalLeftPad),
-                child: RichText(
-                  text: TextSpan(children: [
+                child: Text.rich(
+                  TextSpan(children: [
                     TextSpan(
                       text: _comma(headlineAmount),
                       style: const TextStyle(
                           color: _chartTotalColor,
                           fontSize: _chartTotalFontSize,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w400,
                           letterSpacing: _chartTotalLetterSp),
                     ),
                     const TextSpan(
@@ -924,7 +924,7 @@ class _DriverPageState extends State<DriverPage> {
                     style: TextStyle(
                         color: accent,
                         fontSize: _chartDeltaFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
                 const SizedBox(width: _chartCompareGap),
                 Text(_periodCompare[_period],
                     style: TextStyle(color: accent, fontSize: _chartCompareFontSize)),
@@ -973,7 +973,7 @@ class _DriverPageState extends State<DriverPage> {
                   style: TextStyle(
                       color: sel ? c : _togUnselColor,
                       fontSize: _togFontSize,
-                      fontWeight: sel ? FontWeight.w700 : FontWeight.w500)),
+                      fontWeight: sel ? FontWeight.w400 : FontWeight.w400)),
             ),
           );
         }),
@@ -995,7 +995,7 @@ class _DriverPageState extends State<DriverPage> {
             style: TextStyle(
                 color: c,
                 fontSize: _targetFontSize,
-                fontWeight: FontWeight.w600)),
+                fontWeight: FontWeight.w400)),
       ),
     );
   }
@@ -1021,7 +1021,7 @@ class _DriverPageState extends State<DriverPage> {
                 style: TextStyle(
                     color: _wdlgTitleColor,
                     fontSize: _wdlgTitleFontSize,
-                    fontWeight: FontWeight.w700),
+                    fontWeight: FontWeight.w400),
                 textAlign: TextAlign.center),
             const SizedBox(height: _wdlgTitleGap),
             Row(children: [
@@ -1153,7 +1153,7 @@ class _DriverPageState extends State<DriverPage> {
             style: const TextStyle(
                 color: _tgtDlgTitleColor,
                 fontSize: _tgtDlgTitleFontSize,
-                fontWeight: FontWeight.w700)),
+                fontWeight: FontWeight.w400)),
         content: TextField(
           controller: ctrl,
           keyboardType: TextInputType.number,
@@ -1216,7 +1216,7 @@ class _DriverPageState extends State<DriverPage> {
               style: TextStyle(
                   color: tipColor,
                   fontSize: _ringPctFontSize,
-                  fontWeight: FontWeight.w700)),
+                  fontWeight: FontWeight.w400)),
           const SizedBox(height: 1),
           Text('달성', style: TextStyle(color: tipColor, fontSize: _ringLabelFontSize)),
         ]),
@@ -1257,7 +1257,7 @@ class _DriverPageState extends State<DriverPage> {
               style: TextStyle(
                   color: _ntcTitleColor,
                   fontSize: _ntcTitleFontSize,
-                  fontWeight: FontWeight.w700)),
+                  fontWeight: FontWeight.w400)),
           const Spacer(),
           GestureDetector(
             onTap: _showNoticeDialog,
@@ -1328,7 +1328,7 @@ class _DriverPageState extends State<DriverPage> {
                       style: TextStyle(
                           color: _ntcDlgTitleColor,
                           fontSize: _ntcDlgTitleFontSize,
-                          fontWeight: FontWeight.w700)),
+                          fontWeight: FontWeight.w400)),
                 ]),
                 const SizedBox(height: 12),
                 Flexible(
@@ -1377,7 +1377,7 @@ class _DriverPageState extends State<DriverPage> {
             Expanded(
               child: Text(title,
                   style: const TextStyle(
-                      color: _text, fontSize: 15, fontWeight: FontWeight.w600)),
+                      color: _text, fontSize: 15, fontWeight: FontWeight.w400)),
             ),
             const Icon(Icons.chevron_right, color: _text2, size: 22),
           ]),
@@ -1429,7 +1429,7 @@ class _DriverPageState extends State<DriverPage> {
           const SizedBox(height: 6),
           Text(label,
               style: const TextStyle(
-                  color: _text, fontSize: 11, fontWeight: FontWeight.w600)),
+                  color: _text, fontSize: 11, fontWeight: FontWeight.w400)),
         ]),
       );
 
@@ -1461,7 +1461,7 @@ class _DriverPageState extends State<DriverPage> {
       Stack(clipBehavior: Clip.none, children: [
         Text(text,
             style: const TextStyle(
-                color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
+                color: _text, fontSize: 14, fontWeight: FontWeight.w400)),
         if (due)
           Positioned(
             right: -12,
@@ -1473,7 +1473,7 @@ class _DriverPageState extends State<DriverPage> {
               child: const Center(
                   child: Text("N",
                       style: TextStyle(
-                          color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
+                          color: _text, fontSize: 8, fontWeight: FontWeight.w400))),
             ),
           ),
       ]);
@@ -1512,7 +1512,7 @@ class _DriverPageState extends State<DriverPage> {
                     padding: EdgeInsets.symmetric(horizontal: 14),
                     child: Text('/',
                         style: TextStyle(
-                            color: _text2, fontSize: 14, fontWeight: FontWeight.w600)),
+                            color: _text2, fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                   _lblBadge('기타', etcDue),
                   const Spacer(),
@@ -1602,7 +1602,7 @@ class _DriverPageState extends State<DriverPage> {
             const Icon(Icons.power_settings_new_rounded, color: _red, size: 48),
             const SizedBox(height: 16),
             const Text("서비스 점검 중",
-                style: TextStyle(color: _text, fontSize: 18, fontWeight: FontWeight.w700)),
+                style: TextStyle(color: _text, fontSize: 18, fontWeight: FontWeight.w400)),
             const SizedBox(height: 8),
             const Text("현재 서비스가 일시 중단되었습니다.\n잠시 후 다시 시도해 주세요.",
                 style: TextStyle(color: _text2, fontSize: 13, height: 1.6),
@@ -1710,13 +1710,13 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: _wfAmtFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w400)),
                 const TextSpan(
                     text: ' 원',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: _wfAmtUnitFontSize,
-                        fontWeight: FontWeight.w600)),
+                        fontWeight: FontWeight.w400)),
               ]),
             ),
           ),
@@ -1753,7 +1753,7 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: _wfBtnFontSize,
-                          fontWeight: FontWeight.w800)),
+                          fontWeight: FontWeight.w400)),
                 ),
               ),
             )
@@ -1771,7 +1771,7 @@ class _WithdrawFrameState extends State<_WithdrawFrame>
                   style: const TextStyle(
                       color: _text2,
                       fontSize: _wfBtnFontSize,
-                      fontWeight: FontWeight.w700)),
+                      fontWeight: FontWeight.w400)),
             ),
         ]),
       ),
@@ -1888,7 +1888,7 @@ class _AreaChartPainter extends CustomPainter {
         style: const TextStyle(
             color: _chartPeakLabelColor,
             fontSize: _chartPeakLabelFontSize,
-            fontWeight: FontWeight.w700),
+            fontWeight: FontWeight.w400),
       ),
       textDirection: TextDirection.ltr,
     )..layout();

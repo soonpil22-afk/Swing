@@ -362,7 +362,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
               SizedBox(width: 4),
               Text("랭킹",
                   style: TextStyle(
-                      color: _teal, fontSize: 13, fontWeight: FontWeight.w700)),
+                      color: _teal, fontSize: 13, fontWeight: FontWeight.w400)),
             ]),
           ),
         ]),
@@ -373,7 +373,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
             style: const TextStyle(color: _amber, fontSize: 12)),
         Text(value,
             style: const TextStyle(
-                color: _amber, fontSize: 15, fontWeight: FontWeight.w800)),
+                color: _amber, fontSize: 15, fontWeight: FontWeight.w400)),
       ]);
 
   Widget _boardArea() => Center(
@@ -403,7 +403,7 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
   Widget _readyOverlay() => _overlayBox([
         const Text("블록 퍼즐",
             style: TextStyle(
-                color: _text, fontSize: 22, fontWeight: FontWeight.w800)),
+                color: _text, fontSize: 22, fontWeight: FontWeight.w400)),
         const SizedBox(height: 8),
         const Text("줄을 채워 점수를 올리세요!",
             style: TextStyle(color: _amber, fontSize: 13)),
@@ -422,17 +422,17 @@ class _BlockPuzzleGameState extends State<BlockPuzzleGame>
         const Text("플랫폼 알림루틴 설정필수!!",
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: _pink, fontSize: 12, fontWeight: FontWeight.w700)),
+                color: _pink, fontSize: 12, fontWeight: FontWeight.w400)),
       ]);
 
   Widget _overOverlay() => _overlayBox([
         const Text("게임 오버",
             style: TextStyle(
-                color: _pink, fontSize: 22, fontWeight: FontWeight.w800)),
+                color: _pink, fontSize: 22, fontWeight: FontWeight.w400)),
         const SizedBox(height: 10),
         Text("점수  $_score",
             style: const TextStyle(
-                color: _text, fontSize: 16, fontWeight: FontWeight.w700)),
+                color: _text, fontSize: 16, fontWeight: FontWeight.w400)),
         const SizedBox(height: 18),
         GlassShineButton(
           label: "다시하기",

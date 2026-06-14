@@ -246,14 +246,14 @@ class _LoginPageState extends State<LoginPage> {
           side: const BorderSide(color: _elevated, width: 1),
         ),
         title: Text(title,
-            style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w700)),
+            style: const TextStyle(color: _teal, fontSize: 15, fontWeight: FontWeight.w400)),
         content: Text(msg,
             style: const TextStyle(color: _text, fontSize: 13, height: 1.6)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: const Text("확인",
-                style: TextStyle(color: _teal, fontWeight: FontWeight.w700)),
+                style: TextStyle(color: _teal, fontWeight: FontWeight.w400)),
           ),
         ],
       ),
@@ -352,7 +352,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: _signupLinkColor,
                         fontSize: _signupLinkFontSize,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w400,
                         decoration: TextDecoration.underline,
                         decorationColor: _signupLinkColor,
                         decorationThickness: 1.2,
@@ -364,9 +364,9 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: _gapSignupToBrand),
               // ── 3. 브랜드 문구 ──
-              RichText(
-                text: const TextSpan(
-                  style: TextStyle(fontSize: _brandFontSize, fontWeight: FontWeight.w700, letterSpacing: _brandLetterSp),
+              Text.rich(
+                const TextSpan(
+                  style: TextStyle(fontSize: _brandFontSize, fontWeight: FontWeight.w400, letterSpacing: _brandLetterSp),
                   children: [
                     TextSpan(text: "SWING ", style: TextStyle(color: _brandSwingColor)),
                     TextSpan(text: "TIGER", style: TextStyle(color: _brandTigerColor)),

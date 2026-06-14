@@ -29,7 +29,7 @@ void showInfoDialog(BuildContext context, String msg) {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(msg,
               style: const TextStyle(
-                  color: _teal, fontSize: 15, fontWeight: FontWeight.w700),
+                  color: _teal, fontSize: 15, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(
@@ -58,7 +58,7 @@ Widget pageHeader(BuildContext context, String title) => Padding(
           onPressed: () => Navigator.pop(context),
         ),
         Text(title,
-            style: const TextStyle(color: _text, fontSize: 18, fontWeight: FontWeight.w700)),
+            style: const TextStyle(color: _text, fontSize: 18, fontWeight: FontWeight.w400)),
       ]),
     );
 
@@ -71,5 +71,5 @@ Widget statusBadge(String label, Color c) => Container(
         border: Border.all(color: c),
       ),
       child: Text(label,
-          style: TextStyle(color: c, fontSize: 11, fontWeight: FontWeight.w700)),
+          style: TextStyle(color: c, fontSize: 11)),
     );

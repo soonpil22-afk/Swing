@@ -295,9 +295,9 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                       icon: const Icon(Icons.arrow_back, color: _text, size: 18),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    RichText(
-                        text: TextSpan(
-                            style: const TextStyle(fontWeight: FontWeight.w700),
+                    Text.rich(
+                        TextSpan(
+                            style: const TextStyle(fontWeight: FontWeight.w400),
                             children: [
                           TextSpan(text: widget.name,
                               style: const TextStyle(color: _teal, fontSize: 18)),
@@ -328,7 +328,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                     unselectedLabelColor: _tabUnselColor,
                     dividerColor: Colors.transparent,
                     labelStyle:
-                        const TextStyle(fontWeight: FontWeight.w700, fontSize: _tabFontSize),
+                        const TextStyle(fontWeight: FontWeight.w400, fontSize: _tabFontSize),
                     unselectedLabelStyle:
                         const TextStyle(fontWeight: FontWeight.w400, fontSize: _tabFontSize),
                     tabs: const [Tab(text: "정산 내역"), Tab(text: "누적 정산")],
@@ -406,14 +406,14 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                   border: Border.all(color: _elevated),
                 ),
                 child: Text(dateLabel,
-                    style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(color: _rhDateChipColor, fontSize: _rhDateChipFontSize, fontWeight: FontWeight.w400)),
               ),
               const SizedBox(width: 8),
               if (items.isNotEmpty)
                 Text("  ${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
               const Spacer(),
               Text("${_fmtC(amount)} 원",
-                  style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w400)),
               const SizedBox(width: 6),
               Icon(logExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
                   color: logExp ? _text2 : _teal, size: 18),
@@ -496,7 +496,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(children: [
-              Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w500)),
+              Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w400)),
               const SizedBox(width: 4),
               Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: tog(k) ? _text2 : _teal, size: _rhTogIconSize),
               const Spacer(),
@@ -522,7 +522,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(5), border: Border.all(color: _elevated)),
-              child: Text(iShort, style: const TextStyle(color: _rhItemChipColor, fontSize: _rhItemChipFontSize, fontWeight: FontWeight.w700)),
+              child: Text(iShort, style: const TextStyle(color: _rhItemChipColor, fontSize: _rhItemChipFontSize, fontWeight: FontWeight.w400)),
             ),
             const Spacer(),
             Container(
@@ -533,7 +533,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                 border: Border.all(color: _rhPaidBadgeColor),
               ),
               child: const Text("입금완료",
-                  style: TextStyle(color: _rhPaidBadgeColor, fontSize: _rhPaidFontSize, fontWeight: FontWeight.w700)),
+                  style: TextStyle(color: _rhPaidBadgeColor, fontSize: _rhPaidFontSize, fontWeight: FontWeight.w400)),
             ),
           ]),
         ),
@@ -544,7 +544,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w500)),
+                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w400)),
                 Text("${_fmtC(iDel)} 원", style: const TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize)),
               ]),
             ),
@@ -575,9 +575,9 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("소계", style: TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalLabelFontSize, fontWeight: FontWeight.w700)),
+                const Text("소계", style: TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalLabelFontSize, fontWeight: FontWeight.w400)),
                 Text("${_fmtC((leasePerDay > 0 || etcPerDay > 0) ? actualFinal : iFinal)} 원",
-                    style: const TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalValueFontSize, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalValueFontSize, fontWeight: FontWeight.w400)),
               ]),
             ),
           ]),
@@ -681,7 +681,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w500)),
+                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w400)),
                 Text("${_fmtC(_gross)} 원", style: const TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize)),
               ]),
             ),
@@ -725,8 +725,8 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
       {Color lc = _text2, Color vc = _text2, bool bold = false, double fs = 12}) =>
       Padding(padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: TextStyle(color: lc, fontSize: fs, fontWeight: bold ? FontWeight.w700 : FontWeight.w400)),
-          Text(value, style: TextStyle(color: vc, fontSize: fs, fontWeight: bold ? FontWeight.w700 : FontWeight.w500)),
+          Text(label, style: TextStyle(color: lc, fontSize: fs, fontWeight: bold ? FontWeight.w400 : FontWeight.w400)),
+          Text(value, style: TextStyle(color: vc, fontSize: fs, fontWeight: bold ? FontWeight.w400 : FontWeight.w400)),
         ]));
 
   Widget _sub(String label, String value) =>
@@ -749,7 +749,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
         GestureDetector(onTap: onTap, behavior: HitTestBehavior.opaque,
           child: Padding(padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(children: [
-              Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w500)),
+              Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w400)),
               const SizedBox(width: 4),
               Icon(expanded ? Icons.expand_less : Icons.expand_more,
                   color: expanded ? _text2 : _teal, size: _rhTogIconSize),
@@ -805,7 +805,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
           alignment: Alignment.center,
           child: Text(label, style: TextStyle(
               color: filled ? _teal : _pink,
-              fontSize: 12, fontWeight: FontWeight.w600)),
+              fontSize: 12, fontWeight: FontWeight.w400)),
         ),
       );
 }

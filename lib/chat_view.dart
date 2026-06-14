@@ -162,7 +162,7 @@ class _ChatViewState extends State<ChatView> {
                 style: TextStyle(
                     color: isRead ? _text2 : _teal,
                     fontSize: 9,
-                    fontWeight: FontWeight.w700)),
+                    fontWeight: FontWeight.w400)),
           ),
           Flexible(child: bubble),
         ],

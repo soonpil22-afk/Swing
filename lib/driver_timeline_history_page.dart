@@ -120,12 +120,12 @@ class _DriverTimelineHistoryPageState extends State<DriverTimelineHistoryPage> {
           Expanded(
             child: Text(_fmtDate(date),
                 style: const TextStyle(
-                    color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
+                    color: _text, fontSize: 14, fontWeight: FontWeight.w400)),
           ),
           Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Text(_fmtDist(route),
                 style: const TextStyle(
-                    color: _teal, fontSize: 14, fontWeight: FontWeight.w800)),
+                    color: _teal, fontSize: 14, fontWeight: FontWeight.w400)),
             const SizedBox(height: 2),
             Text("$count개 지점",
                 style: const TextStyle(color: _amber, fontSize: 11)),

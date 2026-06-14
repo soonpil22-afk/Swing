@@ -63,7 +63,7 @@ class DriverPartnersPage extends StatelessWidget {
                             style: TextStyle(
                                 color: _pink,
                                 fontSize: 18,
-                                fontWeight: FontWeight.w800)),
+                                fontWeight: FontWeight.w400)),
                       ),
                       for (var i = 0; i < _partners.length; i++)
                         _item(i + 1, _partners[i]),
@@ -93,13 +93,13 @@ class DriverPartnersPage extends StatelessWidget {
             child: Text("$n",
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    color: _teal, fontSize: 15, fontWeight: FontWeight.w800)),
+                    color: _teal, fontSize: 15, fontWeight: FontWeight.w400)),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(label,
                 style: const TextStyle(
-                    color: _text, fontSize: 14, fontWeight: FontWeight.w600)),
+                    color: _text, fontSize: 14, fontWeight: FontWeight.w400)),
           ),
         ]),
       );

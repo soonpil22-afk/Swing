@@ -1104,7 +1104,7 @@ class _AdminPageState extends State<AdminPage> {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: _elevated, width: 1)),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(title, style: const TextStyle(color: _pink, fontSize: 15, fontWeight: FontWeight.w700), textAlign: TextAlign.center),
+          Text(title, style: const TextStyle(color: _pink, fontSize: 15, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: GlassShineButton(
             label: "확인",
@@ -1241,7 +1241,7 @@ class _AdminPageState extends State<AdminPage> {
           ),
           Text(title,
               style: const TextStyle(
-                  color: _text, fontSize: 18, fontWeight: FontWeight.w700)),
+                  color: _text, fontSize: 18, fontWeight: FontWeight.w400)),
         ]),
       );
 
@@ -1291,7 +1291,7 @@ class _AdminPageState extends State<AdminPage> {
                       style: const TextStyle(
                           color: _chAmtColor,
                           fontSize: _chAmtFontSize,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w400,
                           letterSpacing: -0.5)),
                   const TextSpan(
                       text: ' 원',
@@ -1312,7 +1312,7 @@ class _AdminPageState extends State<AdminPage> {
                       style: TextStyle(
                           color: periodColor,
                           fontSize: _chDeltaFontSize,
-                          fontWeight: FontWeight.w700)),
+                          fontWeight: FontWeight.w400)),
                   const SizedBox(width: _chGapPctCompare),
                   Text(compare,
                       style: TextStyle(
@@ -1374,7 +1374,7 @@ class _AdminPageState extends State<AdminPage> {
               style: TextStyle(
                   color: _rankTitleColor,
                   fontSize: _rankTitleFontSize,
-                  fontWeight: FontWeight.w700)),
+                  fontWeight: FontWeight.w400)),
           const Spacer(),
           GestureDetector(
             onTap: () => _openFullRanking(list),
@@ -1427,7 +1427,7 @@ class _AdminPageState extends State<AdminPage> {
                   style: TextStyle(
                       color: sel ? c : _chTogUnselColor,
                       fontSize: _chTogFontSize,
-                      fontWeight: sel ? FontWeight.w700 : FontWeight.w500)),
+                      fontWeight: sel ? FontWeight.w400 : FontWeight.w400)),
             ),
           );
         }),
@@ -1455,7 +1455,7 @@ class _AdminPageState extends State<AdminPage> {
                       style: TextStyle(
                           color: badgeColor,
                           fontSize: _rankBadgeFontSize,
-                          fontWeight: FontWeight.w700)),
+                          fontWeight: FontWeight.w400)),
                 ),
         ),
         const SizedBox(width: _rankGapBadgeName),
@@ -1465,7 +1465,7 @@ class _AdminPageState extends State<AdminPage> {
               style: const TextStyle(
                   color: _rankNameColor,
                   fontSize: _rankNameFontSize,
-                  fontWeight: FontWeight.w600)),
+                  fontWeight: FontWeight.w400)),
         ),
         Text.rich(TextSpan(children: [
           TextSpan(
@@ -1473,7 +1473,7 @@ class _AdminPageState extends State<AdminPage> {
               style: const TextStyle(
                   color: _rankAmtColor,
                   fontSize: _rankAmtFontSize,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w400,
                   fontFeatures: [FontFeature.tabularFigures()])),
           const TextSpan(
               text: ' 원',
@@ -1505,7 +1505,7 @@ class _AdminPageState extends State<AdminPage> {
         ),
         child: Text('목표 ${NumberFormat('#,###').format(_ringTargets[_chartPeriod])} 원',
             style: TextStyle(
-                color: c, fontSize: _targetFontSize, fontWeight: FontWeight.w600)),
+                color: c, fontSize: _targetFontSize, fontWeight: FontWeight.w400)),
       ),
     );
   }
@@ -1521,7 +1521,7 @@ class _AdminPageState extends State<AdminPage> {
             style: TextStyle(
                 color: tip,
                 fontSize: _ringPctFontSize,
-                fontWeight: FontWeight.w700)),
+                fontWeight: FontWeight.w400)),
         const SizedBox(height: 1),
         Text('달성', style: TextStyle(color: tip, fontSize: _ringLabelFontSize)),
       ]),
@@ -1550,7 +1550,7 @@ class _AdminPageState extends State<AdminPage> {
                 color: _tgtDlgBorderColor, width: _tgtDlgBorderWidth)),
         title: Text('${names[_chartPeriod]} 목표 금액',
             style: const TextStyle(
-                color: _text, fontSize: 15, fontWeight: FontWeight.w700)),
+                color: _text, fontSize: 15, fontWeight: FontWeight.w400)),
         content: TextField(
           controller: ctrl,
           keyboardType: TextInputType.number,
@@ -1630,7 +1630,7 @@ class _AdminPageState extends State<AdminPage> {
                   style: TextStyle(
                       color: sel ? c : _chTogUnselColor,
                       fontSize: _chTogFontSize,
-                      fontWeight: sel ? FontWeight.w700 : FontWeight.w500)),
+                      fontWeight: sel ? FontWeight.w400 : FontWeight.w400)),
             ),
           );
         }),
@@ -1661,19 +1661,19 @@ class _AdminPageState extends State<AdminPage> {
                 style: TextStyle(
                     color: _greetHelloColor,
                     fontSize: _greetHelloFontSize,
-                    fontWeight: FontWeight.w700)),
+                    fontWeight: FontWeight.w400)),
             TextSpan(
                 text: FirebaseAuth.instance.currentUser?.displayName ?? _greetNameFallback,
                 style: const TextStyle(
                     color: _greetNameColor,
                     fontSize: _greetNameFontSize,
-                    fontWeight: FontWeight.w700)),
+                    fontWeight: FontWeight.w400)),
             const TextSpan(
                 text: _greetSuffixText,
                 style: TextStyle(
                     color: _greetSuffixColor,
                     fontSize: _greetSuffixFontSize,
-                    fontWeight: FontWeight.w700)),
+                    fontWeight: FontWeight.w400)),
           ])),
         ),
         GlassShineButton(
@@ -1751,7 +1751,7 @@ class _AdminPageState extends State<AdminPage> {
             child: Center(
                 child: Text(c > 9 ? "9+" : "$c",
                     style: const TextStyle(
-                        color: _text, fontSize: 8, fontWeight: FontWeight.w700))),
+                        color: _text, fontSize: 8, fontWeight: FontWeight.w400))),
           ),
         ),
     ]);
@@ -1850,7 +1850,7 @@ class _AdminPageState extends State<AdminPage> {
             style: const TextStyle(
                 color: _menuTitleColor,
                 fontSize: _menuItemLabelFontSize,
-                fontWeight: FontWeight.w600)),
+                fontWeight: FontWeight.w400)),
       ]),
     );
   }
@@ -1875,7 +1875,7 @@ class _AdminPageState extends State<AdminPage> {
               unselectedLabelColor: _tabUnselColor,
               dividerColor: Colors.transparent,
               labelStyle:
-                  const TextStyle(fontWeight: FontWeight.w700, fontSize: _tabFontSize),
+                  const TextStyle(fontWeight: FontWeight.w400, fontSize: _tabFontSize),
               unselectedLabelStyle:
                   const TextStyle(fontWeight: FontWeight.w400, fontSize: _tabFontSize),
               tabs: tabs.map((t) => Tab(text: t)).toList(),
@@ -1966,10 +1966,10 @@ class _AdminPageState extends State<AdminPage> {
                 child: Row(children: [
                   const Icon(Icons.person_add, color: _ntJoinIconColor, size: 20),
                   const SizedBox(width: 6),
-                  const Text("가입신청  ", style: TextStyle(color: _ntJoinLabelColor, fontSize: _ntJoinLabelFontSize, fontWeight: FontWeight.w600)),
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(fontSize: _ntJoinNameFontSize, fontWeight: FontWeight.w600),
+                  const Text("가입신청  ", style: TextStyle(color: _ntJoinLabelColor, fontSize: _ntJoinLabelFontSize, fontWeight: FontWeight.w400)),
+                  Text.rich(
+                    TextSpan(
+                      style: const TextStyle(fontSize: _ntJoinNameFontSize, fontWeight: FontWeight.w400),
                       children: [
                         TextSpan(text: "${u['name']}", style: const TextStyle(color: _ntJoinNameColor)),
                         const TextSpan(text: " 님", style: TextStyle(color: _ntJoinLabelColor, fontSize: _ntJoinSuffixFontSize)),
@@ -1982,7 +1982,7 @@ class _AdminPageState extends State<AdminPage> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(color: _ntApproveBg, borderRadius: BorderRadius.circular(7)),
-                      child: const Text("승인", style: TextStyle(color: _ntApproveText, fontSize: _ntJoinBtnFontSize, fontWeight: FontWeight.w700)),
+                      child: const Text("승인", style: TextStyle(color: _ntApproveText, fontSize: _ntJoinBtnFontSize, fontWeight: FontWeight.w400)),
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -2008,7 +2008,7 @@ class _AdminPageState extends State<AdminPage> {
     Text(label, style: const TextStyle(color: _ntStatLabelColor, fontSize: _ntStatLabelFontSize)),
     const SizedBox(height: 2),
     Text(NumberFormat('#,###').format(value),
-        style: const TextStyle(color: _ntStatValueColor, fontSize: _ntStatValueFontSize, fontWeight: FontWeight.w700)),
+        style: const TextStyle(color: _ntStatValueColor, fontSize: _ntStatValueFontSize, fontWeight: FontWeight.w400)),
   ]);
 
   // === 공지사항 박스 =================================================================================
@@ -2023,7 +2023,7 @@ class _AdminPageState extends State<AdminPage> {
         Row(children: [
           const Icon(Icons.campaign_outlined, color: _ntTitleIconColor, size: 24),
           const SizedBox(width: 8),
-          const Text("공지사항", style: TextStyle(color: _ntTitleColor, fontSize: _ntTitleFontSize, fontWeight: FontWeight.w700)),
+          const Text("공지사항", style: TextStyle(color: _ntTitleColor, fontSize: _ntTitleFontSize, fontWeight: FontWeight.w400)),
           const Spacer(),
           GestureDetector(
             onTap: () { if (_isEditingNotice) { _saveNotice(); } else { setState(() => _isEditingNotice = true); } },
@@ -2036,7 +2036,7 @@ class _AdminPageState extends State<AdminPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(_isEditingNotice ? "저장" : "수정",
-                  style: TextStyle(color: _isEditingNotice ? _ntEditActiveText : _ntEditColor, fontSize: _ntEditFontSize, fontWeight: FontWeight.w700)),
+                  style: TextStyle(color: _isEditingNotice ? _ntEditActiveText : _ntEditColor, fontSize: _ntEditFontSize, fontWeight: FontWeight.w400)),
             ),
           ),
         ]),
@@ -2112,7 +2112,7 @@ class _AdminPageState extends State<AdminPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("배달수수료 (세전)", style: TextStyle(color: _whGrossColor, fontSize: _whGrossFontSize, fontWeight: FontWeight.w500)),
+                const Text("배달수수료 (세전)", style: TextStyle(color: _whGrossColor, fontSize: _whGrossFontSize, fontWeight: FontWeight.w400)),
                 Text("${_fmtC(lGross)} 원", style: const TextStyle(color: _whGrossColor, fontSize: _whGrossFontSize)),
               ]),
             ),
@@ -2197,7 +2197,7 @@ class _AdminPageState extends State<AdminPage> {
               child: Text(isEditingRates ? "저장" : "수정",
                   style: TextStyle(
                       color: _settingsLocked ? _text2 : (isEditingRates ? _stEditActiveText : _stEditColor),
-                      fontSize: _stEditFontSize, fontWeight: FontWeight.w700)),
+                      fontSize: _stEditFontSize, fontWeight: FontWeight.w400)),
             ),
           ),
         ]),
@@ -2274,10 +2274,10 @@ class _AdminPageState extends State<AdminPage> {
   Widget _promoHeader(String title, bool isPerOrder) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
     Text(title, style: const TextStyle(color: _stLabelColor, fontSize: _stLabelFontSize)),
     if (isEditingRates) Row(children: [
-      GestureDetector(onTap: () => _addRow(isPerOrder), child: const Text("+ 추가", style: TextStyle(color: _stPromoActionColor, fontSize: _stPromoActionFontSize, fontWeight: FontWeight.w700))),
+      GestureDetector(onTap: () => _addRow(isPerOrder), child: const Text("+ 추가", style: TextStyle(color: _stPromoActionColor, fontSize: _stPromoActionFontSize, fontWeight: FontWeight.w400))),
       const SizedBox(width: 8),
       GestureDetector(onTap: () { final list = isPerOrder ? perOrderList : incentiveList; if (list.length > 1) _removeRow(isPerOrder, list.length - 1); },
-          child: const Text("- 제거", style: TextStyle(color: _stPromoActionColor, fontSize: _stPromoActionFontSize, fontWeight: FontWeight.w700))),
+          child: const Text("- 제거", style: TextStyle(color: _stPromoActionColor, fontSize: _stPromoActionFontSize, fontWeight: FontWeight.w400))),
     ]),
   ]);
 
@@ -2334,8 +2334,8 @@ class _AdminPageState extends State<AdminPage> {
   Widget _row(String label, String value, {Color lc = _text2, Color vc = _text2, bool bold = false, double fs = 12}) =>
       Padding(padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: TextStyle(color: lc, fontSize: fs, fontWeight: bold ? FontWeight.w700 : FontWeight.w400)),
-          Text(value, style: TextStyle(color: vc, fontSize: fs, fontWeight: bold ? FontWeight.w700 : FontWeight.w500)),
+          Text(label, style: TextStyle(color: lc, fontSize: fs, fontWeight: bold ? FontWeight.w400 : FontWeight.w400)),
+          Text(value, style: TextStyle(color: vc, fontSize: fs, fontWeight: bold ? FontWeight.w400 : FontWeight.w400)),
         ]));
 
   Widget _sub(String label, String value) => Padding(padding: const EdgeInsets.symmetric(vertical: 3),
@@ -2356,7 +2356,7 @@ class _AdminPageState extends State<AdminPage> {
         GestureDetector(onTap: onTap, behavior: HitTestBehavior.opaque,
           child: Padding(padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(children: [
-              Text(label, style: const TextStyle(color: _whTogLabelColor, fontSize: _whTogFontSize, fontWeight: FontWeight.w500)),
+              Text(label, style: const TextStyle(color: _whTogLabelColor, fontSize: _whTogFontSize, fontWeight: FontWeight.w400)),
               const SizedBox(width: 4),
               Icon(expanded ? Icons.expand_less : Icons.expand_more, color: expanded ? _text2 : _teal, size: _whTogIconSize),
               const Spacer(),
@@ -2378,7 +2378,7 @@ class _AdminPageState extends State<AdminPage> {
     child: Container(height: _whBtnHeight, padding: const EdgeInsets.symmetric(horizontal: _whBtnPadH),
       decoration: BoxDecoration(color: Colors.transparent, border: Border.all(color: filled ? _whBtnFilledBg : _whBtnLineBorder), borderRadius: BorderRadius.circular(_whBtnRadius)),
       alignment: Alignment.center,
-      child: Text(label, style: TextStyle(color: filled ? _whBtnFilledText : _whBtnLineText, fontSize: _whBtnFontSize, fontWeight: FontWeight.w600)),
+      child: Text(label, style: TextStyle(color: filled ? _whBtnFilledText : _whBtnLineText, fontSize: _whBtnFontSize, fontWeight: FontWeight.w400)),
     ),
   );
 }
@@ -2532,7 +2532,7 @@ class _AdminAreaChartPainter extends CustomPainter {
         style: const TextStyle(
             color: _chartPeakLabelColor,
             fontSize: _chartPeakLabelFontSize,
-            fontWeight: FontWeight.w700),
+            fontWeight: FontWeight.w400),
       ),
       textDirection: TextDirection.ltr,
     )..layout();

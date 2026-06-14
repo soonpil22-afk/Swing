@@ -46,7 +46,7 @@ class UserApprovalPage extends StatelessWidget {
                   border: Border.all(color: Colors.white10),
                 ),
                 child: ListTile(
-                  title: Text(userData['email'] ?? '이메일 없음', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  title: Text(userData['email'] ?? '이메일 없음', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w400)),
                   subtitle: const Text("가입 요청 중...", style: TextStyle(color: Colors.white38, fontSize: 12)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

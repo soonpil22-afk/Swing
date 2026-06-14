@@ -59,30 +59,30 @@ const double _lsCardPadL = 16;  // 안쪽 여백 왼
 const double _lsCardPadT = 14;  // 안쪽 여백 위
 const double _lsCardPadR = 16;  // 안쪽 여백 오른
 const double _lsCardPadB = 16;  // 안쪽 여백 아래
-const double _lsHeadIconSize    = 16;      // 아이콘 크기
+const double _lsHeadIconSize    = 26;      // 아이콘 크기
 const Color  _lsHeadTitleColor  = _text;   // "리스비 전체 현황" 글씨 색
-const double _lsHeadTitleFontSize = 13;    // 제목 글씨 크기
+const double _lsHeadTitleFontSize = 14;    // 제목 글씨 크기
 const Color  _lsTypeChipBg      = _chip;   // 타입 칩 배경
 const Color  _lsTypeChipBorder  = _elevated; // 타입 칩 테두리
-const double _lsTypeChipFontSize = 11;     // 타입 칩 글씨 크기
+const double _lsTypeChipFontSize = 14;     // 타입 칩 글씨 크기
 const Color  _lsInfoLabelColor  = _text;   // 정보 라벨 색
 const Color  _lsInfoValueColor  = _text;   // 정보 값 색
 const Color  _lsInfoPinkColor   = _pink;  // "출금 시 자동공제" 값 색
-const double _lsInfoFontSize    = 12;      // 정보 글씨 크기
+const double _lsInfoFontSize    = 14;      // 정보 글씨 크기
 const Color  _lsPayMethodLabelColor    = _pink; // "납부 방식" 라벨 글씨 색
 const double _lsPayMethodLabelFontSize = 14;     // "납부 방식" 라벨 글씨 크기
 const Color  _lsProgressColor   = _amber;  // "진행 현황" 글씨·숫자 색
-const double _lsProgressLabelFontSize = 13; // "진행 현황" 라벨 크기
-const double _lsProgressNumFontSize = 13;  // 완료 숫자 크기
+const double _lsProgressLabelFontSize = 14; // "진행 현황" 라벨 크기
+const double _lsProgressNumFontSize = 14;  // 완료 숫자 크기
 const double _lsProgressTotalFontSize = 14; // "/ 총" 숫자 크기
 const Color  _lsBarFillColor    = _teal;   // 진행바 채움 색
 const Color  _lsBarTrackColor   = _chip;   // 진행바 배경 색
 const double _lsBarHeight       = 6;       // 진행바 높이
 const double _lsBarRadius       = 4;       // 진행바 모서리
 const Color  _lsPaidLabelColor  = _amber;  // "납부 완료" 라벨·금액 색
-const double _lsPaidFontSize    = 12;      // "납부 완료" 글씨 크기
+const double _lsPaidFontSize    = 14;      // "납부 완료" 글씨 크기
 const Color  _lsRemainColor     = _teal;   // "잔여 금액" 라벨·금액 색
-const double _lsRemainFontSize  = 12;      // "잔여 금액" 글씨 크기
+const double _lsRemainFontSize  = 14;      // "잔여 금액" 글씨 크기
 
 // 공제 종류 (리스비 / 기타)
 class _DKind {
@@ -307,7 +307,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
               style: const TextStyle(
                   color: _lpEmptyTitleColor,
                   fontSize: _lpEmptyTitleFontSize,
-                  fontWeight: FontWeight.w600)),
+                  fontWeight: FontWeight.w400)),
         ]),
       );
 
@@ -327,7 +327,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
           labelColor: _teal,
           unselectedLabelColor: _text2,
           dividerColor: Colors.transparent,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          labelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
           unselectedLabelStyle:
               const TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
           tabs: const [Tab(text: '리스비'), Tab(text: '기타')],
@@ -390,7 +390,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
                 style: TextStyle(
                     color: c,
                     fontSize: _lpOverTitleFontSize,
-                    fontWeight: FontWeight.w700)),
+                    fontWeight: FontWeight.w400)),
             Text(sub,
                 style: const TextStyle(
                     color: _lpOverSubColor, fontSize: _lpOverSubFontSize)),
@@ -436,8 +436,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
           Text("${k.title} 전체 현황",
               style: const TextStyle(
                   color: _lsHeadTitleColor,
-                  fontSize: _lsHeadTitleFontSize,
-                  fontWeight: FontWeight.w700)),
+                  fontSize: _lsHeadTitleFontSize)),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -448,8 +447,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
             child: Text(typeLabel,
                 style: TextStyle(
                     color: k.accent,
-                    fontSize: _lsTypeChipFontSize,
-                    fontWeight: FontWeight.w600)),
+                    fontSize: _lsTypeChipFontSize)),
           ),
         ]),
         Container(
@@ -475,13 +473,11 @@ class _DriverLeasePageState extends State<DriverLeasePage>
           const Text("진행 현황",
               style: TextStyle(
                   color: _lsProgressColor, fontSize: _lsProgressLabelFontSize)),
-          RichText(
-              text: TextSpan(children: [
+          Text.rich(TextSpan(children: [
             TextSpan(text: "$paidCount",
                 style: const TextStyle(
                     color: _lsProgressColor,
-                    fontSize: _lsProgressNumFontSize,
-                    fontWeight: FontWeight.w700)),
+                    fontSize: _lsProgressNumFontSize)),
             TextSpan(text: " / $totalCount $cycleLabel",
                 style: const TextStyle(
                     color: _lsProgressColor, fontSize: _lsProgressTotalFontSize)),
@@ -503,8 +499,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
           Text("${NumberFormat('#,###').format(paidAmt)} 원",
               style: const TextStyle(
                   color: _lsPaidLabelColor,
-                  fontSize: _lsPaidFontSize,
-                  fontWeight: FontWeight.w600)),
+                  fontSize: _lsPaidFontSize)),
         ]),
         if (totalAmt > paidAmt) ...[
           const SizedBox(height: 3),
@@ -557,7 +552,7 @@ class _DriverLeasePageState extends State<DriverLeasePage>
                       style: TextStyle(
                           color: _text,
                           fontSize: _lpPaidFontSize,
-                          fontWeight: FontWeight.w600))),
+                          fontWeight: FontWeight.w400))),
             ),
         ],
       ]),
@@ -573,6 +568,6 @@ class _DriverLeasePageState extends State<DriverLeasePage>
             style: TextStyle(color: labelColor, fontSize: labelFs)),
         Text(value,
             style: TextStyle(
-                color: vc, fontSize: _lsInfoFontSize, fontWeight: FontWeight.w600)),
+                color: vc, fontSize: _lsInfoFontSize)),
       ]);
 }

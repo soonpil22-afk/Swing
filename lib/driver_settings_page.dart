@@ -105,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
             style: TextStyle(
                 color: valueColor ?? _siValueColor,
                 fontSize: _siValueFontSize,
-                fontWeight: FontWeight.w600)),
+                fontWeight: FontWeight.w400)),
       );
 
   // 라벨 + 값박스 (전체폭: 값박스가 남는 폭만큼 늘어남)
@@ -214,7 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       style: TextStyle(
                                           color: _spHeadTitleColor,
                                           fontSize: _spHeadTitleFontSize,
-                                          fontWeight: FontWeight.w700)),
+                                          fontWeight: FontWeight.w400)),
                                 ]),
                               ),
                               Container(

@@ -97,13 +97,13 @@ class ChatListPage extends StatelessWidget {
                         Row(children: [
                           Text(name, style: TextStyle(
                               color: unread ? _csNameUnread : _csNameColor,
-                              fontSize: _csNameFontSize, fontWeight: FontWeight.w700)),
+                              fontSize: _csNameFontSize, fontWeight: FontWeight.w400)),
                           if (unread) ...[
                             const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(color: _csNewBg, borderRadius: BorderRadius.circular(8)),
-                              child: const Text("NEW", style: TextStyle(color: _csNewText, fontSize: _csNewFontSize, fontWeight: FontWeight.w700)),
+                              child: const Text("NEW", style: TextStyle(color: _csNewText, fontSize: _csNewFontSize, fontWeight: FontWeight.w400)),
                             ),
                           ],
                           const Spacer(),

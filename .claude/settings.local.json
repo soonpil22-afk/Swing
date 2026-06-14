@@ -124,7 +124,8 @@
       "Bash(sed -n '1638,1646p' lib/driver_page.dart)",
       "Bash(sed -i '287,326d;412,416d;458,459d;768,772d' lib/driver_page.dart)",
       "Bash(sed -n '283,288p' lib/driver_page.dart)",
-      "Bash(sed -n '368,375p' lib/driver_page.dart)"
+      "Bash(sed -n '368,375p' lib/driver_page.dart)",
+      "Bash(sed -i -E 's/FontWeight\\\\.\\(w300|w500|w600|w700|w800|w900|bold\\)/FontWeight.w400/g' lib/*.dart && echo \"=== 변경 후 남은 굵기\\(w400 외\\) ===\" && grep -rEoh \"FontWeight\\\\.\\(w300|w500|w600|w700|w800|w900|bold\\)\" lib/*.dart | sort | uniq -c; echo \"\\(위에 아무것도 없으면 0개 = 성공\\)\")"
     ]
   }
 }

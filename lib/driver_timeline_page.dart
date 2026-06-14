@@ -85,7 +85,7 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Text("지난 기록이 중단됐어요.\n이어서 다시 시작할까요?",
                 style: TextStyle(
-                    color: _pink, fontSize: 15, fontWeight: FontWeight.w700),
+                    color: _pink, fontSize: 15, fontWeight: FontWeight.w400),
                 textAlign: TextAlign.center),
             const SizedBox(height: 20),
             Row(children: [
@@ -207,7 +207,7 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
             style: TextStyle(
                 color: recording ? _pink : _text,
                 fontSize: 13,
-                fontWeight: FontWeight.w700)),
+                fontWeight: FontWeight.w400)),
         const Spacer(),
         Text("오늘 ${_route.length}개 지점 · ${DateFormat('M.d').format(DateTime.now())}",
             style: const TextStyle(color: _text, fontSize: 12)),
@@ -245,7 +245,7 @@ class _DriverTimelinePageState extends State<DriverTimelinePage> {
       const Text("기록 시작 전 위치 권한 설정 → 항상 허용",
           textAlign: TextAlign.center,
           style: TextStyle(
-              color: _pink, fontSize: 12, fontWeight: FontWeight.w600)),
+              color: _pink, fontSize: 12, fontWeight: FontWeight.w400)),
     ]);
   }
 }

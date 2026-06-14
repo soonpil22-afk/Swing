@@ -44,7 +44,7 @@ Widget adminPanelScaffold(BuildContext context, String title, Widget child,
                   ),
                   Text(title,
                       style: const TextStyle(
-                          color: _text, fontSize: 18, fontWeight: FontWeight.w700)),
+                          color: _text, fontSize: 18, fontWeight: FontWeight.w400)),
                 ]),
               ),
               Container(

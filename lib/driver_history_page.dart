@@ -68,16 +68,16 @@ const Color  _stCardBorderOpen  = _elevated; // 펼친 상태 테두리
 const Color  _stCardBorderClose = _elevated;  // 접힌 상태 테두리
 const double _stCardRadius      = 12;  // 카드 모서리
 const double _stCardGap         = kGapCard;   // 카드 사이 간격
-const double _stCardHeadPadH    = 4;   // 카드 머리 좌우 여백
+const double _stCardHeadPadH    = 14;  // 카드 머리 좌우 여백 (본문과 정렬)
 const double _stCardHeadPadV    = 12;  // 카드 머리 위아래 여백
 const Color  _stDateChipBg      = _chip;   // 날짜 칩 배경
 const Color  _stDateChipBorder  = _elevated; // 날짜 칩 테두리
 const Color  _stDateChipText    = _teal;   // 날짜 칩 글씨 색
-const double _stDateChipFontSize = 12;     // 날짜 칩 글씨 크기
+const double _stDateChipFontSize = 13;     // 날짜 칩 글씨 크기
 const Color  _stDayCountColor   = _amber;  // "N일" 글씨 색
-const double _stDayCountFontSize = 11;     // "N일" 글씨 크기
+const double _stDayCountFontSize = 13;     // "N일" 글씨 크기
 const Color  _stHeadAmtColor    = _text;   // 머리 금액 색
-const double _stHeadAmtFontSize = 16;      // 머리 금액 크기
+const double _stHeadAmtFontSize = 13;      // 머리 금액 크기
 const double _stBodyPadL = 14;  // 상세 안쪽 여백 왼
 const double _stBodyPadT = 10;  // 상세 안쪽 여백 위
 const double _stBodyPadR = 14;  // 상세 안쪽 여백 오른
@@ -85,9 +85,9 @@ const double _stBodyPadB = 14;  // 상세 안쪽 여백 아래
 const Color  _stDayChipBg       = _chip;   // 일자 칩 배경
 const Color  _stDayChipBorder   = _elevated; // 일자 칩 테두리
 const Color  _stDayChipText     = _teal;   // 일자 칩 글씨 색
-const double _stDayChipFontSize = 11;      // 일자 칩 글씨 크기
-const double _stRowFontSize     = 12;      // 행 라벨 글씨 크기
-const double _stRowAmtFontSize  = 16;      // 행 금액 글씨 크기
+const double _stDayChipFontSize = 14;      // 일자 칩(헤더 밑 날짜) 글씨 크기
+const double _stRowFontSize     = 14;      // 행 라벨 글씨 크기
+const double _stRowAmtFontSize  = 14;      // 행 금액(+ 원) 글씨 크기
 const Color  _stRowLabelColor   = _text;   // 기본 라벨 색
 const Color  _stRowPinkColor    = _pink;   // 세금/수수료/공제 라벨 색
 const double _stToggleIconSize  = 15;      // 토글 화살표 크기
@@ -97,14 +97,14 @@ const double _stSubBoxRadius    = 8;       // 하위 박스 모서리
 const Color  _stSubRowColor     = _text2;  // 하위 행 금액 색
 const Color  _stSubLabelColor   = _text2;  // 하위 행 라벨 색
 const double _stSubRowFontSize  = 12;      // 하위 행 라벨 크기
-const double _stSubAmtFontSize  = 15;      // 하위 행 금액 크기
+const double _stSubAmtFontSize  = 12;      // 하위 행 금액 크기
 const Color  _stSubAmtUnitColor     = _text2; // 하위 행 " 원" 글씨 색
-const double _stSubAmtUnitFontSize  = 13;    // 하위 행 " 원" 글씨 크기
+const double _stSubAmtUnitFontSize  = 12;    // 하위 행 " 원" 글씨 크기
 const Color  _stSubtotalColor   = _teal;   // "소계" 글씨/금액 색
-const double _stSubtotalFontSize = 14;     // "소계" 라벨 크기
-const double _stSubtotalAmtFontSize = 18;  // "소계" 금액 크기
+const double _stSubtotalFontSize = 16;     // "소계" 라벨 크기
+const double _stSubtotalAmtFontSize = 16;  // "소계" 금액 크기
 const Color  _stSubtotalUnitColor    = _teal; // "소계" " 원" 글씨 색
-const double _stSubtotalUnitFontSize = 15;    // "소계" " 원" 글씨 크기
+const double _stSubtotalUnitFontSize = 16;    // "소계" " 원" 글씨 크기
 const Color  _stAmtUnitColor    = _text;   // " 원" 글씨 색(기본·기타 행)
 // ── 추가. 미출금(23시 마감 경과) 상태 표시 ──
 const Color  _stUnpaidColor   = _purple;  // "미출금" 배지/글씨 색 (퍼플)
@@ -433,7 +433,7 @@ class _HistoryPageState extends State<HistoryPage>
                     unselectedLabelColor: _hpTabUnselColor,
                     dividerColor: Colors.transparent,
                     labelStyle: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: _hpTabFontSize),
+                        fontWeight: FontWeight.w400, fontSize: _hpTabFontSize),
                     unselectedLabelStyle: const TextStyle(
                         fontWeight: FontWeight.w400, fontSize: _hpTabFontSize),
                     tabs: const [Tab(text: _hpTab1Text), Tab(text: _hpTab2Text)],
@@ -455,15 +455,14 @@ class _HistoryPageState extends State<HistoryPage>
 
   // ── 정산탭 전용 공통 함수 ──
   Widget _stAmt(double v, Color numColor,
-      {double fs = 13, bool bold = false, Color? unitColor, double? unitFs, bool signed = false}) {
-    return RichText(
-      text: TextSpan(children: [
+      {double fs = 13, Color? unitColor, double? unitFs, bool signed = false}) {
+    return Text.rich(
+      TextSpan(children: [
         TextSpan(
           text: (signed && v < 0 ? '-' : '') + fmtAbs(v),
           style: TextStyle(
               color: numColor,
-              fontSize: fs,
-              fontWeight: bold ? FontWeight.w700 : FontWeight.w500),
+              fontSize: fs),
         ),
         TextSpan(
           text: ' 원',
@@ -483,8 +482,7 @@ class _HistoryPageState extends State<HistoryPage>
           Text(label,
               style: TextStyle(
                   color: labelColor,
-                  fontSize: _stRowFontSize,
-                  fontWeight: FontWeight.w500)),
+                  fontSize: _stRowFontSize)),
           _stAmt(v, vc, fs: _stRowAmtFontSize),
         ]),
       );
@@ -500,8 +498,7 @@ class _HistoryPageState extends State<HistoryPage>
           Text(label,
               style: const TextStyle(
                   color: _stRowLabelColor,
-                  fontSize: _stRowFontSize,
-                  fontWeight: FontWeight.w500)),
+                  fontSize: _stRowFontSize)),
           const SizedBox(width: 4),
           Icon(exp ? Icons.expand_less : Icons.expand_more,
               color: exp ? _text2 : _teal, size: _stToggleIconSize),
@@ -564,7 +561,7 @@ class _HistoryPageState extends State<HistoryPage>
             style: TextStyle(
                 color: _stEmptyTitleColor,
                 fontSize: _stEmptyTitleFontSize,
-                fontWeight: FontWeight.w600)),
+                fontWeight: FontWeight.w400)),
         SizedBox(height: 6),
         Text("관리자가 정산 데이터를 업로드하면 표시됩니다.",
             style: TextStyle(color: _stEmptySubColor, fontSize: _stEmptySubFontSize)),
@@ -677,8 +674,7 @@ class _HistoryPageState extends State<HistoryPage>
                 child: Text(dateLabel,
                     style: const TextStyle(
                         color: _stDateChipText,
-                        fontSize: _stDateChipFontSize,
-                        fontWeight: FontWeight.w700)),
+                        fontSize: _stDateChipFontSize)),
               ),
               const SizedBox(width: 8),
               Text("${items.length}일",
@@ -687,7 +683,7 @@ class _HistoryPageState extends State<HistoryPage>
               const Spacer(),
               statusBadge(status, stColor),
               const SizedBox(width: 8),
-              _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, bold: true, signed: true),
+              _stAmt(amount, _stHeadAmtColor, fs: _stHeadAmtFontSize, signed: true),
             ]),
           ),
         ),
@@ -757,8 +753,7 @@ class _HistoryPageState extends State<HistoryPage>
                       child: Text(dateShort,
                           style: const TextStyle(
                               color: _stDayChipText,
-                              fontSize: _stDayChipFontSize,
-                              fontWeight: FontWeight.w600)),
+                              fontSize: _stDayChipFontSize)),
                     ),
                     _stDetailRow("배달수수료 (세전)", del, _stRowLabelColor,
                         labelColor: _stRowLabelColor),
@@ -797,8 +792,7 @@ class _HistoryPageState extends State<HistoryPage>
                       const Text("소계",
                           style: TextStyle(
                               color: _stSubtotalColor,
-                              fontSize: _stSubtotalFontSize,
-                              fontWeight: FontWeight.w600)),
+                              fontSize: _stSubtotalFontSize)),
                       _stAmt(del + prm - tax - fee - iDedu, _stSubtotalColor,
                           fs: _stSubtotalAmtFontSize,
                           unitColor: _stSubtotalUnitColor,
@@ -817,15 +811,14 @@ class _HistoryPageState extends State<HistoryPage>
 
   // ── 출금탭 전용 공통 함수 ──
   Widget _htAmt(double v, Color numColor,
-      {double fs = 13, bool bold = false, Color? unitColor, double? unitFs}) {
-    return RichText(
-      text: TextSpan(children: [
+      {double fs = 13, Color? unitColor, double? unitFs}) {
+    return Text.rich(
+      TextSpan(children: [
         TextSpan(
           text: fmtAbs(v),
           style: TextStyle(
               color: numColor,
-              fontSize: fs,
-              fontWeight: bold ? FontWeight.w700 : FontWeight.w500),
+              fontSize: fs),
         ),
         TextSpan(
           text: ' 원',
@@ -845,8 +838,7 @@ class _HistoryPageState extends State<HistoryPage>
           Text(label,
               style: TextStyle(
                   color: labelColor,
-                  fontSize: _htRowFontSize,
-                  fontWeight: FontWeight.w500)),
+                  fontSize: _htRowFontSize)),
           _htAmt(v, vc, fs: _htRowAmtFontSize),
         ]),
       );
@@ -862,8 +854,7 @@ class _HistoryPageState extends State<HistoryPage>
           Text(label,
               style: const TextStyle(
                   color: _htRowLabelColor,
-                  fontSize: _htRowFontSize,
-                  fontWeight: FontWeight.w500)),
+                  fontSize: _htRowFontSize)),
           const SizedBox(width: 4),
           Icon(exp ? Icons.expand_less : Icons.expand_more,
               color: exp ? _text2 : _teal, size: _htToggleIconSize),
@@ -978,11 +969,9 @@ class _HistoryPageState extends State<HistoryPage>
               const Text("총 출금금액",
                   style: TextStyle(
                       color: _htTotalColor,
-                      fontSize: _htTotalFontSize,
-                      fontWeight: FontWeight.w700)),
+                      fontSize: _htTotalFontSize)),
               _htAmt(_hTotal, _htTotalColor,
                   fs: _htTotalAmtFontSize,
-                  bold: true,
                   unitColor: _htTotalUnitColor,
                   unitFs: _htTotalUnitFontSize),
             ]),
@@ -1038,8 +1027,7 @@ class _HistoryPageState extends State<HistoryPage>
         child: Text(label,
             style: TextStyle(
                 color: filled ? _htBtnFilledText : _htBtnLineText,
-                fontSize: _htBtnFontSize,
-                fontWeight: FontWeight.w600)),
+                fontSize: _htBtnFontSize)),
       ),
     );
   }

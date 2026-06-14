@@ -27,7 +27,7 @@ class GlassShineButton extends StatefulWidget {
     this.height = 52,
     this.radius = 15,
     this.fontSize = 16,
-    this.fontWeight = FontWeight.w700,
+    this.fontWeight = FontWeight.w400,
     this.loading = false,
     this.pill = false,
   });
