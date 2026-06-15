@@ -18,6 +18,9 @@ const kRed        = Color(0xFFE05252);
 const kBlue       = Color(0xFF5B8DEF); // 미니게임 블록용
 const kGreen      = Color(0xFF5BD08B); // 미니게임 블록용
 
+// ═══ 시맨틱(역할) 토큰 — 원시색에 "역할" 이름을 부여 ═══
+const kBorderActive = kTeal; // 강조/활성 테두리 (안읽음·출금요청·납부 박스 등)
+
 // 랭킹 메달 — 1·2·3등 금·은·동 (출금랭킹·미니게임랭킹 공용)
 const kRankGold   = Color.fromARGB(255, 241, 201, 97);  // 1등 금
 const kRankSilver = Color.fromARGB(255, 200, 207, 216); // 2등 은

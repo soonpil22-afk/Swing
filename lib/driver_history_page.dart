@@ -7,6 +7,7 @@ import 'tokens.dart';
 import 'driver_common.dart';
 import 'settlement.dart';
 import 'withdrawal_breakdown_card.dart';
+import 'settlement_day_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _appBg     = kAppBg;
@@ -17,7 +18,6 @@ const _elevated  = kElevated;
 const _text      = kText;
 const _text2     = kText2;
 const _teal      = kTeal;
-const _purple    = kPurple;
 const _amber     = kAmber;
 const _pink      = kPink;
 const Color _bgScaffold = _appBg;
@@ -83,32 +83,8 @@ const double _stBodyPadL = 14;  // 상세 안쪽 여백 왼
 const double _stBodyPadT = 10;  // 상세 안쪽 여백 위
 const double _stBodyPadR = 14;  // 상세 안쪽 여백 오른
 const double _stBodyPadB = 14;  // 상세 안쪽 여백 아래
-const Color  _stDayChipBg       = _surface;   // 일자 칩 배경
-const Color  _stDayChipBorder   = _elevated; // 일자 칩 테두리
-const Color  _stDayChipText     = _teal;   // 일자 칩 글씨 색
-const double _stDayChipFontSize = 14;      // 일자 칩(헤더 밑 날짜) 글씨 크기
-const double _stRowFontSize     = 14;      // 행 라벨 글씨 크기
-const double _stRowAmtFontSize  = 14;      // 행 금액(+ 원) 글씨 크기
-const Color  _stRowLabelColor   = _text;   // 기본 라벨 색
-const Color  _stRowPinkColor    = _pink;   // 세금/수수료/공제 라벨 색
-const double _stToggleIconSize  = 15;      // 토글 화살표 크기
-const Color  _stSubBoxBg        = _appBg;  // 하위 박스 배경
-const Color  _stSubBoxBorder    = _elevated; // 하위 박스 테두리
-const double _stSubBoxRadius    = 8;       // 하위 박스 모서리
-const Color  _stSubRowColor     = _text2;  // 하위 행 금액 색
-const Color  _stSubLabelColor   = _text2;  // 하위 행 라벨 색
-const double _stSubRowFontSize  = 12;      // 하위 행 라벨 크기
-const double _stSubAmtFontSize  = 12;      // 하위 행 금액 크기
-const Color  _stSubAmtUnitColor     = _text2; // 하위 행 " 원" 글씨 색
-const double _stSubAmtUnitFontSize  = 12;    // 하위 행 " 원" 글씨 크기
-const Color  _stSubtotalColor   = _teal;   // "소계" 글씨/금액 색
-const double _stSubtotalFontSize = 16;     // "소계" 라벨 크기
-const double _stSubtotalAmtFontSize = 16;  // "소계" 금액 크기
-const Color  _stSubtotalUnitColor    = _teal; // "소계" " 원" 글씨 색
-const double _stSubtotalUnitFontSize = 16;    // "소계" " 원" 글씨 크기
 const Color  _stAmtUnitColor    = _text;   // " 원" 글씨 색(기본·기타 행)
 // ── 추가. 미출금(23시 마감 경과) 상태 표시 ──
-const Color  _stUnpaidColor   = _purple;  // "미출금" 배지/글씨 색 (퍼플)
 const String _stUnpaidLabel   = '미출금';  // 미출금 상태 표시 문구
 const int    _stCutoffHour    = 23;       // 출금 마감 시각(23시)
 
@@ -133,7 +109,6 @@ class _HistoryPageState extends State<HistoryPage>
   List<Map<String, dynamic>> _settlements = [];
   bool _settleLoaded = false;
   final Map<String, bool> _settleExp = {};
-  final Map<String, bool> _itemToggles = {};
 
   // 업로드된 현재 미출금(정산 대기)
   List<Map<String, dynamic>> _pendingItems = [];
@@ -430,62 +405,6 @@ class _HistoryPageState extends State<HistoryPage>
     );
   }
 
-  Widget _stDetailRow(String label, double v, Color vc, {Color labelColor = _stRowLabelColor}) =>
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label,
-              style: TextStyle(
-                  color: labelColor,
-                  fontSize: _stRowFontSize)),
-          _stAmt(v, vc, fs: _stRowAmtFontSize),
-        ]),
-      );
-
-  Widget _stToggleRow(String key, String label, double v, Color vc) {
-    final exp = _itemToggles[key] ?? false;
-    return GestureDetector(
-      onTap: () => setState(() => _itemToggles[key] = !exp),
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(children: [
-          Text(label,
-              style: const TextStyle(
-                  color: _stRowLabelColor,
-                  fontSize: _stRowFontSize)),
-          const SizedBox(width: 4),
-          Icon(exp ? Icons.expand_less : Icons.expand_more,
-              color: exp ? _text2 : _teal, size: _stToggleIconSize),
-          const Spacer(),
-          _stAmt(v, vc, fs: _stRowAmtFontSize),
-        ]),
-      ),
-    );
-  }
-
-  Widget _stSubGroup(List<Widget> children) => Container(
-        margin: const EdgeInsets.only(bottom: 4),
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        decoration: BoxDecoration(
-            color: _stSubBoxBg,
-            borderRadius: BorderRadius.circular(_stSubBoxRadius),
-            border: Border.all(color: _stSubBoxBorder)),
-        child: Column(children: children),
-      );
-
-  Widget _stSubRow(String label, double v, Color vc) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label,
-              style: const TextStyle(
-                  color: _stSubLabelColor, fontSize: _stSubRowFontSize)),
-          _stAmt(v, vc,
-              fs: _stSubAmtFontSize,
-              unitColor: _stSubAmtUnitColor,
-              unitFs: _stSubAmtUnitFontSize),
-        ]),
-      );
 
   // 추가. 미출금 항목이 23시 마감을 지났는지 판별
   //  · items의 가장 최근 날짜가 '오늘'이 아니면  → 마감 지남(미출금)
@@ -584,9 +503,9 @@ class _HistoryPageState extends State<HistoryPage>
     final stColor = status == '신청대기'
         ? _amber
         : status == '입금대기'
-            ? _pink
+            ? _amber
             : status == _stUnpaidLabel
-                ? _stUnpaidColor      // 미출금 = 퍼플
+                ? _pink               // 미출금 = pink
                 : _teal;
 
     String dateLabel;
@@ -681,85 +600,28 @@ class _HistoryPageState extends State<HistoryPage>
                     : (items.isNotEmpty ? etcDedu / items.length : 0.0);
                 final iDedu = ins + dailyLease + dailyEtc;
 
-                final promoK = '${docId}_${i}_promo';
-                final taxK = '${docId}_${i}_tax';
-                final commK = '${docId}_${i}_comm';
-                final deduK = '${docId}_${i}_dedu';
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (i > 0)
-                      Container(
-                        height: 1,
-                        color: _elevated,
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(children: [
-                        Container(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: _stDayChipBg,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: _stDayChipBorder),
-                          ),
-                          child: Text(dateShort,
-                              style: const TextStyle(
-                                  color: _stDayChipText,
-                                  fontSize: _stDayChipFontSize)),
-                        ),
-                        const Spacer(),
-                        statusBadge(status, stColor),
-                      ]),
-                    ),
-                    _stDetailRow("배달수수료 (세전)", del, _stRowLabelColor,
-                        labelColor: _stRowLabelColor),
-                    const SizedBox(height: 2),
-                    _stToggleRow(promoK, "지원금합계", prm, _stRowLabelColor),
-                    if (_itemToggles[promoK] == true)
-                      _stSubGroup([
-                        _stSubRow("미션금액", mission, _stSubRowColor),
-                        _stSubRow("건당프로모션 ($pmCnt)", pOrd, _stSubRowColor),
-                        _stSubRow("구간프로모션 ($pmCnt)", rng, _stSubRowColor),
-                      ]),
-                    _stToggleRow(taxK, "세금합계", tax, _stRowPinkColor),
-                    if (_itemToggles[taxK] == true)
-                      _stSubGroup([
-                        _stSubRow("고용보험", emp, _stSubRowColor),
-                        _stSubRow("산재보험", acc, _stSubRowColor),
-                        _stSubRow("원천세", inc, _stSubRowColor),
-                      ]),
-                    _stToggleRow(commK, "수수료합계", fee, _stRowPinkColor),
-                    if (_itemToggles[commK] == true)
-                      _stSubGroup([
-                        _stSubRow("출금수수료", wd, _stSubRowColor),
-                        _stSubRow("협력사수수료", comm, _stSubRowColor),
-                      ]),
-                    _stToggleRow(deduK, "공제합계", iDedu, _stRowPinkColor),
-                    if (_itemToggles[deduK] == true)
-                      _stSubGroup([
-                        _stSubRow("시간제보험", ins, _stSubRowColor),
-                        _stSubRow("리스비", dailyLease, _stSubRowColor),
-                        _stSubRow("기타", dailyEtc, _stSubRowColor),
-                      ]),
-                    const SizedBox(height: 6),
-                    Container(height: 1, color: _elevated),
-                    const SizedBox(height: 6),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      const Text("소계",
-                          style: TextStyle(
-                              color: _stSubtotalColor,
-                              fontSize: _stSubtotalFontSize)),
-                      _stAmt(del + prm - tax - fee - iDedu, _stSubtotalColor,
-                          fs: _stSubtotalAmtFontSize,
-                          unitColor: _stSubtotalUnitColor,
-                          unitFs: _stSubtotalUnitFontSize,
-                          signed: true),
-                    ]),
-                  ],
+                return SettlementDayCard(
+                  dateShort: dateShort,
+                  statusLabel: status,
+                  statusColor: stColor,
+                  del: del,
+                  promoTotal: prm,
+                  mission: mission,
+                  perOrder: pOrd,
+                  range: rng,
+                  pmCnt: pmCnt,
+                  tax: tax,
+                  emp: emp,
+                  acc: acc,
+                  incomeTax: inc,
+                  wdFee: wd,
+                  comm: comm,
+                  ins: ins,
+                  lease: dailyLease,
+                  etc: dailyEtc,
+                  subtotal: del + prm - tax - fee - iDedu,
+                  signed: true,
+                  showTopDivider: i > 0,
                 );
               }),
             ]),

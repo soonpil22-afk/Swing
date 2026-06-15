@@ -6,6 +6,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'admin_common.dart';
 import 'glass_shine_button.dart';
+import 'settlement_day_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _surface  = kSurface;
@@ -28,24 +29,21 @@ const double _wrCardGap    = kGapCard;   // 카드 사이 간격
 const double _wrHeadPadH   = 16;   // 헤더 좌우 여백
 const double _wrHeadPadV   = 13;   // 헤더 위아래 여백
 const _wrNameColor  = _teal;     // 이름 글씨 색
-const double _wrNameFontSize  = 17;// 이름 글씨 크기
-const _wrTitleColor = _text;      // "님의 출금 신청" 글씨 색
-const double _wrTitleFontSize = 15;// "님의 출금 신청" 글씨 크기
-const _wrDateColor  = _text2;      // 날짜 글씨 색
-const double _wrDateFontSize  = 11;// 날짜 글씨 크기
-const _wrAmtColor   = _teal;     // 헤더 금액 숫자 색
+const double _wrNameFontSize  = 14;// 이름 글씨 크기
+const double _wrDateFontSize  = 14;// 날짜 글씨 크기
+const _wrAmtColor   = _text;     // 헤더 금액 숫자 색 (기사처럼 text색)
 const double _wrAmtFontSize    = 14;// 헤더 금액 숫자 크기
-const _wrDaysColor  = _text2;      // "N일 합산" 글씨 색
-const double _wrDaysFontSize   = 10;// "N일 합산" 글씨 크기
+const _wrDaysColor  = _amber;      // "N일" 글씨 색 (기사처럼 앰버)
+const double _wrDaysFontSize   = 14;// "N일 합산" 글씨 크기
 // 펼침: 계좌·최종출금금액 행
 const _wrBankColor      = _amber;     // 은행명 글씨 색(박스 없음)
-const double _wrBankFontSize     = 12; // 은행명 글씨 크기
+const double _wrBankFontSize     = 14; // 은행명 글씨 크기
 const _wrAcctNumColor   = _text;       // 계좌번호 글씨 색(박스 안)
-const double _wrAcctNumFontSize  = 13; // 계좌번호 글씨 크기
+const double _wrAcctNumFontSize  = 14; // 계좌번호 글씨 크기
 const _wrFinalLabelColor = _amber;    // "최종출금금액" 라벨 색
-const double _wrFinalLabelFontSize = 16;// "최종출금금액" 라벨 크기
+const double _wrFinalLabelFontSize = 14;// "최종출금금액" 라벨 크기
 const _wrFinalAmtColor  = _text;       // 최종출금금액 숫자 색
-const double _wrFinalAmtFontSize = 16; // 최종출금금액 숫자 크기
+const double _wrFinalAmtFontSize = 14; // 최종출금금액 숫자 크기
 const _wrValBoxBg       = _surface;      // 값 박스 배경(블랙)
 const _wrValBoxBorder   = _elevated;   // 값 박스 테두리
 const double _wrValBoxRadius = 6;      // 값 박스 모서리
@@ -55,26 +53,9 @@ const _wrCopyBorder     = _elevated;   // 복사 버튼 테두리 색
 const double _wrCopyBorderWidth = 1;   // 복사 버튼 테두리 두께
 // 카드 테두리·헤더 줄 간격
 const double _wrCardBorderWidth = 1;   // 카드 테두리 두께
-const double _wrGapNameDate    = 2;    // 이름줄 ↔ 날짜 갭
-const double _wrGapAmtChevron  = 8;    // 금액 ↔ 펼침아이콘 갭
-const double _wrChevronSize    = 18;   // 펼침 아이콘 크기
 const double _wrGapAcctFinal   = 8;    // 계좌행 ↔ 최종금액 갭
 const double _wrGapFinalItems  = 10;   // 최종금액 ↔ 날짜상세 갭
 // 날짜별 상세 내역 행
-const double _wrItemGap        = kGapCard;    // 날짜 카드 사이 갭
-const _wrItemChipColor         = _teal; // 날짜칩 글씨 색
-const double _wrItemChipFontSize = 11; // 날짜칩 글씨 크기
-const double _wrItemChevronSize  = 15; // 날짜 펼침 아이콘 크기
-const _wrDtMainColor           = _text; // "배달수수료(세전)" 색
-const double _wrDtMainFontSize   = 14; // "배달수수료(세전)" 크기
-const _wrDtTogLabelColor       = _text; // 토글 라벨 색
-const double _wrDtTogFontSize    = 14; // 토글 글씨 크기
-const double _wrDtTogIconSize    = 14; // 토글 아이콘 크기
-const _wrDtSubColor            = _text2; // 하위행(subRow) 색
-const double _wrDtSubFontSize    = 12; // 하위행 글씨 크기
-const _wrDtSubtotalColor       = _teal; // 소계 색
-const double _wrDtSubtotalLabelFontSize = 16; // 소계 라벨 크기
-const double _wrDtSubtotalValueFontSize = 16; // 소계 값 크기
 
 // ═══════════════ 출금신청 페이지 (로직) ═══════════════
 class WithdrawalRequestPage extends StatefulWidget {
@@ -220,22 +201,23 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
             padding: const EdgeInsets.symmetric(
                 horizontal: _wrHeadPadH, vertical: _wrHeadPadV),
             child: Row(children: [
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text.rich(TextSpan(style: const TextStyle(fontWeight: FontWeight.w400), children: [
-                  TextSpan(text: riderName, style: const TextStyle(color: _wrNameColor, fontSize: _wrNameFontSize)),
-                  const TextSpan(text: " 님의 출금 신청!!", style: TextStyle(color: _wrTitleColor, fontSize: _wrTitleFontSize)),
-                ])),
-                const SizedBox(height: _wrGapNameDate),
-                Text(dateLabel, style: const TextStyle(color: _wrDateColor, fontSize: _wrDateFontSize)),
-              ])),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text("${NumberFormat('#,###').format(totalAmount)} 원",
-                    style: const TextStyle(color: _wrAmtColor, fontWeight: FontWeight.w400, fontSize: _wrAmtFontSize)),
-                if (hasItems)
-                  Text("${items.length}일 합산", style: const TextStyle(color: _wrDaysColor, fontSize: _wrDaysFontSize)),
-              ]),
-              const SizedBox(width: _wrGapAmtChevron),
-              Icon(cardExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: cardExp ? _text2 : _teal, size: _wrChevronSize),
+              // 날짜 칩 (기사처럼 teal 칩)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                    color: _surface,
+                    borderRadius: BorderRadius.circular(7),
+                    border: Border.all(color: _elevated)),
+                child: Text(dateLabel, style: const TextStyle(color: _teal, fontSize: _wrDateFontSize)),
+              ),
+              const SizedBox(width: 8),
+              if (hasItems)
+                Text("${items.length}일", style: const TextStyle(color: _wrDaysColor, fontSize: _wrDaysFontSize)),
+              const SizedBox(width: 8),
+              Text(riderName, style: const TextStyle(color: _wrNameColor, fontSize: _wrNameFontSize)),
+              const Spacer(),
+              Text("${NumberFormat('#,###').format(totalAmount)} 원",
+                  style: const TextStyle(color: _wrAmtColor, fontSize: _wrAmtFontSize)),
             ]),
           ),
         ),
@@ -295,6 +277,8 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
               // 날짜별 상세 (items 있을 때)
               if (hasItems) ...[
                 const SizedBox(height: _wrGapFinalItems),
+                Container(height: 1, color: _elevated),
+                const SizedBox(height: _wrGapFinalItems),
                 ...List.generate(items.length, (i) {
                   final item    = items[i];
                   final iDate   = item['date'] as String? ?? '';
@@ -319,118 +303,28 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
                   final iIns    = (item['insuranceFee']   as num?)?.toDouble() ?? 0;
                   final iLease  = items.isNotEmpty ? leaseDeduction / items.length : 0.0;
                   final iEtc    = items.isNotEmpty ? etcDeduction / items.length : 0.0;
-                  final iFee    = iWd + iComm;
-                  final iDedu   = iIns + iLease + iEtc;
-                  final iExp    = _dateItemExp[docId]?[iDate] ?? false;
-
-                  bool tog(String k) => _dateItemExp[docId]?[k] ?? false;
-                  void togSet(String k) => setState(() =>
-                      _dateItemExp[docId]![k] = !(_dateItemExp[docId]![k] ?? false));
-
-                  Widget subGroup(List<Widget> ch) => Container(
-                    margin: const EdgeInsets.only(bottom: 4),
-                    padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
-                    decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(6), border: Border.all(color: _elevated)),
-                    child: Column(children: ch),
-                  );
-
-                  Widget subRow(String label, String val, {Color lc = _wrDtSubColor, Color vc = _wrDtSubColor}) =>
-                      Padding(padding: const EdgeInsets.symmetric(vertical: 2),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Text(label, style: TextStyle(color: lc, fontSize: _wrDtSubFontSize)),
-                          Text(val,   style: TextStyle(color: vc, fontSize: _wrDtSubFontSize)),
-                        ]));
-
-                  Widget togRow(String label, double v, Color vc, String k) =>
-                      GestureDetector(
-                        onTap: () => togSet(k),
-                        behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(children: [
-                            Text(label, style: const TextStyle(color: _wrDtTogLabelColor, fontSize: _wrDtTogFontSize, fontWeight: FontWeight.w400)),
-                            const SizedBox(width: 4),
-                            Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: tog(k) ? _text2 : _teal, size: _wrDtTogIconSize),
-                            const Spacer(),
-                            Text.rich(TextSpan(children: [
-                              TextSpan(text: _fmtC(v), style: TextStyle(color: vc, fontSize: _wrDtTogFontSize)),
-                              const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: _wrDtTogFontSize)),
-                            ])),
-                          ]),
-                        ),
-                      );
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: _wrItemGap),
-                    decoration: BoxDecoration(
-                      color: _surface, borderRadius: BorderRadius.circular(9),
-                      border: Border.all(color: iExp ? _teal : _elevated),
-                    ),
-                    child: Column(children: [
-                      GestureDetector(
-                        onTap: () => setState(() => _dateItemExp[docId]![iDate] = !iExp),
-                        behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                          child: Row(children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                              decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(5), border: Border.all(color: _elevated)),
-                              child: Text(iShort, style: const TextStyle(color: _wrItemChipColor, fontSize: _wrItemChipFontSize, fontWeight: FontWeight.w400)),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(iExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: iExp ? _text2 : _teal, size: _wrItemChevronSize),
-                          ]),
-                        ),
-                      ),
-                      if (iExp) ...[
-                        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 10)),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                          child: Column(children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text("배달수수료 (세전)", style: TextStyle(color: _wrDtMainColor, fontSize: _wrDtMainFontSize, fontWeight: FontWeight.w400)),
-                                Text("${_fmtC(iDel)} 원", style: const TextStyle(color: _wrDtMainColor, fontSize: _wrDtMainFontSize)),
-                              ]),
-                            ),
-                            togRow("지원금합계", iPromo, _text, '${iDate}_promo'),
-                            if (tog('${iDate}_promo')) subGroup([
-                              subRow("미션금액", "${_fmtC(iMission)} 원"),
-                              subRow("건당프로모션 ($iPmCnt)", "${_fmtC(iPOrder)} 원"),
-                              subRow("구간프로모션 ($iPmCnt)", "${_fmtC(iRange)} 원"),
-                            ]),
-                            togRow("세금합계", iTax, _pink, '${iDate}_tax'),
-                            if (tog('${iDate}_tax')) subGroup([
-                              subRow("고용보험", "${_fmtC(iETax)} 원", vc: _text2),
-                              subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
-                              subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
-                            ]),
-                            togRow("수수료합계", iFee, _pink, '${iDate}_comm'),
-                            if (tog('${iDate}_comm')) subGroup([
-                              subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
-                              subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
-                            ]),
-                            togRow("공제합계", iDedu, _pink, '${iDate}_dedu'),
-                            if (tog('${iDate}_dedu')) subGroup([
-                              subRow("시간제보험", "${_fmtC(iIns)} 원",   vc: _text2),
-                              subRow("리스비",     "${_fmtC(iLease)} 원", vc: _text2),
-                              subRow("기타",       "${_fmtC(iEtc)} 원",   vc: _text2),
-                            ]),
-                            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                const Text("소계", style: TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalLabelFontSize, fontWeight: FontWeight.w400)),
-                                // finalAmount에 시간제보험이 이미 빠져 있으므로 리스비·기타만 추가 차감(보험 이중차감 방지)
-                                Text("${_fmtC(iFinal - iLease - iEtc)} 원", style: const TextStyle(color: _wrDtSubtotalColor, fontSize: _wrDtSubtotalValueFontSize, fontWeight: FontWeight.w400)),
-                              ]),
-                            ),
-                          ]),
-                        ),
-                      ],
-                    ]),
+                  return SettlementDayCard(
+                    dateShort: iShort,
+                    statusLabel: "입금대기",
+                    statusColor: _amber,
+                    del: iDel,
+                    promoTotal: iPromo,
+                    mission: iMission,
+                    perOrder: iPOrder,
+                    range: iRange,
+                    pmCnt: iPmCnt,
+                    tax: iTax,
+                    emp: iETax,
+                    acc: iATax,
+                    incomeTax: iITax,
+                    wdFee: iWd,
+                    comm: iComm,
+                    ins: iIns,
+                    lease: iLease,
+                    etc: iEtc,
+                    // finalAmount에 시간제보험이 이미 빠져 있으므로 리스비·기타만 추가 차감(보험 이중차감 방지)
+                    subtotal: iFinal - iLease - iEtc,
+                    showTopDivider: i > 0,
                   );
                 }),
               ]
@@ -620,7 +514,7 @@ class _WithdrawalRequestPageState extends State<WithdrawalRequestPage> {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(border: Border.all(color: _wrCopyBorder, width: _wrCopyBorderWidth), borderRadius: BorderRadius.circular(6)),
-      child: const Text("복사", style: TextStyle(color: _teal, fontSize: 11)),
+      child: const Text("복사", style: TextStyle(color: _teal, fontSize: 14)),
     ),
   );
 

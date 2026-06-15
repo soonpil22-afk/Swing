@@ -6,33 +6,25 @@ import 'tokens.dart';
 import 'admin_common.dart';
 import 'chat_view.dart';
 
-// 팔레트 별칭 (tokens.dart 단일 출처)
-const _surface  = kSurface;
-const _elevated = kElevated;
-const _teal     = kTeal;
-const _text     = kText;
-const _text2    = kText2;
-const _pink     = kPink;
 
 // ── 상담 — 목록 카드 ──
 const double _csListPadH = 14; // 목록 좌우 여백
 const double _csListPadV = 12; // 목록 상하 여백
-const _csCardBg = _surface;    // 상담 카드 배경
+const _csCardBg = kSurface;    // 상담 카드 배경
 const double _csCardRadius = 12;// 상담 카드 모서리
-const _csCardBorder       = _elevated; // 읽음 카드 테두리
-const _csCardBorderUnread = _teal;    // 안읽음 카드 테두리
-const _csAvatarBg         = _surface;  // 아바타 배경
-const _csAvatarIconColor  = _text;     // 아바타 아이콘(읽음)
-const _csAvatarIconUnread = _teal;    // 아바타 아이콘(안읽음)
-const _csNameColor  = _text;  // 이름(읽음) 색
-const _csNameUnread = _teal;   // 이름(안읽음) 색
+const _csCardBorder       = kElevated; // 읽음 카드 테두리
+const _csAvatarBg         = kSurface;  // 아바타 배경
+const _csAvatarIconColor  = kText;     // 아바타 아이콘(읽음)
+const _csAvatarIconUnread = kTeal;    // 아바타 아이콘(안읽음)
+const _csNameColor  = kText;  // 이름(읽음) 색
+const _csNameUnread = kTeal;   // 이름(안읽음) 색
 const double _csNameFontSize = 16; // 이름 글씨 크기
-const _csNewBg   = _pink;   // NEW 뱃지 배경
-const _csNewText = _text;  // NEW 뱃지 글씨
-const _csTimeColor = _text;       // 시간 색
+const _csNewBg   = kPink;   // NEW 뱃지 배경
+const _csNewText = kText;  // NEW 뱃지 글씨
+const _csTimeColor = kText;       // 시간 색
 const double _csTimeFontSize = 16; // 시간 크기
-const _csChevronColor = _text2;    // 화살표 색
-const _csEmptyColor = _text2;      // "접수된 상담이 없습니다" 색
+const _csChevronColor = kText2;    // 화살표 색
+const _csEmptyColor = kText2;      // "접수된 상담이 없습니다" 색
 const double _csEmptyFontSize = 13;// 빈 안내 글씨 크기
 const double _csAvatarSize     = 38; // 아바타 크기
 const double _csAvatarIconSize = 20; // 아바타 아이콘 크기
@@ -54,7 +46,7 @@ class ChatListPage extends StatelessWidget {
             .orderBy('lastAt', descending: true)
             .snapshots(),
         builder: (ctx, snap) {
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: _teal));
+          if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: kTeal));
           final docs = snap.data!.docs;
           if (docs.isEmpty) {
             return const Center(
@@ -80,14 +72,14 @@ class ChatListPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _csCardBg,
                     borderRadius: BorderRadius.circular(_csCardRadius),
-                    border: Border.all(color: unread ? _csCardBorderUnread : _csCardBorder, width: 1),
+                    border: Border.all(color: unread ? kBorderActive : _csCardBorder, width: 1),
                   ),
                   child: Row(children: [
                     Container(
                       width: _csAvatarSize, height: _csAvatarSize,
                       decoration: BoxDecoration(
                         color: _csAvatarBg, shape: BoxShape.circle,
-                        border: Border.all(color: unread ? _csCardBorderUnread : _csCardBorder, width: 1),
+                        border: Border.all(color: unread ? kBorderActive : _csCardBorder, width: 1),
                       ),
                       child: Icon(Icons.person_outline_rounded, color: unread ? _csAvatarIconUnread : _csAvatarIconColor, size: _csAvatarIconSize),
                     ),
@@ -137,7 +129,7 @@ class _AdminChatPage extends StatelessWidget {
     return adminPanelScaffold(
       context,
       "$riderName 님",
-      dividerColor: _elevated,
+      dividerColor: kElevated,
       dividerInset: 15,
       ChatView(uid: uid, mySide: 'admin'),
     );

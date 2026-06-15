@@ -14,7 +14,7 @@ const _panel    = kPanel;    // 메인 배경 (inset 패널)
 const _surface  = kSurface;  // 카드
 const _elevated = kElevated; // 트랙 · 테두리
 const _text  = kText;
-const _text3 = kText3;
+const _text2 = kText2;
 const _teal     = kTeal;     // 민트 (메인 액센트)
 const _pink     = kPink;     // 핑크
 const _purple   = kPurple;   // 보라
@@ -239,7 +239,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                 value: isOn,
                 onChanged: _setAppOn,
                 activeThumbColor: _appOnColor,
-                inactiveThumbColor: _text3,
+                inactiveThumbColor: _text2,
                 inactiveTrackColor: _elevated,
               ),
             ]),

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'tokens.dart';
 import 'withdrawal_breakdown_card.dart';
+import 'settlement_day_card.dart';
 
 // 팔레트 별칭 (tokens.dart 단일 출처)
 const _surface  = kSurface;
@@ -42,23 +43,13 @@ const _rhDaysColor       = _amber;     // "N일" 색
 const double _rhDaysFontSize = 14;     // "N일" 크기
 const _rhHeadAmtColor    = _text;      // 헤더 금액 색
 const double _rhHeadAmtFontSize = 14;  // 헤더 금액 크기
-const _rhPaidBadgeColor  = _teal;      // "입금완료" 박스 색
-const double _rhPaidFontSize = 10;     // "입금완료" 박스 글씨 크기
 // 상세 내역 행 (정산내역·누적정산 공통 헬퍼)
-const _rhMainColor       = _text;      // "배달수수료(세전)" 등 메인 행 색
-const double _rhMainFontSize = 14;     // 메인 행 글씨 크기
 const _rhTogLabelColor   = _text;     // 토글 라벨 색
 const double _rhTogFontSize  = 14;     // 토글 글씨 크기
 const double _rhTogIconSize  = 14;     // 토글 아이콘 크기
 const _rhSubColor        = _text2;     // 하위행 색
 const double _rhSubFontSize  = 12;     // 하위행 글씨 크기
-const _rhSubtotalColor   = _teal;      // 소계·총출금 색
-const double _rhSubtotalLabelFontSize = 16; // 소계 라벨 크기
-const double _rhSubtotalValueFontSize = 16; // 소계 값 크기
 // 날짜별 상세 카드
-const double _rhItemGap  = kGapCard;          // 날짜 카드 사이 갭
-const _rhItemChipColor   = _teal;      // 날짜칩 글씨 색
-const double _rhItemChipFontSize = 11; // 날짜칩 글씨 크기
 // 누적정산 카드 여백
 const double _rhCumOuterL = 15; // 카드 바깥 여백 왼
 const double _rhCumOuterT = 2; // 위 (탭 ↔ 카드)
@@ -78,12 +69,6 @@ const double _rhLogBodyPadT = 10; // 위
 const double _rhLogBodyPadR = 14; // 오른
 const double _rhLogBodyPadB = 14; // 아래
 // 날짜카드(속) 안쪽 여백
-const double _rhItemHeadPadH = 12; // 헤더 좌우 여백
-const double _rhItemHeadPadV = 9;  // 헤더 위아래 여백
-const double _rhItemBodyPadL = 12; // 본문 여백 왼
-const double _rhItemBodyPadT = 8;  // 위
-const double _rhItemBodyPadR = 12; // 오른
-const double _rhItemBodyPadB = 10; // 아래
 
 // ═══════════════ 라이더 정산내역 페이지 (로직) ═══════════════
 class RiderHistoryPage extends StatefulWidget {
@@ -401,7 +386,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
               ),
               const SizedBox(width: 8),
               if (items.isNotEmpty)
-                Text("  ${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
+                Text("${items.length}일", style: const TextStyle(color: _rhDaysColor, fontSize: _rhDaysFontSize)),
               const Spacer(),
               Text("${_fmtC(amount)} 원",
                   style: const TextStyle(color: _rhHeadAmtColor, fontSize: _rhHeadAmtFontSize, fontWeight: FontWeight.w400)),
@@ -429,7 +414,7 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
                       etcPerDay: (() {
                         final ed = (data['etcDeduction'] as num?)?.toDouble() ?? 0;
                         return items.isNotEmpty ? ed / items.length : 0.0;
-                      })()),
+                      })(), showTopDivider: i > 0),
               ] else
                 _oldMsgView(data),
             ]),
@@ -439,10 +424,9 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     );
   }
 
-  Widget _dateItemCard(Map<String, dynamic> item, String docId, {double leasePerDay = 0, double etcPerDay = 0}) {
+  Widget _dateItemCard(Map<String, dynamic> item, String docId, {double leasePerDay = 0, double etcPerDay = 0, bool showTopDivider = false}) {
     final iDate   = item['date']            as String? ?? '';
     final iFinal  = (item['finalAmount']    as num?)?.toDouble() ?? 0;
-    final key     = '${docId}_$iDate';
     final iShort  = iDate.length >= 10 ? iDate.substring(5) : iDate;
     final actualFinal = iFinal - leasePerDay - etcPerDay;
 
@@ -462,118 +446,27 @@ class _RiderHistoryPageState extends State<RiderHistoryPage>
     final iATax   = (item['accidentTax']    as num?)?.toDouble() ?? 0;
     final iITax   = (item['incomeTax']      as num?)?.toDouble() ?? 0;
     final iIns    = (item['insuranceFee']   as num?)?.toDouble() ?? 0;
-    final iFee    = iWd + iComm;
-    final iDedu   = iIns + leasePerDay + etcPerDay;
 
-    bool tog(String k) => _dateExp[k] ?? false;
-    void togSet(String k) => setState(() => _dateExp[k] = !(_dateExp[k] ?? false));
-
-    Widget subGroup(List<Widget> ch) => Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
-      decoration: BoxDecoration(color: _surface.withAlpha(180), borderRadius: BorderRadius.circular(6), border: Border.all(color: _elevated)),
-      child: Column(children: ch),
-    );
-    Widget subRow(String label, String val, {Color lc = _rhSubColor, Color vc = _rhSubColor}) =>
-        Padding(padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(label, style: TextStyle(color: lc, fontSize: _rhSubFontSize)),
-            Text(val,   style: TextStyle(color: vc, fontSize: _rhSubFontSize)),
-          ]));
-    Widget togRow(String label, double v, Color vc, String k) =>
-        GestureDetector(
-          onTap: () => togSet(k),
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(children: [
-              Text(label, style: const TextStyle(color: _rhTogLabelColor, fontSize: _rhTogFontSize, fontWeight: FontWeight.w400)),
-              const SizedBox(width: 4),
-              Icon(tog(k) ? Icons.expand_less : Icons.expand_more, color: tog(k) ? _text2 : _teal, size: _rhTogIconSize),
-              const Spacer(),
-              Text.rich(TextSpan(children: [
-                TextSpan(text: _fmtC(v), style: TextStyle(color: vc, fontSize: _rhTogFontSize)),
-                const TextSpan(text: ' 원', style: TextStyle(color: _text, fontSize: _rhTogFontSize)),
-              ])),
-            ]),
-          ),
-        );
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: _rhItemGap),
-      decoration: BoxDecoration(
-        color: _surface, borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: _elevated),
-      ),
-      child: Column(children: [
-        // 날짜 헤더 (토글 없음 — 항상 펼침)
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: _rhItemHeadPadH, vertical: _rhItemHeadPadV),
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-              decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(5), border: Border.all(color: _elevated)),
-              child: Text(iShort, style: const TextStyle(color: _rhItemChipColor, fontSize: _rhItemChipFontSize, fontWeight: FontWeight.w400)),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-              decoration: BoxDecoration(
-                color: _rhPaidBadgeColor.withAlpha(20),
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: _rhPaidBadgeColor),
-              ),
-              child: const Text("입금완료",
-                  style: TextStyle(color: _rhPaidBadgeColor, fontSize: _rhPaidFontSize, fontWeight: FontWeight.w400)),
-            ),
-          ]),
-        ),
-        Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(horizontal: 12)),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(_rhItemBodyPadL, _rhItemBodyPadT, _rhItemBodyPadR, _rhItemBodyPadB),
-          child: Column(children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("배달수수료 (세전)", style: TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize, fontWeight: FontWeight.w400)),
-                Text("${_fmtC(iDel)} 원", style: const TextStyle(color: _rhMainColor, fontSize: _rhMainFontSize)),
-              ]),
-            ),
-            togRow("지원금합계", iPromo, _text, '${key}_promo'),
-            if (tog('${key}_promo')) subGroup([
-              subRow("미션금액", "${_fmtC(iMission)} 원"),
-              subRow("건당프로모션 ($iPmCnt)", "${_fmtC(iPOrd)} 원"),
-              subRow("구간프로모션 ($iPmCnt)", "${_fmtC(iRng)} 원"),
-            ]),
-            togRow("세금합계", iTax, _pink, '${key}_tax'),
-            if (tog('${key}_tax')) subGroup([
-              subRow("고용보험", "${_fmtC(iETax)} 원", vc: _text2),
-              subRow("산재보험", "${_fmtC(iATax)} 원", vc: _text2),
-              subRow("원천세",   "${_fmtC(iITax)} 원", vc: _text2),
-            ]),
-            togRow("수수료합계", iFee, _pink, '${key}_comm'),
-            if (tog('${key}_comm')) subGroup([
-              subRow("출금수수료",   "${_fmtC(iWd)} 원",   vc: _text2),
-              subRow("협력사수수료", "${_fmtC(iComm)} 원", vc: _text2),
-            ]),
-            togRow("공제합계", iDedu, _pink, '${key}_dedu'),
-            if (tog('${key}_dedu')) subGroup([
-              subRow("시간제보험", "${_fmtC(iIns)} 원",        vc: _text2),
-              subRow("리스비",     "${_fmtC(leasePerDay)} 원", vc: _text2),
-              subRow("기타",       "${_fmtC(etcPerDay)} 원",   vc: _text2),
-            ]),
-            Container(height: 1, color: _elevated, margin: const EdgeInsets.symmetric(vertical: 5)),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text("소계", style: TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalLabelFontSize, fontWeight: FontWeight.w400)),
-                Text("${_fmtC((leasePerDay > 0 || etcPerDay > 0) ? actualFinal : iFinal)} 원",
-                    style: const TextStyle(color: _rhSubtotalColor, fontSize: _rhSubtotalValueFontSize, fontWeight: FontWeight.w400)),
-              ]),
-            ),
-          ]),
-        ),
-      ]),
+    return SettlementDayCard(
+      dateShort: iShort,
+      statusLabel: "입금완료",
+      del: iDel,
+      promoTotal: iPromo,
+      mission: iMission,
+      perOrder: iPOrd,
+      range: iRng,
+      pmCnt: iPmCnt,
+      tax: iTax,
+      emp: iETax,
+      acc: iATax,
+      incomeTax: iITax,
+      wdFee: iWd,
+      comm: iComm,
+      ins: iIns,
+      lease: leasePerDay,
+      etc: etcPerDay,
+      subtotal: (leasePerDay > 0 || etcPerDay > 0) ? actualFinal : iFinal,
+      showTopDivider: showTopDivider,
     );
   }
 
